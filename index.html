@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psychiatry Assessment Scales</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div id="app">
+    <button id="sidebar-toggle" aria-label="Toggle sidebar">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div id="overlay"></div>
+
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <h2>Psychiatry Tool</h2>
+        <p>DNB Residency</p>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">
+          <i class="fas fa-clipboard-list"></i> Scales
+        </h3>
+        <div id="sidebar-scale-list"></div>
+      </div>
+      <div class="sidebar-footer">
+        <p>v1.2.0</p>
+      </div>
+    </nav>
+
+    <main id="main-content">
+      <header>
+        <h1>Psychiatry Assessment Tool</h1>
+        <p>DNB Psychiatry Residency — Standardized Clinical Rating Scales</p>
+      </header>
+
+      <section id="home-view">
+        <div class="welcome-card">
+          <i class="fas fa-clipboard-check welcome-icon"></i>
+          <h2>Welcome</h2>
+          <p>Select a rating scale from the sidebar to begin an assessment. Each scale follows standard administration guidelines with auto-advance, scoring, and clinical interpretation.</p>
+        </div>
+        <div class="quick-info">
+          <div class="info-card">
+            <i class="fas fa-list-check"></i>
+            <span class="info-count" id="scale-count">0</span>
+            <span>Scales Available</span>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-arrow-right"></i>
+            <span>Auto-advance</span>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-file-pdf"></i>
+            <span>Export PDF</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="assessment-view" style="display: none;">
+        <div id="assessment-header">
+          <h2 id="assessment-scale-name"></h2>
+          <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+          </div>
+          <p id="question-counter"></p>
+        </div>
+        <div id="question-container">
+          <p id="question-text"></p>
+          <div id="options-container"></div>
+        </div>
+        <button id="back-to-home-btn" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Scales</button>
+      </section>
+
+      <section id="results-view" style="display: none;">
+        <div id="results-content">
+          <div class="results-header">
+            <i class="fas fa-check-circle results-icon"></i>
+            <h2>Assessment Complete</h2>
+          </div>
+          <div id="score-display"></div>
+          <div id="subscale-scores"></div>
+          <div id="interpretation-display"></div>
+        </div>
+        <div id="action-buttons">
+          <button id="share-btn"><i class="fas fa-share-alt"></i> Share</button>
+          <button id="pdf-btn"><i class="fas fa-file-pdf"></i> Export PDF</button>
+          <button id="restart-btn"><i class="fas fa-redo"></i> New Assessment</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="scales.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
