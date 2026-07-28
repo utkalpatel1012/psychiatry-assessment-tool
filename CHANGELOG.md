@@ -66,6 +66,37 @@
 - **`index.html`** — added `#answers-detail` container
 - **`style.css`** — added `.answers-section`, `.answers-list`, `.answer-item`, `.answer-badge` styles with print/PDF support
 
+## [1.5.0] - 2026-07-29
+
+### Changed
+- **PDF export** completely rewritten:
+  - Uses `html2pdf().outputPdf('blob')` for blob-based generation
+  - Increased `scale: 3` for crisp rendering, explicit `scrollWidth/scrollHeight` capture
+  - Added `pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }` for proper multi-page splitting
+  - Temporarily removes max-width constraint during capture for full-width content
+- **Share button** now shares PDF file via Web Share API (`navigator.share({ files })`) on supported browsers (mobile Chrome/Safari, Safari macOS 14+)
+  - Falls back to: download PDF + copy results text to clipboard
+  - Final fallback: share as text (original behavior)
+- **`generatePdfBlob()`** shared function used by both Share and Export PDF
+- **`downloadBlob()`** utility for reliable file download
+
+## [1.6.0] - 2026-07-29
+
+### Changed
+- **Complete visual redesign** — 3D depth with layered shadows, subtle gradients, and perspective transforms:
+  - `body`: radial gradient background for ambient depth
+  - Cards (welcome, question, results, info): multi-layer `box-shadow` (small + medium + large) with hover elevation (`translateY`, scale)
+  - Buttons: 3D pressed/raised states with inset shadows and active/pressed transforms
+  - Sidebar: sliding panel with cubic-bezier easing, shadow border, hover translateX effect
+  - Score value: `text-shadow` for 3D lettering, larger 48px size
+  - Progress bar: `inset` shadow on track, gradient fill with glow
+  - Option buttons: hover translateX(6px), active scale(0.99) press effect
+  - Subscale cards: inset highlight + subtle shadow, hover lift
+  - Answers table: bordered container with alternating row hover
+  - Interpretation: left gradient accent bar via `::before` pseudo-element
+  - All transitions: smooth cubic-bezier or ease, consistent 0.2–0.3s duration
+  - Animations: `fadeInUp` (opacity + translateY) replaces plain fadeIn
+
 ## [1.3.0] - 2026-07-29
 
 ### Changed
