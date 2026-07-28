@@ -1,8 +1,6 @@
-// Official Google OAuth 2.0 & Google Drive API v3 Service
-let GOOGLE_CLIENT_ID = localStorage.getItem('google_custom_client_id') || '1082531393608-p7hql5v9n5e0u8k4b9r3v2q1s8t4u5v6.apps.googleusercontent.com';
-const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+// Official Google OAuth 2.0 & Google Drive API v3 Integration
+let GOOGLE_CLIENT_ID = localStorage.getItem('google_custom_client_id') || '785934029482-a0b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5.apps.googleusercontent.com';
 
-let tokenClient = null;
 let accessToken = localStorage.getItem('google_access_token') || null;
 let googleUser = null;
 
@@ -16,74 +14,120 @@ try {
 const GoogleDriveService = {
   init(onAuthChange) {
     this.onAuthChange = onAuthChange;
+    
+    // Check if returning from Google OAuth redirect with access token in hash
+    if (window.location.hash && window.location.hash.includes('access_token=')) {
+      this.handleOAuthRedirectHash();
+    }
+
     if (googleUser && accessToken) {
       if (this.onAuthChange) this.onAuthChange(googleUser, true);
+    }
+  },
+
+  handleOAuthRedirectHash() {
+    try {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const token = hashParams.get('access_token');
+      if (token) {
+        accessToken = token;
+        localStorage.setItem('google_access_token', token);
+        window.history.replaceState(null, null, window.location.pathname);
+        this.fetchUserProfile(token);
+      }
+    } catch (e) {
+      console.error('Error parsing OAuth hash:', e);
     }
   },
 
   setClientId(clientId) {
     GOOGLE_CLIENT_ID = clientId;
     localStorage.setItem('google_custom_client_id', clientId);
-    tokenClient = null;
-    alert('Google Cloud Client ID updated successfully!');
+    alert('Google Cloud Client ID updated!');
   },
 
   getClientId() {
     return GOOGLE_CLIENT_ID;
   },
 
-  // Main entry point for Google Sign-In & Drive Permission Grant
+  // Open Authentic Google OAuth 2.0 Sign-In Popup
   requestDrivePermission(onSuccessCallback) {
-    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
-      alert('Google Sign-In service is loading. Please check your internet connection and try again.');
+    const currentOrigin = window.location.origin;
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+    
+    // Check if GIS TokenClient is available
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+      try {
+        const tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+          callback: async (tokenResponse) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              accessToken = tokenResponse.access_token;
+              localStorage.setItem('google_access_token', accessToken);
+              await this.fetchUserProfile(accessToken);
+              if (onSuccessCallback) onSuccessCallback(accessToken);
+            } else {
+              this.fallbackOAuthPopupWindow(onSuccessCallback);
+            }
+          }
+        });
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+        return;
+      } catch (e) {
+        console.warn('GIS TokenClient init error, falling back to popup window:', e);
+      }
+    }
+
+    this.fallbackOAuthPopupWindow(onSuccessCallback);
+  },
+
+  fallbackOAuthPopupWindow(onSuccessCallback) {
+    const redirectUri = window.location.origin;
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+    
+    // Official Google OAuth 2.0 Web Endpoint
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}&prompt=consent`;
+
+    const width = 500;
+    const height = 650;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    const popup = window.open(
+      authUrl,
+      'GoogleOAuthWindow',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
+    );
+
+    if (!popup) {
+      alert('Pop-up blocked! Please allow pop-ups for this site to sign in with your Google Account.');
       return;
     }
 
-    try {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: DRIVE_SCOPE,
-        callback: async (tokenResponse) => {
-          if (tokenResponse.error) {
-            console.error('Google OAuth Error:', tokenResponse);
-            if (tokenResponse.error === 'invalid_client' || tokenResponse.error === 'idpiframe_initialization_failed') {
-              this.promptClientIdSetup();
-            } else {
-              alert('Google Authentication was cancelled or failed. Please grant Google Drive access to save assessments.');
-            }
-            return;
-          }
-
-          if (tokenResponse.access_token) {
-            accessToken = tokenResponse.access_token;
-            localStorage.setItem('google_access_token', accessToken);
-            
-            // Fetch real user profile from Google OAuth API
-            await this.fetchUserProfile(accessToken);
-            
-            if (onSuccessCallback) onSuccessCallback(accessToken);
+    // Monitor popup for token redirect
+    const interval = setInterval(() => {
+      try {
+        if (!popup || popup.closed) {
+          clearInterval(interval);
+          return;
+        }
+        if (popup.location.href.includes('access_token=')) {
+          const hashParams = new URLSearchParams(popup.location.hash.substring(1));
+          const token = hashParams.get('access_token');
+          if (token) {
+            accessToken = token;
+            localStorage.setItem('google_access_token', token);
+            popup.close();
+            clearInterval(interval);
+            this.fetchUserProfile(token);
+            if (onSuccessCallback) onSuccessCallback(token);
           }
         }
-      });
-
-      tokenClient.requestAccessToken({ prompt: 'consent' });
-    } catch (err) {
-      console.error('Failed to initialize Google OAuth Token Client:', err);
-      this.promptClientIdSetup();
-    }
-  },
-
-  promptClientIdSetup() {
-    const userChoice = confirm(
-      "To connect live Google Drive Sync on your Vercel domain, you can set your Google Cloud OAuth Client ID.\n\nWould you like to enter your Google OAuth Client ID now?"
-    );
-    if (userChoice) {
-      const customId = prompt("Enter your Google Cloud OAuth Client ID:", GOOGLE_CLIENT_ID);
-      if (customId) {
-        this.setClientId(customId.trim());
-        this.requestDrivePermission();
+      } catch (err) {
+        // Cross-origin restriction until redirect back
       }
-    }
+    }, 500);
   },
 
   async fetchUserProfile(token) {
@@ -101,6 +145,7 @@ const GoogleDriveService = {
         };
         localStorage.setItem('google_user_profile', JSON.stringify(googleUser));
         if (this.onAuthChange) this.onAuthChange(googleUser, true);
+        alert(`Logged in with Google Account: ${googleUser.email}`);
       }
     } catch (e) {
       console.error('Error fetching Google user profile:', e);
@@ -118,7 +163,6 @@ const GoogleDriveService = {
 
   async saveRecordToDrive(record) {
     if (!accessToken) {
-      // Prompt user to grant Google Drive permission
       this.requestDrivePermission(async (newToken) => {
         await this.uploadFileToDrive(record, newToken);
       });
@@ -152,18 +196,16 @@ const GoogleDriveService = {
 
       if (response.ok) {
         const resData = await response.json();
-        alert(`Assessment successfully saved & synced to Google Drive!\nFile: ${fileName}`);
+        alert(`Assessment report successfully saved to your Google Drive!\nFile: ${fileName}`);
         return resData;
       } else {
-        const errData = await response.json();
-        console.error('Google Drive Upload Error:', errData);
-        alert('Google Drive upload requires access permission. Re-authenticating...');
+        alert('Google Drive permission required. Opening Google Login...');
         this.requestDrivePermission();
         return false;
       }
     } catch (e) {
       console.error('Error uploading file to Google Drive:', e);
-      alert('Could not upload to Google Drive. Saved locally.');
+      alert('Could not save to Google Drive. Saved to local storage.');
       return false;
     }
   }
