@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Psychiatry Assessment Scales — DNB Clinical Tool Suite</title>
-  <meta name="description" content="Comprehensive standardized psychiatric rating scale suite featuring CIWA-Ar, COWS, Y-BOCS, BFCRS, PANSS, YMRS, HAM-D, MMSE, and C-SSRS for psychiatric residency and clinicians.">
+  <meta name="description" content="Comprehensive standardized psychiatric rating scale suite featuring CIWA-Ar, COWS, Y-BOCS, BFCRS, MADRS, PANSS, YMRS, HAM-D, MMSE, and C-SSRS with Google Drive Auto-Sync.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -24,10 +24,17 @@
 
       <div class="search-container">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="search-input" class="search-input" placeholder="Search scales (e.g. CIWA-Ar, COWS, Y-BOCS, PANSS)...">
+        <input type="text" id="search-input" class="search-input" placeholder="Search scales (e.g. CIWA-Ar, COWS, Y-BOCS, MADRS)...">
       </div>
 
       <div class="nav-actions">
+        <!-- Google Account Login Button / Sync Pill -->
+        <div id="google-auth-container">
+          <button id="google-login-btn" class="btn-pill" title="Sign in with Google to auto-sync assessments to Google Drive">
+            <i class="fab fa-google"></i> Google Drive Sync
+          </button>
+        </div>
+
         <button id="history-btn" class="btn-pill" title="Patient Case History & Score Trends">
           <i class="fas fa-folder-open"></i> Patient Records
         </button>
@@ -45,14 +52,14 @@
         <div class="hero-banner">
           <h2 class="hero-title">Standardized Clinical <span>Psychiatry Scales</span></h2>
           <p class="hero-desc">
-            Evidence-based clinician-rated & self-report rating scales for DNB Psychiatry Residents. Includes protocol-guided scoring for Substance Withdrawal (CIWA-Ar, COWS), OCD (Y-BOCS), Catatonia (BFCRS), Psychosis (PANSS), Mania (YMRS), Depression (HAM-D, MADRS, PHQ-9), and Suicide Risk (C-SSRS).
+            Evidence-based clinician-rated & self-report rating scales for DNB Psychiatry Residents. Includes protocol-guided scoring for Substance Withdrawal (CIWA-Ar, COWS), OCD (Y-BOCS), Catatonia (BFCRS), Psychosis (PANSS), Mania (YMRS), Depression (HAM-D, MADRS, PHQ-9), and Suicide Risk (C-SSRS). Auto-syncs patient records directly to your personal Google Drive!
           </p>
           <div class="quick-tags">
             <span class="category-tag active" data-category="all">All Scales</span>
             <span class="category-tag" data-category="substance">Substance Withdrawal (CIWA/COWS)</span>
             <span class="category-tag" data-category="anxiety">Anxiety & OCD (Y-BOCS)</span>
             <span class="category-tag" data-category="catatonia">Catatonia & Movement (BFCRS/AIMS)</span>
-            <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D)</span>
+            <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D/MADRS)</span>
             <span class="category-tag" data-category="psychosis">Psychosis (PANSS)</span>
             <span class="category-tag" data-category="cognitive">Cognitive (MMSE)</span>
             <span class="category-tag" data-category="suicide">Suicide Risk (C-SSRS)</span>
@@ -62,7 +69,7 @@
         <div class="section-header">
           <h3 class="section-title">
             <i class="fas fa-th-large" style="color: var(--accent-cyan);"></i> Scales Library
-            <span id="scale-count-badge" class="scale-count-badge">16 Scales</span>
+            <span id="scale-count-badge" class="scale-count-badge">17 Scales</span>
           </h3>
         </div>
 
@@ -110,7 +117,7 @@
           <div class="results-header-box">
             <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 0.5rem;"></i>
             <h2 style="font-family: var(--font-heading); font-size: 1.8rem;">Clinical Assessment Complete</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Automated Score Calculation & Protocol Guidance</p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Automated Score Calculation & Google Drive Auto-Sync</p>
           </div>
 
           <!-- Radial Gauge Display -->
@@ -140,7 +147,7 @@
           <!-- Action Buttons -->
           <div class="action-bar">
             <button id="btn-save-record" class="btn-pill">
-              <i class="fas fa-save"></i> Save Patient Record
+              <i class="fas fa-save"></i> Save & Sync to Google Drive
             </button>
             <button id="btn-print-pdf" class="btn-pill">
               <i class="fas fa-print"></i> Export / Print Medical Report
@@ -167,7 +174,10 @@
 
   </div>
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="scales.js"></script>
+  <script src="drive-service.js"></script>
+  <script src="storage.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

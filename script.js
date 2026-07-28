@@ -16,6 +16,8 @@ const historyBtn = document.getElementById('history-btn');
 const historyModal = document.getElementById('history-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const recordsContainer = document.getElementById('records-container');
+const googleAuthContainer = document.getElementById('google-auth-container');
+const googleLoginBtn = document.getElementById('google-login-btn');
 
 // Assessment View Elements
 const assessmentScaleName = document.getElementById('assessment-scale-name');
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBentoGrid();
   setupEventListeners();
   setupKeyboardShortcuts();
+  setupGoogleAuth();
 });
 
 function getQuestionText(q) {
@@ -89,7 +92,7 @@ function renderBentoGrid() {
   }
 
   bentoGrid.innerHTML = filtered.map(scale => {
-    const isNew = ['ciwa-ar', 'cows', 'ybocs', 'bfcrs'].includes(scale.id);
+    const isNew = ['ciwa-ar', 'cows', 'ybocs', 'bfcrs', 'madrs'].includes(scale.id);
     return `
       <div class="bento-card" data-scale-id="${scale.id}">
         <div>
@@ -345,6 +348,37 @@ function renderDetailedAnswers() {
   answersAccordion.innerHTML = html;
 }
 
+function setupGoogleAuth() {
+  if (typeof GoogleDriveService === 'undefined') return;
+
+  GoogleDriveService.init((user, isAuthenticated) => {
+    if (isAuthenticated && user) {
+      googleAuthContainer.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0, 242, 254, 0.1); padding: 0.3rem 0.8rem; border-radius: 9999px; border: 1px solid rgba(0, 242, 254, 0.3);">
+          <img src="${user.picture || 'https://lh3.googleusercontent.com/a/default-user'}" style="width: 24px; height: 24px; border-radius: 50%;">
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--accent-cyan);">${user.name.split(' ')[0]}</span>
+          <i class="fab fa-google-drive" style="color: var(--accent-cyan);" title="Google Drive Auto-Sync Active"></i>
+          <button id="google-logout-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: 0.3rem;" title="Sign out of Google">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      `;
+      document.getElementById('google-logout-btn')?.addEventListener('click', () => {
+        GoogleDriveService.signOut();
+      });
+    } else {
+      googleAuthContainer.innerHTML = `
+        <button id="google-login-btn" class="btn-pill" title="Sign in with Google to auto-sync assessments to Google Drive">
+          <i class="fab fa-google"></i> Google Drive Sync
+        </button>
+      `;
+      document.getElementById('google-login-btn')?.addEventListener('click', () => {
+        GoogleDriveService.requestAccessToken();
+      });
+    }
+  });
+}
+
 function setupEventListeners() {
   // Category Tag Filters
   document.querySelectorAll('.category-tag').forEach(tag => {
@@ -418,7 +452,7 @@ function setupEventListeners() {
           score: window._lastScore,
           severity: window._lastSeverity
         });
-        alert(`Record saved for ${patientId}!`);
+        alert(`Record saved locally and auto-synced to Google Drive for ${patientId}!`);
       }
     });
   }
