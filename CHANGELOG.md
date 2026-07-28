@@ -97,6 +97,22 @@
   - All transitions: smooth cubic-bezier or ease, consistent 0.2–0.3s duration
   - Animations: `fadeInUp` (opacity + translateY) replaces plain fadeIn
 
+## [1.7.0] - 2026-07-29
+
+### Changed
+- **PDF export rewritten** — now uses `window.print()` with native browser print-to-PDF instead of html2pdf.js
+  - Produces perfect quality PDF (no canvas rendering artifacts)
+  - Auto-hides sidebar, nav, buttons in print view
+  - Professional clinical report layout: A4 margins, clean typography, structured sections
+  - All shadows/gradients stripped for crisp monochrome output
+- **`@media print` CSS** completely rewritten for clinical report format:
+  - `@page` margins (15mm/12mm), font-size 11pt
+  - Header with title/date, score section, full answer detail with alternating rows
+  - Subscale cards, interpretation block, CSSRS results all print-ready
+  - `page-break-inside: avoid` on major sections
+  - Print-only high-risk badge (white text on black background)
+- **Share button** simplified: tries html2pdf direct file share (mobile), falls back to text share/clipboard
+
 ## [1.3.0] - 2026-07-29
 
 ### Changed

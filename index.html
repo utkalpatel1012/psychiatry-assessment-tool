@@ -1,100 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Psychiatry Assessment Scales</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Psychiatry Assessment Scales — DNB Clinical Tool Suite</title>
+  <meta name="description" content="Comprehensive standardized psychiatric rating scale suite featuring CIWA-Ar, COWS, Y-BOCS, BFCRS, PANSS, YMRS, HAM-D, MMSE, and C-SSRS for psychiatric residency and clinicians.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
-    <button id="sidebar-toggle" aria-label="Toggle sidebar">
-      <i class="fas fa-bars"></i>
-    </button>
-    <div id="overlay"></div>
-
-    <nav id="sidebar">
-      <div class="sidebar-header">
-        <h2>Psychiatry Tool</h2>
-        <p>DNB Residency</p>
+    <!-- Navbar Header -->
+    <header class="navbar">
+      <div class="nav-brand" id="brand-home-link">
+        <div class="brand-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Psychiatry Rating Scales</h1>
+          <span>DNB Clinical Assessment Tool Suite</span>
+        </div>
       </div>
-      <div class="sidebar-section">
-        <h3 class="sidebar-section-title">
-          <i class="fas fa-clipboard-list"></i> Scales
-        </h3>
-        <div id="sidebar-scale-list"></div>
-      </div>
-      <div class="sidebar-footer">
-        <p>v1.2.0</p>
-      </div>
-    </nav>
 
-    <main id="main-content">
-      <header>
-        <h1>Psychiatry Assessment Tool</h1>
-        <p>DNB Psychiatry Residency — Standardized Clinical Rating Scales</p>
-      </header>
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="search-input" class="search-input" placeholder="Search scales (e.g. CIWA-Ar, COWS, Y-BOCS, PANSS)...">
+      </div>
 
+      <div class="nav-actions">
+        <button id="history-btn" class="btn-pill" title="Patient Case History & Score Trends">
+          <i class="fas fa-folder-open"></i> Patient Records
+        </button>
+        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Light/Dark Theme">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+      
+      <!-- View 1: Home Dashboard & Bento Grid -->
       <section id="home-view">
-        <div class="welcome-card">
-          <i class="fas fa-clipboard-check welcome-icon"></i>
-          <h2>Welcome</h2>
-          <p>Select a rating scale from the sidebar to begin an assessment. Each scale follows standard administration guidelines with auto-advance, scoring, and clinical interpretation.</p>
+        <div class="hero-banner">
+          <h2 class="hero-title">Standardized Clinical <span>Psychiatry Scales</span></h2>
+          <p class="hero-desc">
+            Evidence-based clinician-rated & self-report rating scales for DNB Psychiatry Residents. Includes protocol-guided scoring for Substance Withdrawal (CIWA-Ar, COWS), OCD (Y-BOCS), Catatonia (BFCRS), Psychosis (PANSS), Mania (YMRS), Depression (HAM-D, MADRS, PHQ-9), and Suicide Risk (C-SSRS).
+          </p>
+          <div class="quick-tags">
+            <span class="category-tag active" data-category="all">All Scales</span>
+            <span class="category-tag" data-category="substance">Substance Withdrawal (CIWA/COWS)</span>
+            <span class="category-tag" data-category="anxiety">Anxiety & OCD (Y-BOCS)</span>
+            <span class="category-tag" data-category="catatonia">Catatonia & Movement (BFCRS/AIMS)</span>
+            <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D)</span>
+            <span class="category-tag" data-category="psychosis">Psychosis (PANSS)</span>
+            <span class="category-tag" data-category="cognitive">Cognitive (MMSE)</span>
+            <span class="category-tag" data-category="suicide">Suicide Risk (C-SSRS)</span>
+          </div>
         </div>
-        <div class="quick-info">
-          <div class="info-card">
-            <i class="fas fa-list-check"></i>
-            <span class="info-count" id="scale-count">0</span>
-            <span>Scales Available</span>
-          </div>
-          <div class="info-card">
-            <i class="fas fa-arrow-right"></i>
-            <span>Auto-advance</span>
-          </div>
-          <div class="info-card">
-            <i class="fas fa-file-pdf"></i>
-            <span>Export PDF</span>
-          </div>
+
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fas fa-th-large" style="color: var(--accent-cyan);"></i> Scales Library
+            <span id="scale-count-badge" class="scale-count-badge">16 Scales</span>
+          </h3>
+        </div>
+
+        <div id="bento-grid" class="bento-grid">
+          <!-- Dynamically populated Bento scale cards -->
         </div>
       </section>
 
+      <!-- View 2: Active Assessment View -->
       <section id="assessment-view" style="display: none;">
-        <div id="assessment-header">
-          <h2 id="assessment-scale-name"></h2>
-          <div id="progress-bar-container">
-            <div id="progress-bar"></div>
+        <div class="assessment-card">
+          <div class="assessment-header">
+            <div class="assessment-meta-bar">
+              <h2 id="assessment-scale-name" class="assessment-title"></h2>
+              <button id="btn-cancel-assessment" class="btn-icon" title="Cancel Assessment">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="progress-bar-track">
+              <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted);">
+              <span id="question-counter-text">Question 1 of 10</span>
+              <span><i class="far fa-keyboard"></i> Press keys 0–7 for quick selection</span>
+            </div>
           </div>
-          <p id="question-counter"></p>
+
+          <div class="question-box">
+            <p id="question-text" class="question-text"></p>
+            <div id="options-container" class="options-list"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+            <button id="btn-prev" class="btn-pill" style="display: none;">
+              <i class="fas fa-arrow-left"></i> Previous Item
+            </button>
+            <span></span>
+          </div>
         </div>
-        <div id="question-container">
-          <p id="question-text"></p>
-          <div id="options-container"></div>
-        </div>
-        <button id="back-to-home-btn" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Scales</button>
       </section>
 
+      <!-- View 3: Results & Interpretation View -->
       <section id="results-view" style="display: none;">
-        <div id="results-content">
-          <div class="results-header">
-            <i class="fas fa-check-circle results-icon"></i>
-            <h2>Assessment Complete</h2>
+        <div class="results-card">
+          <div class="results-header-box">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 0.5rem;"></i>
+            <h2 style="font-family: var(--font-heading); font-size: 1.8rem;">Clinical Assessment Complete</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Automated Score Calculation & Protocol Guidance</p>
           </div>
-          <div id="score-display"></div>
-          <div id="subscale-scores"></div>
-          <div id="answers-detail"></div>
-          <div id="interpretation-display"></div>
-        </div>
-        <div id="action-buttons">
-          <button id="share-btn"><i class="fas fa-share-alt"></i> Share</button>
-          <button id="pdf-btn"><i class="fas fa-file-pdf"></i> Export PDF</button>
-          <button id="restart-btn"><i class="fas fa-redo"></i> New Assessment</button>
+
+          <!-- Radial Gauge Display -->
+          <div class="gauge-wrapper">
+            <div class="radial-gauge">
+              <svg width="180" height="180">
+                <circle class="radial-bg" cx="90" cy="90" r="70"></circle>
+                <circle id="radial-progress-circle" class="radial-progress" cx="90" cy="90" r="70"></circle>
+              </svg>
+              <div class="gauge-center-text">
+                <div id="score-main" class="score-main">0</div>
+                <div id="score-max" class="score-max">/ 60</div>
+              </div>
+            </div>
+            <div id="severity-pill" class="severity-pill">Severe</div>
+          </div>
+
+          <!-- Subscales Breakdown (if applicable) -->
+          <div id="subscales-grid" class="subscale-grid" style="display: none;"></div>
+
+          <!-- Clinical Interpretation Box -->
+          <div id="interpretation-text" class="interpretation-box"></div>
+
+          <!-- Detailed Item Breakdown Accordion -->
+          <div id="answers-accordion"></div>
+
+          <!-- Action Buttons -->
+          <div class="action-bar">
+            <button id="btn-save-record" class="btn-pill">
+              <i class="fas fa-save"></i> Save Patient Record
+            </button>
+            <button id="btn-print-pdf" class="btn-pill">
+              <i class="fas fa-print"></i> Export / Print Medical Report
+            </button>
+            <button id="btn-restart" class="btn-start">
+              <i class="fas fa-redo"></i> New Assessment
+            </button>
+          </div>
         </div>
       </section>
+
     </main>
+
+    <!-- Modal Drawer: Patient Records History -->
+    <div id="history-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.3rem;"><i class="fas fa-history" style="color: var(--accent-cyan);"></i> Saved Patient Assessments</h3>
+          <button id="close-modal-btn" class="btn-icon"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="records-container" class="records-list"></div>
+      </div>
+    </div>
+
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="scales.js"></script>
   <script src="script.js"></script>
 </body>
