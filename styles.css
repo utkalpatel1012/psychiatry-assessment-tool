@@ -149,6 +149,80 @@ body {
   gap: 0.75rem;
 }
 
+/* Native Google Login Button */
+.google-btn-native {
+  background: #FFFFFF;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.google-btn-native:hover {
+  background: #f8f9fa;
+  border-color: #d2e3fc;
+  box-shadow: 0 2px 8px rgba(66,133,244,0.3);
+  transform: translateY(-1px);
+}
+
+.google-logo-svg {
+  flex-shrink: 0;
+}
+
+/* Google Welcome Banner */
+.google-banner-card {
+  background: rgba(66, 133, 244, 0.08);
+  border: 1px solid rgba(66, 133, 244, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  backdrop-filter: blur(12px);
+}
+
+.google-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.google-banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(66, 133, 244, 0.15);
+  color: #4285F4;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.google-banner-left h3 {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.google-banner-left p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
 .btn-icon {
   background: var(--bg-card);
   border: 1px solid var(--glass-border);
@@ -761,7 +835,7 @@ body {
     background: #FFF !important;
     color: #000 !important;
   }
-  .navbar, .hero-banner, .action-bar, .search-container, .quick-tags, #home-view, #assessment-view {
+  .navbar, .hero-banner, .google-banner-card, .action-bar, .search-container, .quick-tags, #home-view, #assessment-view {
     display: none !important;
   }
   #results-view, .results-card {
