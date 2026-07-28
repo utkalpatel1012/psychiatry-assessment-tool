@@ -1,5 +1,44 @@
 const scales = [
   {
+    id: "madrs",
+    name: "MADRS",
+    fullName: "Montgomery-Asberg Depression Rating Scale",
+    category: "mood",
+    description: "10-item clinician-rated scale sensitive to change in depression severity over treatment (Montgomery & Asberg, 1979).",
+    estimatedTime: "5-8 min",
+    options: [
+      { label: "0 - Normal mood", score: 0 },
+      { label: "1 - Slight", score: 1 },
+      { label: "2 - Sad but brightens up", score: 2 },
+      { label: "3 - Moderate", score: 3 },
+      { label: "4 - Pervasive sadness; gloomy most of time", score: 4 },
+      { label: "5 - Severe", score: 5 },
+      { label: "6 - Extreme continuous misery", score: 6 }
+    ],
+    questions: [
+      "1. Apparent Sadness: Despondency, gloom and despair rated on observed affect",
+      "2. Reported Sadness: Subjective reports of depressed mood",
+      "3. Inner Tension: Ill-defined discomfort, edginess, inner turmoil, panic",
+      "4. Reduced Sleep: Reduced duration or depth of sleep compared to baseline",
+      "5. Reduced Appetite: Reduced desire to eat or loss of interest in food",
+      "6. Concentration Difficulties: Difficulty collecting thoughts, easily distractible",
+      "7. Lassitude: Difficulty starting or performing routine activities; reduced energy",
+      "8. Inability to Feel: Reduced interest in surroundings; emotional detachment",
+      "9. Pessimistic Thoughts: Guilt, inferiority, self-reproach, ideas of ruin",
+      "10. Suicidal Thoughts: Thoughts life is not worth living, or active ideation"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 60,
+      ranges: [
+        { min: 0, max: 6, severity: "Normal / Remission", interpretation: "Score 0-6: Normal mood, no clinical depression." },
+        { min: 7, max: 19, severity: "Mild Depression", interpretation: "Score 7-19: Mild depression. Watchful waiting or psychotherapy." },
+        { min: 20, max: 34, severity: "Moderate Depression", interpretation: "Score 20-34: Moderate depression. Initiate SSRI/SNRI antidepressant." },
+        { min: 35, max: 60, severity: "Severe Depression", interpretation: "Score 35-60: Severe depression. Aggressive antidepressant therapy + inpatient safety." }
+      ]
+    }
+  },
+  {
     id: "ciwa-ar",
     name: "CIWA-Ar",
     fullName: "Clinical Institute Withdrawal Assessment for Alcohol, Revised",
