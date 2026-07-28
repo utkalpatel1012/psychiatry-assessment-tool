@@ -481,41 +481,99 @@ function getCSSRSResultsText() {
   return text;
 }
 
-// Share
-shareBtn.addEventListener("click", async () => {
-  const text = getResultsText();
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: `${currentScale.name} Assessment`, text });
-    } catch (e) {
-      if (e.name !== "AbortError") alert("Share cancelled.");
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(text);
-      alert("Results copied to clipboard!");
-    } catch {
-      alert("Unable to share. Copy the text manually.");
-    }
-  }
-});
+async function generatePdfBlob(element, filename) {
+  const _html2pdf = window.html2pdf;
+  if (!_html2pdf) throw new Error('PDF library not loaded');
+  const opt = {
+    margin: [6, 6],
+    filename,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: {
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+  return await _html2pdf().set(opt).from(element).outputPdf('blob');
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
 
 // Export PDF
-pdfBtn.addEventListener("click", () => {
-  const element = resultsContent;
-  const opt = {
-    margin: [10, 10],
-    filename: `${currentScale.name}_${new Date().toISOString().slice(0, 10)}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-  };
-  pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+pdfBtn.addEventListener('click', async () => {
+  pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
   pdfBtn.disabled = true;
-  html2pdf().set(opt).from(element).save().then(() => {
-    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Export PDF';
-    pdfBtn.disabled = false;
-  });
+  try {
+    const filename = `${currentScale.name}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    resultsContent.style.maxWidth = 'none';
+    const blob = await generatePdfBlob(resultsContent, filename);
+    resultsContent.style.maxWidth = '';
+    downloadBlob(blob, filename);
+  } catch (e) {
+    resultsContent.style.maxWidth = '';
+    alert('PDF generation failed. Use Print (Ctrl+P) → Save as PDF as fallback.');
+  }
+  pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Export PDF';
+  pdfBtn.disabled = false;
+});
+
+// Share — tries to share PDF file, falls back to download + clipboard text
+shareBtn.addEventListener('click', async () => {
+  shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+  shareBtn.disabled = true;
+  try {
+    const filename = `${currentScale.name}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    resultsContent.style.maxWidth = 'none';
+    const blob = await generatePdfBlob(resultsContent, filename);
+    resultsContent.style.maxWidth = '';
+    const file = new File([blob], filename, { type: 'application/pdf' });
+
+    // Web Share API supports files on mobile (Chrome Android, Safari iOS/macOS)
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: `${currentScale.name} Assessment` });
+    } else {
+      // Fallback: download PDF + copy text to clipboard
+      downloadBlob(blob, filename);
+      try {
+        await navigator.clipboard.writeText(getResultsText());
+        alert('PDF downloaded. Results text copied to clipboard.');
+      } catch {
+        alert('PDF downloaded.');
+      }
+    }
+  } catch (e) {
+    resultsContent.style.maxWidth = '';
+    if (e.name === 'AbortError') return;
+    // Final fallback: share as text only
+    try {
+      const text = getResultsText();
+      if (navigator.share) {
+        await navigator.share({ title: `${currentScale.name} Assessment`, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        alert('PDF share unavailable. Results copied to clipboard.');
+      }
+    } catch {
+      alert('Unable to share.');
+    }
+  }
+  shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> Share';
+  shareBtn.disabled = false;
 });
 
 backBtn.addEventListener("click", () => showView(homeView));

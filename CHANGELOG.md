@@ -56,6 +56,16 @@
 - **`script.js`** — `evaluateCondition()` for `dependsOn` skip logic; `showQuestion()` skips questions whose conditions aren't met (pushes null); `sumAnswers()` filters nulls; `displayCSSRSResults()` for narrative risk summary; `getCSSRSResultsText()` for share/PDF text
 - **`style.css`** — C-SSRS result styles: `.cssrs-list` (endorsed/not-endorsed), `.cssrs-table` (intensity), `.cssrs-risk-*` (color-coded badges: green/orange/yellow/red)
 
+## [1.4.0] - 2026-07-29
+
+### Changed
+- **Results view** now includes full question-by-question answer breakdown with scores (rendered in `#answers-detail` between subscale cards and interpretation)
+- **Share text** (`getResultsText()`, `getCSSRSResultsText()`) includes every question and the selected answer label with score
+- **PDF export** captures the full detail automatically (html2pdf reads `#results-content`)
+- **Skipped questions** (C-SSRS `dependsOn`) show "— Skipped" with reduced opacity
+- **`index.html`** — added `#answers-detail` container
+- **`style.css`** — added `.answers-section`, `.answers-list`, `.answer-item`, `.answer-badge` styles with print/PDF support
+
 ## [1.3.0] - 2026-07-29
 
 ### Changed
