@@ -351,8 +351,8 @@ function renderDetailedAnswers() {
 function setupGoogleAuth() {
   if (typeof GoogleDriveService === 'undefined') return;
 
-  const triggerLogin = () => {
-    GoogleDriveService.requestAccessToken();
+  const triggerDriveAuth = () => {
+    GoogleDriveService.requestDrivePermission();
   };
 
   GoogleDriveService.init((user, isAuthenticated) => {
@@ -387,9 +387,9 @@ function setupGoogleAuth() {
             <span>Continue with Google</span>
           </button>
         `;
-        document.getElementById('google-login-btn')?.addEventListener('click', triggerLogin);
+        document.getElementById('google-login-btn')?.addEventListener('click', triggerDriveAuth);
       }
-      document.getElementById('google-banner-login-btn')?.addEventListener('click', triggerLogin);
+      document.getElementById('google-banner-login-btn')?.addEventListener('click', triggerDriveAuth);
     }
   });
 }
@@ -455,19 +455,23 @@ function setupEventListeners() {
     });
   }
 
-  // Save Patient Record
+  // Save Patient Record & Google Drive Permission Prompt
   if (btnSaveRecord) {
     btnSaveRecord.addEventListener('click', () => {
       const patientId = prompt("Enter Patient ID or Initials (e.g. PT-104):");
       if (patientId && typeof StorageService !== 'undefined') {
-        StorageService.saveRecord({
+        const record = StorageService.saveRecord({
           patientId,
           scaleId: currentScale.id,
           scaleName: currentScale.name,
           score: window._lastScore,
           severity: window._lastSeverity
         });
-        alert(`Record saved locally and auto-synced to Google Drive for ${patientId}!`);
+
+        // Trigger Google Drive Permission Consent & Upload
+        if (typeof GoogleDriveService !== 'undefined') {
+          GoogleDriveService.saveRecordToDrive(record);
+        }
       }
     });
   }
