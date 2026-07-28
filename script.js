@@ -134,8 +134,43 @@ function showQuestion() {
 function showResults() {
   showView(resultsView);
   displayScores();
+  renderAnswersDetail();
   displayInterpretation();
   resultsContent.scrollIntoView({ behavior: "smooth" });
+}
+
+function renderAnswersDetail() {
+  const el = document.getElementById("answers-detail");
+  const qs = currentScale.questions;
+  let html = '<div class="answers-section"><h3>Detailed Responses</h3>';
+  html += '<div class="answers-list">';
+
+  qs.forEach((q, i) => {
+    const answer = answers[i];
+    const qText = getQuestionText(q);
+    const opts = getQuestionOptions(q);
+    const qNum = i + 1;
+
+    if (answer == null) {
+      html += `<div class="answer-item answer-skipped">
+        <div class="answer-q"><span class="answer-num">Q${qNum}.</span> ${qText.split('\n')[0]}</div>
+        <div class="answer-val">— Skipped</div>
+      </div>`;
+    } else {
+      const opt = opts.find(o => o.score === answer);
+      const label = opt ? opt.label : `Score ${answer}`;
+      html += `<div class="answer-item">
+        <div class="answer-q"><span class="answer-num">Q${qNum}.</span> ${qText.split('\n')[0]}</div>
+        <div class="answer-val">
+          <span class="answer-badge">${answer}</span>
+          ${label}
+        </div>
+      </div>`;
+    }
+  });
+
+  html += '</div></div>';
+  el.innerHTML = html;
 }
 
 function sumAnswers(arr) {
@@ -342,14 +377,29 @@ function getResultsText() {
   const range = currentScale.scoring.ranges.find(r => totalScore >= r.min && totalScore <= r.max);
   let text = `Psychiatry Assessment Tool\n========================\n\nScale: ${currentScale.name} - ${currentScale.fullName}\n`;
 
+  text += `\nResponses:\n`;
+  currentScale.questions.forEach((q, i) => {
+    const answer = answers[i];
+    const qText = getQuestionText(q);
+    const qShort = qText.split('\n')[0];
+    if (answer == null) {
+      text += `  Q${i + 1}. ${qShort}\n    -> Skipped\n`;
+    } else {
+      const opts = getQuestionOptions(q);
+      const opt = opts.find(o => o.score === answer);
+      const label = opt ? opt.label : `Score ${answer}`;
+      text += `  Q${i + 1}. ${qShort}\n    -> ${label} [${answer}]\n`;
+    }
+  });
+
   if (currentScale.subscales && window._subscaleScores) {
+    text += `\nSubscale Scores:\n`;
     currentScale.subscales.forEach(ss => {
-      text += `${ss.name}: ${window._subscaleScores[ss.id]} (Range: ${ss.min}–${ss.max})\n`;
+      text += `  ${ss.name}: ${window._subscaleScores[ss.id]} (Range: ${ss.min}–${ss.max})\n`;
     });
-    text += `\n`;
   }
 
-  text += `Total Score: ${totalScore}\nSeverity: ${range ? range.severity : "Unknown"}\n\nInterpretation:\n${range ? range.interpretation : "Unable to determine."}\n\nDate: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+  text += `\nTotal Score: ${totalScore}\nSeverity: ${range ? range.severity : "Unknown"}\n\nInterpretation:\n${range ? range.interpretation : "Unable to determine."}\n\nDate: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
   return text;
 }
 
@@ -357,6 +407,22 @@ function getCSSRSResultsText() {
   const a = answers;
   let text = `C-SSRS Assessment\n======================\n\n`;
 
+  text += `Responses:\n`;
+  currentScale.questions.forEach((q, i) => {
+    const answer = a[i];
+    const qText = getQuestionText(q);
+    const qShort = qText.split('\n')[0];
+    if (answer == null) {
+      text += `  Q${i + 1}. ${qShort}\n    -> Skipped\n`;
+    } else {
+      const opts = getQuestionOptions(q);
+      const opt = opts.find(o => o.score === answer);
+      const label = opt ? opt.label : `Score ${answer}`;
+      text += `  Q${i + 1}. ${qShort}\n    -> ${label}\n`;
+    }
+  });
+
+  text += `\nSummary:\n`;
   text += `Suicidal Ideation:\n`;
   const ideationLabels = ["Wish to be Dead", "Non-Specific Active Suicidal Thoughts", "Active Ideation with Methods", "Active Ideation with Some Intent", "Active Ideation with Specific Plan"];
   for (let i = 0; i < 5; i++) {
