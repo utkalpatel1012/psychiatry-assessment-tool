@@ -481,95 +481,54 @@ function getCSSRSResultsText() {
   return text;
 }
 
-async function generatePdfBlob(element, filename) {
-  const _html2pdf = window.html2pdf;
-  if (!_html2pdf) throw new Error('PDF library not loaded');
-  const opt = {
-    margin: [6, 6],
-    filename,
-    image: { type: 'jpeg', quality: 0.95 },
-    html2canvas: {
-      scale: 3,
-      useCORS: true,
-      logging: false,
-      width: element.scrollWidth,
-      height: element.scrollHeight,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-  return await _html2pdf().set(opt).from(element).outputPdf('blob');
-}
-
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-}
-
-// Export PDF
-pdfBtn.addEventListener('click', async () => {
-  pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
-  pdfBtn.disabled = true;
-  try {
-    const filename = `${currentScale.name}_${new Date().toISOString().slice(0, 10)}.pdf`;
-    resultsContent.style.maxWidth = 'none';
-    const blob = await generatePdfBlob(resultsContent, filename);
-    resultsContent.style.maxWidth = '';
-    downloadBlob(blob, filename);
-  } catch (e) {
-    resultsContent.style.maxWidth = '';
-    alert('PDF generation failed. Use Print (Ctrl+P) → Save as PDF as fallback.');
-  }
-  pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Export PDF';
-  pdfBtn.disabled = false;
+// Export PDF — uses native browser print for perfect quality
+pdfBtn.addEventListener('click', () => {
+  window.print();
 });
 
-// Share — tries to share PDF file, falls back to download + clipboard text
+// Share — tries html2pdf for direct PDF share if available, falls back to text
 shareBtn.addEventListener('click', async () => {
   shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
   shareBtn.disabled = true;
   try {
     const filename = `${currentScale.name}_${new Date().toISOString().slice(0, 10)}.pdf`;
-    resultsContent.style.maxWidth = 'none';
-    const blob = await generatePdfBlob(resultsContent, filename);
-    resultsContent.style.maxWidth = '';
-    const file = new File([blob], filename, { type: 'application/pdf' });
+    const text = getResultsText();
 
-    // Web Share API supports files on mobile (Chrome Android, Safari iOS/macOS)
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: `${currentScale.name} Assessment` });
-    } else {
-      // Fallback: download PDF + copy text to clipboard
-      downloadBlob(blob, filename);
-      try {
-        await navigator.clipboard.writeText(getResultsText());
-        alert('PDF downloaded. Results text copied to clipboard.');
-      } catch {
-        alert('PDF downloaded.');
+    // Try html2pdf for direct file share (mobile Chrome/Safari)
+    if (typeof html2pdf !== 'undefined' && navigator.share && navigator.canShare) {
+      const blob = await html2pdf().set({
+        margin: [8, 8],
+        filename,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).from(resultsContent).outputPdf('blob');
+
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: `${currentScale.name} Assessment` });
+        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> Share';
+        shareBtn.disabled = false;
+        return;
       }
     }
+
+    // Fallback: try Web Share text API
+    if (navigator.share) {
+      await navigator.share({ title: `${currentScale.name} Assessment`, text });
+    } else {
+      await navigator.clipboard.writeText(text);
+      alert('Results copied to clipboard. Use the Export PDF button for a formatted PDF.');
+    }
   } catch (e) {
-    resultsContent.style.maxWidth = '';
-    if (e.name === 'AbortError') return;
-    // Final fallback: share as text only
-    try {
-      const text = getResultsText();
-      if (navigator.share) {
-        await navigator.share({ title: `${currentScale.name} Assessment`, text });
-      } else {
-        await navigator.clipboard.writeText(text);
-        alert('PDF share unavailable. Results copied to clipboard.');
+    if (e.name === 'AbortError') { /* user cancelled — do nothing */ }
+    else {
+      try {
+        await navigator.clipboard.writeText(getResultsText());
+        alert('Results copied to clipboard.');
+      } catch {
+        alert('Unable to share.');
       }
-    } catch {
-      alert('Unable to share.');
     }
   }
   shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> Share';

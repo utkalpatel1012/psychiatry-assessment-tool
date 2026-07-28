@@ -871,25 +871,214 @@ header p {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Print/PDF: ensure answers-detail is visible */
+/* ========== PRINT / PDF ========== */
 @media print {
-  #answers-detail {
-    page-break-inside: avoid;
+  @page {
+    margin: 15mm 12mm;
   }
-  .answer-item {
-    break-inside: avoid;
-  }
-}
 
-/* ========== PRINT ========== */
-@media print {
-  body { background: #fff; }
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    background: #fff !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
   #sidebar, #sidebar-toggle, #overlay, #home-view, #assessment-view, #action-buttons, .back-btn {
     display: none !important;
   }
-  #main-content { margin: 0 !important; padding: 20px; max-width: 100%; }
-  #results-view { display: block !important; }
-  #results-content { box-shadow: none; border: 1px solid #ccc; }
+
+  #main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    perspective: none !important;
+  }
+
+  header {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  header::after {
+    display: none !important;
+  }
+
+  header h1 {
+    font-size: 18pt;
+    font-weight: 700;
+  }
+
+  header p {
+    color: #555 !important;
+    font-size: 10pt;
+  }
+
+  #results-view {
+    display: block !important;
+  }
+
+  #results-content {
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid;
+  }
+
+  .results-header {
+    margin-bottom: 14px;
+  }
+
+  .results-icon {
+    display: none !important;
+  }
+
+  .results-header h2 {
+    font-size: 16pt;
+    font-weight: 700;
+  }
+
+  #score-display {
+    margin-bottom: 14px;
+  }
+
+  .score-item h3 {
+    font-size: 13pt;
+    margin-bottom: 6px;
+  }
+
+  .score-value {
+    font-size: 28pt;
+    font-weight: 700;
+  }
+
+  .severity {
+    font-size: 11pt;
+    color: #333 !important;
+  }
+
+  #answers-detail {
+    page-break-inside: auto;
+  }
+
+  .answers-section {
+    border-top: 1px solid #000 !important;
+  }
+
+  .answers-section h3 {
+    font-size: 11pt;
+    margin-bottom: 8px;
+  }
+
+  .answers-list {
+    border: 1px solid #ccc !important;
+  }
+
+  .answer-item {
+    padding: 4px 8px;
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .answer-item:nth-child(odd) {
+    background: #f5f5f5 !important;
+  }
+
+  .answer-item:last-child {
+    border-bottom: none !important;
+  }
+
+  .answer-item:hover {
+    background: none !important;
+  }
+
+  .answer-badge {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  #subscale-scores {
+    margin-bottom: 14px;
+  }
+
+  .subscale-card {
+    border: 1px solid #ccc !important;
+    background: #f5f5f5 !important;
+    box-shadow: none !important;
+  }
+
+  .subscale-card:hover {
+    transform: none !important;
+  }
+
+  #interpretation-display {
+    border: 1px solid #ccc !important;
+    background: #f5f5f5 !important;
+    border-radius: 4px;
+    font-size: 10pt;
+  }
+
+  #interpretation-display::before {
+    display: none !important;
+  }
+
+  .cssrs-container {
+    border-top: 1px solid #000 !important;
+  }
+
+  .cssrs-list .endorsed {
+    font-weight: 700;
+  }
+
+  .cssrs-list .not-endorsed {
+    color: #999 !important;
+  }
+
+  .cssrs-table {
+    border: 1px solid #ccc;
+  }
+
+  .cssrs-table td {
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .cssrs-risk {
+    border: 1px solid #000 !important;
+    border-left-width: 3px !important;
+    padding: 8px 12px;
+  }
+
+  .cssrs-risk-high-risk {
+    background: #000 !important;
+    color: #fff !important;
+    border-left-color: #fff !important;
+  }
+
+  .cssrs-risk-high-risk * {
+    color: #fff !important;
+  }
+
+  .welcome-card, .quick-info, .info-card {
+    display: none !important;
+  }
+
+  #question-container, #assessment-header {
+    display: none !important;
+  }
+
+  #answers-detail {
+    page-break-inside: avoid;
+  }
+
+  .answer-item {
+    break-inside: avoid;
+  }
 }
 
 /* ========== ANIMATION ========== */
