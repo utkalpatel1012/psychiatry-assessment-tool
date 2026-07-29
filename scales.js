@@ -1,5 +1,523 @@
 const scales = [
   {
+    id: "hama",
+    name: "HAM-A",
+    fullName: "Hamilton Anxiety Rating Scale",
+    category: "anxiety",
+    description: "14-item clinician-rated scale to evaluate severity of anxiety symptoms, distinguishing psychic and somatic anxiety.",
+    estimatedTime: "5-10 min",
+    options: [
+      { label: "0 - Not present", score: 0 },
+      { label: "1 - Mild", score: 1 },
+      { label: "2 - Moderate", score: 2 },
+      { label: "3 - Severe", score: 3 },
+      { label: "4 - Very severe / Incapacitating", score: 4 }
+    ],
+    subscales: [
+      { id: "psychic", name: "Psychic Anxiety", min: 0, max: 28 },
+      { id: "somatic", name: "Somatic Anxiety", min: 0, max: 28 }
+    ],
+    questions: [
+      { text: "1. Anxious Mood\nWorries, anticipation of the worst, fearful anticipation, irritability.", subscale: "psychic" },
+      { text: "2. Tension\nFeelings of tension, fatigability, startle response, moved to tears easily, trembling, restlessness, inability to relax.", subscale: "psychic" },
+      { text: "3. Fears\nOf dark, of strangers, of being left alone, of animals, of traffic, of crowds.", subscale: "psychic" },
+      { text: "4. Insomnia\nDifficulty in falling asleep, broken sleep, unsatisfying sleep and fatigue on waking, nightmares.", subscale: "psychic" },
+      { text: "5. Intellectual (Cognitive)\nDifficulty in concentration, poor memory.", subscale: "psychic" },
+      { text: "6. Depressed Mood\nLoss of interest, lack of pleasure in hobbies, depression, early waking, diurnal swing.", subscale: "psychic" },
+      { text: "7. Somatic (Muscular)\nPains and aches, twitchings, stiffness, myoclonic jerks, grinding of teeth, unsteady voice, increased muscle tone.", subscale: "somatic" },
+      { text: "8. Somatic (Sensory)\nTinnitus, blurring of vision, hot and cold flushes, feelings of weakness, pricking sensation.", subscale: "somatic" },
+      { text: "9. Cardiovascular Symptoms\nTachycardia, palpitations, pain in chest, throbbing of vessels, fainting feelings, missing beat.", subscale: "somatic" },
+      { text: "10. Respiratory Symptoms\nPressure or constriction in chest, choking feelings, sighing, dyspnea.", subscale: "somatic" },
+      { text: "11. Gastrointestinal Symptoms\nDifficulty in swallowing, meteorism, abdominal pain, burning, nausea, vomiting, loose bowels, constipation.", subscale: "somatic" },
+      { text: "12. Genitourinary Symptoms\nFrequency of micturition, urgency, amenorrhea, menorrhagia, frigidity, premature ejaculation, loss of libido.", subscale: "somatic" },
+      { text: "13. Autonomic Symptoms\nDry mouth, flushing, pallor, tendency to sweat, giddiness, tension headache, raising of hair.", subscale: "somatic" },
+      { text: "14. Behavior at Interview\nFidgeting, restlessness or pacing, tremor of hands, furrowed brow, strained face, sighing, facial pallor.", subscale: "psychic" }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 56,
+      ranges: [
+        { min: 0, max: 17, severity: "Mild Anxiety", interpretation: "Score 0-17: Mild anxiety symptoms. Psychoeducation, supportive counseling, or watchful waiting." },
+        { min: 18, max: 24, severity: "Moderate Anxiety", interpretation: "Score 18-24: Moderate anxiety. Consider CBT psychotherapy and SSRI/SNRI pharmacotherapy." },
+        { min: 25, max: 30, severity: "Severe Anxiety", interpretation: "Score 25-30: Severe anxiety. Initiate combination CBT and pharmacotherapy (SSRI/SNRI + short-term anxiolytic)." },
+        { min: 31, max: 56, severity: "Very Severe Anxiety", interpretation: "Score 31-56: Very severe anxiety. Intensive psychiatric management, combination pharmacotherapy, and close monitoring." }
+      ]
+    }
+  },
+  {
+    id: "bprs",
+    name: "BPRS",
+    fullName: "Brief Psychiatric Rating Scale (Expanded 24-Item)",
+    category: "psychosis",
+    description: "24-item clinician-rated instrument assessing overall psychotic, affective, and behavioral symptoms (Overall & Gorham / Lukoff et al.).",
+    estimatedTime: "10-15 min",
+    options: [
+      { label: "1 - Not Present", score: 1 },
+      { label: "2 - Very Mild", score: 2 },
+      { label: "3 - Mild", score: 3 },
+      { label: "4 - Moderate", score: 4 },
+      { label: "5 - Moderately Severe", score: 5 },
+      { label: "6 - Severe", score: 6 },
+      { label: "7 - Extremely Severe", score: 7 }
+    ],
+    questions: [
+      "1. Somatic Concern: Excessive concern over bodily health, fears of physical illness.",
+      "2. Anxiety: Worry, apprehension, or fearful anticipation concerning present or future.",
+      "3. Depression: Subjective report of sadness, despondency, or feelings of hopelessness.",
+      "4. Suicidality: Expressed suicidal thoughts, preoccupation, or self-harming behavior.",
+      "5. Guilt Feelings: Over-concern or remorse for past actions; self-blame.",
+      "6. Hostility: Animosity, contempt, belligerence, or verbal abuse.",
+      "7. Elated Mood: Excessive optimism, euphoria, or inflated self-esteem.",
+      "8. Grandiosity: Exaggerated opinion of abilities, power, wealth, or station.",
+      "9. Suspiciousness: Belief that others harbor malicious or discriminatory intentions.",
+      "10. Hallucinations: Perceptual experiences without external stimuli (auditory, visual, tactile).",
+      "11. Unusual Thought Content: Unorthodox, bizarre, or delusional beliefs.",
+      "12. Bizarre Behavior: Eccentric, odd, or inappropriate motor/social conduct.",
+      "13. Self-Neglect: Hygiene, grooming, or personal care deficits.",
+      "14. Disorientation: Confusion or lack of awareness of time, place, or person.",
+      "15. Conceptual Disorganization: Thought disorder; tangentiality, neologisms, incoherence.",
+      "16. Blunted Affect: Diminished emotional responsiveness, flat affect, reduced facial expressiveness.",
+      "17. Emotional Withdrawal: Lack of spontaneous interaction, apathy, detachment.",
+      "18. Motor Retardation: Slowed movement, speech, or motor reactivity.",
+      "19. Tension: Observable physical signs of nervousness, motor tension, or trembling.",
+      "20. Uncooperativeness: Resistance, unfriendliness, or refusal to comply with interview.",
+      "21. Excitement: Heightened emotional tone, hyper-reactivity, or agitation.",
+      "22. Mannerisms and Posturing: Odd, unnatural motor postures or stilted mannerisms.",
+      "23. Distractibility: Inability to sustain attention due to internal/external stimuli.",
+      "24. Hyperactivity: Excessive motor activity, pacing, or inability to sit still."
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 168,
+      ranges: [
+        { min: 24, max: 36, severity: "Mild / Remission", interpretation: "Score 24-36: Minimal to no active psychotic or affective symptoms." },
+        { min: 37, max: 53, severity: "Mild Symptom Severity", interpretation: "Score 37-53: Mild symptoms. Low-dose antipsychotic maintenance and psychosocial rehabilitation." },
+        { min: 54, max: 70, severity: "Moderate Psychosis", interpretation: "Score 54-70: Moderate symptom severity. Optimize antipsychotic regimen and monitor for side effects." },
+        { min: 71, max: 168, severity: "Severe Psychosis / Crisis", interpretation: "Score 71+: Severe psychotic exacerbation. Urgent inpatient psychiatric stabilization and high-potency antipsychotic intervention." }
+      ]
+    }
+  },
+  {
+    id: "moca",
+    name: "MoCA",
+    fullName: "Montreal Cognitive Assessment",
+    category: "cognitive",
+    description: "30-point screening tool for Mild Cognitive Impairment (MCI) and early dementia across 8 cognitive domains (Nasreddine, 2005).",
+    estimatedTime: "10 min",
+    options: [
+      { label: "0 - Incorrect / Absent", score: 0 },
+      { label: "1 - Correct / Present", score: 1 }
+    ],
+    questions: [
+      "1. Visuospatial - Alternating Trail Making B (1 -> A -> 2 -> B -> 3 -> C -> 4 -> D -> 5 -> E)",
+      "2. Visuospatial - Copy 3D Cube (Draws cube accurately with all lines)",
+      "3. Visuospatial - Clock Contour (Draws complete closed circle)",
+      "4. Visuospatial - Clock Numbers (All 12 numbers in correct positions)",
+      "5. Visuospatial - Clock Hands (Hands point to 11:10 accurately)",
+      "6. Naming - Animal 1 (Identify Lion)",
+      "7. Naming - Animal 2 (Identify Rhinoceros)",
+      "8. Naming - Animal 3 (Identify Camel)",
+      "9. Attention - Forward Digit Span (Repeat 2-1-8-5-4 correctly)",
+      "10. Attention - Backward Digit Span (Repeat 7-4-2 backwards as 2-4-7)",
+      "11. Attention - Vigilance Letter A Tapping (Taps on letter A with <= 1 error)",
+      "12. Attention - Serial 7 Subtraction 1 (100 - 7 = 93)",
+      "13. Attention - Serial 7 Subtraction 2 (93 - 7 = 86)",
+      "14. Attention - Serial 7 Subtraction 3 (86 - 7 = 79)",
+      "15. Attention - Serial 7 Subtraction 4 (79 - 7 = 72)",
+      "16. Attention - Serial 7 Subtraction 5 (72 - 7 = 65)",
+      "17. Language - Sentence Repetition 1 ('I only know that John is the one to help today.')",
+      "18. Language - Sentence Repetition 2 ('The cat always hid under the couch when dogs were in the room.')",
+      "19. Language - Verbal Fluency (Generates 11 or more words starting with letter 'F' in 1 min)",
+      "20. Abstraction - Similarity 1 (Category for Banana - Orange -> Fruit)",
+      "21. Abstraction - Similarity 2 (Category for Train - Bicycle -> Transport / Vehicle)",
+      "22. Delayed Recall - Word 1 ('FACE' recalled without cue)",
+      "23. Delayed Recall - Word 2 ('VELVET' recalled without cue)",
+      "24. Delayed Recall - Word 3 ('CHURCH' recalled without cue)",
+      "25. Delayed Recall - Word 4 ('DAISY' recalled without cue)",
+      "26. Delayed Recall - Word 5 ('RED' recalled without cue)",
+      "27. Orientation - Date of the month",
+      "28. Orientation - Month of the year",
+      "29. Orientation - Year",
+      "30. Orientation - Day of the week & Exact Place/City"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 30,
+      ranges: [
+        { min: 26, max: 30, severity: "Normal Cognitive Function", interpretation: "Score 26-30: Normal cognition. No evidence of mild cognitive impairment." },
+        { min: 18, max: 25, severity: "Mild Cognitive Impairment (MCI)", interpretation: "Score 18-25: Mild Cognitive Impairment. Order neuroimaging (MRI/CT brain), B12, TSH, and neuropsychological evaluation." },
+        { min: 10, max: 17, severity: "Moderate Cognitive Impairment", interpretation: "Score 10-17: Moderate cognitive deficit / early dementia. Initiate cholinesterase inhibitor (Donepezil/Rivastigmine) and safety planning." },
+        { min: 0, max: 9, severity: "Severe Cognitive Impairment", interpretation: "Score 0-9: Severe dementia. Comprehensive caregiver support, safety evaluation, and specialized memory care." }
+      ]
+    }
+  },
+  {
+    id: "isaa",
+    name: "ISAA",
+    fullName: "Indian Scale for Assessment of Autism",
+    category: "neurodevelopmental",
+    description: "40-item standardized rating scale developed by Govt of India (NIMH/NIEPID) for diagnosing and quantifying Autism Spectrum Disorder (ASD) severity.",
+    estimatedTime: "15-20 min",
+    options: [
+      { label: "1 - Rarely / Never (< 20%)", score: 1 },
+      { label: "2 - Sometimes (21-40%)", score: 2 },
+      { label: "3 - Frequently (41-60%)", score: 3 },
+      { label: "4 - Mostly (61-80%)", score: 4 },
+      { label: "5 - Always (81-100%)", score: 5 }
+    ],
+    questions: [
+      "1. Has poor eye contact",
+      "2. Lacks social smile",
+      "3. Remains aloof / avoids peer interaction",
+      "4. Does not reach out to parent / caregiver",
+      "5. Lacks joint attention",
+      "6. Responds inappropriately to social cues",
+      "7. Shows lack of empathy",
+      "8. Unable to initiate or sustain conversation",
+      "9. Uses gestures inappropriately",
+      "10. Shows inappropriate emotional responses",
+      "11. Shows exaggerated fear to harmless objects",
+      "12. Lacks fear of real danger",
+      "13. Shows excitement without evident cause",
+      "14. Insensitive to pain / thermal stimuli",
+      "15. Shows delay in speech development",
+      "16. Uses echolalia (repeating words/phrases)",
+      "17. Uses jargon / unintelligible speech",
+      "18. Uses pronominal reversal (e.g. 'you' for 'I')",
+      "19. Cannot understand simple verbal instructions",
+      "20. Speaks with monotonous voice or abnormal pitch",
+      "21. Shows repetitive vocalizations",
+      "22. Lacks imaginative / pretend play",
+      "23. Plays with objects inappropriately",
+      "24. Shows stereotypic motor movements (hand flapping, spinning)",
+      "25. Shows resistance to change in routine",
+      "26. Shows obsessive attachment to unusual objects",
+      "27. Shows hyperactive behavior",
+      "28. Shows aggressive behavior towards others",
+      "29. Shows self-injurious behavior (head banging, biting)",
+      "30. Shows temper tantrums",
+      "31. Stares at spinning objects / lights",
+      "32. Smells or licks objects repeatedly",
+      "33. Shows tactile defensiveness (dislikes textures/touch)",
+      "34. Shows hyper-responsiveness to auditory stimuli",
+      "35. Shows hypo-responsiveness to auditory stimuli",
+      "36. Shows unusual visual inspection of objects",
+      "37. Shows inconsistent attention span",
+      "38. Shows uneven cognitive profile",
+      "39. Shows exceptional memory in specific narrow areas",
+      "40. Shows difficulty in conceptual thinking and generalization"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 200,
+      ranges: [
+        { min: 40, max: 69, severity: "No Autism (< 40%)", interpretation: "Score < 70: No autism detected. Normal developmental trajectory." },
+        { min: 70, max: 106, severity: "Mild Autism (40-70%)", interpretation: "Score 70-106: Mild Autism. Initiate early intervention, occupational therapy, and speech therapy." },
+        { min: 107, max: 153, severity: "Moderate Autism (71-100%)", interpretation: "Score 107-153: Moderate Autism. Structured sensory integration, ABA therapy, and special education." },
+        { min: 154, max: 200, severity: "Severe Autism (> 100%)", interpretation: "Score > 153: Severe Autism. High-intensity multi-disciplinary intervention, disability certification, and caregiver training." }
+      ]
+    }
+  },
+  {
+    id: "audit",
+    name: "AUDIT",
+    fullName: "Alcohol Use Disorders Identification Test",
+    category: "substance",
+    description: "10-item WHO screening tool to identify hazardous alcohol consumption, harmful use, and alcohol dependence.",
+    estimatedTime: "3-5 min",
+    questions: [
+      {
+        text: "1. How often do you have a drink containing alcohol?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Monthly or less", score: 1 },
+          { label: "2 - 2 to 4 times a month", score: 2 },
+          { label: "3 - 2 to 3 times a week", score: 3 },
+          { label: "4 - 4 or more times a week", score: 4 }
+        ]
+      },
+      {
+        text: "2. How many drinks containing alcohol do you have on a typical day when drinking?",
+        options: [
+          { label: "0 - 1 or 2", score: 0 },
+          { label: "1 - 3 or 4", score: 1 },
+          { label: "2 - 5 or 6", score: 2 },
+          { label: "3 - 7 to 9", score: 3 },
+          { label: "4 - 10 or more", score: 4 }
+        ]
+      },
+      {
+        text: "3. How often do you have 6 or more drinks on one occasion?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "4. How often during the last year have you found that you were not able to stop drinking once you had started?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "5. How often during the last year have you failed to do what was normally expected of you because of drinking?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "6. How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "7. How often during the last year have you had a feeling of guilt or remorse after drinking?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "8. How often during the last year have you been unable to remember what happened the night before because of your drinking?",
+        options: [
+          { label: "0 - Never", score: 0 },
+          { label: "1 - Less than monthly", score: 1 },
+          { label: "2 - Monthly", score: 2 },
+          { label: "3 - Weekly", score: 3 },
+          { label: "4 - Daily or almost daily", score: 4 }
+        ]
+      },
+      {
+        text: "9. Have you or someone else been injured as a result of your drinking?",
+        options: [
+          { label: "0 - No", score: 0 },
+          { label: "2 - Yes, but not in the last year", score: 2 },
+          { label: "4 - Yes, during the last year", score: 4 }
+        ]
+      },
+      {
+        text: "10. Has a relative, friend, doctor, or health worker been concerned about your drinking or suggested you cut down?",
+        options: [
+          { label: "0 - No", score: 0 },
+          { label: "2 - Yes, but not in the last year", score: 2 },
+          { label: "4 - Yes, during the last year", score: 4 }
+        ]
+      }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 40,
+      ranges: [
+        { min: 0, max: 7, severity: "Low Risk / Abstinent", interpretation: "Score 0-7: Low-risk drinking or abstinence. Provide brief alcohol education." },
+        { min: 8, max: 15, severity: "Hazardous Alcohol Use", interpretation: "Score 8-15: Hazardous alcohol use. Provide brief intervention and counseling to reduce consumption." },
+        { min: 16, max: 19, severity: "Harmful Alcohol Use", interpretation: "Score 16-19: Harmful alcohol use. Extended brief intervention, motivational interviewing, and close monitoring." },
+        { min: 20, max: 40, severity: "Possible Alcohol Dependence", interpretation: "Score 20-40: High risk of alcohol dependence. Specialist addiction evaluation, medical detoxification, and pharmacotherapy (Acamprosate/Naltrexone)." }
+      ]
+    }
+  },
+  {
+    id: "gsaq",
+    name: "GSAQ",
+    fullName: "Global Sleep Assessment Questionnaire",
+    category: "sleep",
+    description: "11-item validated self-report screening tool for common clinical sleep disorders (Roth et al., 2002).",
+    estimatedTime: "4-6 min",
+    options: [
+      { label: "0 - Never (0 days/week)", score: 0 },
+      { label: "1 - Sometimes (1-2 days/week)", score: 1 },
+      { label: "2 - Usually (3-4 days/week)", score: 2 },
+      { label: "3 - Always (5-7 days/week)", score: 3 }
+    ],
+    questions: [
+      "1. How often do you have difficulty falling asleep at night?",
+      "2. How often do you wake up during the night and have trouble going back to sleep?",
+      "3. How often do you wake up too early in the morning and cannot fall back asleep?",
+      "4. How often do you feel unrested or tired during the day, even after a full night's sleep?",
+      "5. How often do you feel excessively sleepy during the day or struggle to stay awake?",
+      "6. How often has anyone told you that you snore loudly or gasp for breath while sleeping?",
+      "7. How often do you have unpleasant restless sensations in your legs when lying down to sleep?",
+      "8. How often do you move or kick your legs repeatedly while sleeping?",
+      "9. How often do you experience disturbing nightmares, vivid dreams, or sleep walking?",
+      "10. How often does pain or physical discomfort interrupt your sleep?",
+      "11. How often does worry, stress, or sadness keep you awake at night?"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 33,
+      ranges: [
+        { min: 0, max: 7, severity: "Normal Sleep Pattern", interpretation: "Score 0-7: Healthy sleep hygiene. No significant sleep pathology." },
+        { min: 8, max: 14, severity: "Mild Sleep Disturbance", interpretation: "Score 8-14: Mild sleep disruption. Optimize sleep hygiene, limit caffeine, and establish regular sleep routine." },
+        { min: 15, max: 22, severity: "Moderate Sleep Disorder Risk", interpretation: "Score 15-22: Moderate risk of clinical sleep disorder (Insomnia / Restless Legs / Sleep Apnea). Consider polysomnography." },
+        { min: 23, max: 33, severity: "Severe Sleep Disorder", interpretation: "Score 23-33: High probability of primary sleep disorder. Urgent referral for overnight polysomnography and sleep specialist evaluation." }
+      ]
+    }
+  },
+  {
+    id: "dass21",
+    name: "DASS-21",
+    fullName: "Depression Anxiety Stress Scales (21-Item)",
+    category: "mood",
+    description: "21-item quantitative self-report measure of emotional states across Depression, Anxiety, and Stress (Lovibond & Lovibond, 1995).",
+    estimatedTime: "5-7 min",
+    options: [
+      { label: "0 - Did not apply to me at all", score: 0 },
+      { label: "1 - Applied to me to some degree / some of the time", score: 1 },
+      { label: "2 - Applied to me to a considerable degree / good part of time", score: 2 },
+      { label: "3 - Applied to me very much / most of the time", score: 3 }
+    ],
+    subscales: [
+      { id: "dep", name: "Depression", min: 0, max: 21 },
+      { id: "anx", name: "Anxiety", min: 0, max: 21 },
+      { id: "str", name: "Stress", min: 0, max: 21 }
+    ],
+    questions: [
+      { text: "1. I found it hard to wind down", subscale: "str" },
+      { text: "2. I was aware of dryness of my mouth", subscale: "anx" },
+      { text: "3. I couldn't seem to experience any positive feeling at all", subscale: "dep" },
+      { text: "4. I experienced breathing difficulty (e.g., excessively rapid breathing)", subscale: "anx" },
+      { text: "5. I found it difficult to work up the initiative to do things", subscale: "dep" },
+      { text: "6. I tended to over-react to situations", subscale: "str" },
+      { text: "7. I experienced trembling (e.g., in the hands)", subscale: "anx" },
+      { text: "8. I felt that I was using a lot of nervous energy", subscale: "str" },
+      { text: "9. I was worried about situations in which I might panic and make a fool of myself", subscale: "anx" },
+      { text: "10. I felt that I had nothing to look forward to", subscale: "dep" },
+      { text: "11. I found myself getting agitated", subscale: "str" },
+      { text: "12. I found it difficult to relax", subscale: "str" },
+      { text: "13. I felt down-hearted and blue", subscale: "dep" },
+      { text: "14. I was intolerant of anything that kept me from getting on with what I was doing", subscale: "str" },
+      { text: "15. I felt I was close to panic", subscale: "anx" },
+      { text: "16. I was unable to become enthusiastic about anything", subscale: "dep" },
+      { text: "17. I felt I wasn't worth much as a person", subscale: "dep" },
+      { text: "18. I felt that I was rather touchy", subscale: "str" },
+      { text: "19. I was aware of the action of my heart in the absence of physical exertion", subscale: "anx" },
+      { text: "20. I felt scared without any good reason", subscale: "anx" },
+      { text: "21. I felt that life was meaningless", subscale: "dep" }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 63,
+      ranges: [
+        { min: 0, max: 14, severity: "Normal Emotional State", interpretation: "Score 0-14: Normal emotional state across Depression, Anxiety, and Stress domains." },
+        { min: 15, max: 25, severity: "Mild Emotional Distress", interpretation: "Score 15-25: Mild distress. Recommend mindfulness, stress management, and supportive therapy." },
+        { min: 26, max: 40, severity: "Moderate Emotional Distress", interpretation: "Score 26-40: Moderate emotional distress. Initiate Cognitive Behavioral Therapy (CBT) and clinical monitoring." },
+        { min: 41, max: 63, severity: "Severe / Extremely Severe Distress", interpretation: "Score 41+: Severe to extremely severe distress. Comprehensive psychiatric evaluation and combined psychotherapy + pharmacotherapy." }
+      ]
+    }
+  },
+  {
+    id: "bars",
+    name: "BARS",
+    fullName: "Barnes Akathisia Rating Scale",
+    category: "catatonia",
+    description: "4-item rating scale for drug-induced akathisia (motor restlessness) assessing objective and subjective components (Barnes, 1989).",
+    estimatedTime: "3-5 min",
+    questions: [
+      {
+        text: "1. Objective Akathisia (Observed motor restlessness while seated/standing)",
+        options: [
+          { label: "0 - Normal, no restless movements", score: 0 },
+          { label: "1 - Mild restlessness, characteristic movements of legs/feet < half the time", score: 1 },
+          { label: "2 - Moderate restlessness, characteristic movements > half the time", score: 2 },
+          { label: "3 - Severe constant pacing or inability to remain seated", score: 3 }
+        ]
+      },
+      {
+        text: "2. Subjective Awareness of Restlessness (Patient's internal feeling)",
+        options: [
+          { label: "0 - Absence of inner restlessness", score: 0 },
+          { label: "1 - Non-specific sense of inner restlessness", score: 1 },
+          { label: "2 - Awareness of inability to keep legs still", score: 2 },
+          { label: "3 - Intense compulsion to move legs continuously", score: 3 }
+        ]
+      },
+      {
+        text: "3. Subjective Distress Related to Restlessness",
+        options: [
+          { label: "0 - No distress", score: 0 },
+          { label: "1 - Mild distress", score: 1 },
+          { label: "2 - Moderate distress", score: 2 },
+          { label: "3 - Severe distress / agony", score: 3 }
+        ]
+      },
+      {
+        text: "4. Global Clinical Impression of Akathisia",
+        options: [
+          { label: "0 - Akathisia absent", score: 0 },
+          { label: "1 - Questionable akathisia", score: 1 },
+          { label: "2 - Mild akathisia (Awareness + mild distress)", score: 2 },
+          { label: "3 - Moderate akathisia", score: 3 },
+          { label: "4 - Marked akathisia", score: 4 },
+          { label: "5 - Severe akathisia (Constant pacing + severe agony)", score: 5 }
+        ]
+      }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 14,
+      ranges: [
+        { min: 0, max: 1, severity: "Akathisia Absent", interpretation: "Score 0-1: No diagnostic evidence of drug-induced akathisia." },
+        { min: 2, max: 5, severity: "Mild Akathisia", interpretation: "Score 2-5: Mild akathisia. Consider reducing antipsychotic dosage or adding Propranolol (20-40 mg/day)." },
+        { min: 6, max: 9, severity: "Moderate Akathisia", interpretation: "Score 6-9: Moderate akathisia. Add Propranolol or switch to lower-risk antipsychotic (Quetiapine/Clozapine)." },
+        { min: 10, max: 14, severity: "Severe Akathisia", interpretation: "Score 10-14: Severe distressing akathisia. Urgent dose reduction, Propranolol + short-term Benzodiazepine, or antipsychotic switch." }
+      ]
+    }
+  },
+  {
+    id: "phq9",
+    name: "PHQ-9",
+    fullName: "Patient Health Questionnaire (9-Item)",
+    category: "mood",
+    description: "9-item self-report scale based on DSM-5 major depressive episode criteria for screening and measuring depression severity.",
+    estimatedTime: "3 min",
+    options: [
+      { label: "0 - Not at all", score: 0 },
+      { label: "1 - Several days", score: 1 },
+      { label: "2 - More than half the days", score: 2 },
+      { label: "3 - Nearly every day", score: 3 }
+    ],
+    questions: [
+      "1. Little interest or pleasure in doing things (Anhedonia)",
+      "2. Feeling down, depressed, or hopeless",
+      "3. Trouble falling or staying asleep, or sleeping too much",
+      "4. Feeling tired or having little energy",
+      "5. Poor appetite or overeating",
+      "6. Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+      "7. Trouble concentrating on things, such as reading the newspaper or watching television",
+      "8. Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless",
+      "9. Thoughts that you would be better off dead, or of hurting yourself in some way"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 27,
+      ranges: [
+        { min: 0, max: 4, severity: "Minimal / No Depression", interpretation: "Score 0-4: Minimal depression. No treatment required." },
+        { min: 5, max: 9, severity: "Mild Depression", interpretation: "Score 5-9: Mild depression. Watchful waiting and repeat PHQ-9 at follow-up." },
+        { min: 10, max: 14, severity: "Moderate Depression", interpretation: "Score 10-14: Moderate depression. Consider psychotherapy (CBT) and/or SSRI antidepressant." },
+        { min: 15, max: 19, severity: "Moderately Severe Depression", interpretation: "Score 15-19: Moderately severe depression. Initiate SSRI/SNRI antidepressant and psychotherapy." },
+        { min: 20, max: 27, severity: "Severe Depression", interpretation: "Score 20-27: Severe depression. Immediate pharmacotherapy, dual-action antidepressant, and safety evaluation." }
+      ]
+    }
+  },
+  {
     id: "madrs",
     name: "MADRS",
     fullName: "Montgomery-Asberg Depression Rating Scale",
@@ -138,12 +656,12 @@ const scales = [
         ]
       },
       {
-        text: "8. Visual Disturbances\nAsk: 'Is light too bright? Are colors different? Are you seeing things that bother you or aren't there?'",
+        text: "8. Visual Disturbances\nAsk: 'Is the light too bright? Do you see things that aren't there?'",
         options: [
           { label: "0 - Not present", score: 0 },
           { label: "1 - Very mild sensitivity to light", score: 1 },
-          { label: "2 - Mild sensitivity to light", score: 2 },
-          { label: "3 - Moderate sensitivity to light", score: 3 },
+          { label: "2 - Mild sensitivity", score: 2 },
+          { label: "3 - Moderate sensitivity", score: 3 },
           { label: "4 - Moderately severe visual hallucinations", score: 4 },
           { label: "5 - Severe visual hallucinations", score: 5 },
           { label: "6 - Extremely severe visual hallucinations", score: 6 },
@@ -151,23 +669,23 @@ const scales = [
         ]
       },
       {
-        text: "9. Headache, Fullness in Head\nAsk: 'Does your head feel different? Does it feel like there is a band around your head?'",
+        text: "9. Headache, Fullness in Head\nAsk: 'Does your head feel different? Does it feel like a tight band around your head?'",
         options: [
           { label: "0 - Not present", score: 0 },
-          { label: "1 - Very mild", score: 1 },
-          { label: "2 - Mild", score: 2 },
-          { label: "3 - Moderate", score: 3 },
-          { label: "4 - Moderately severe", score: 4 },
-          { label: "5 - Severe", score: 5 },
-          { label: "6 - Very severe", score: 6 },
-          { label: "7 - Extremely severe", score: 7 }
+          { label: "1 - Very mild headache", score: 1 },
+          { label: "2 - Mild headache", score: 2 },
+          { label: "3 - Moderate headache", score: 3 },
+          { label: "4 - Moderately severe headache", score: 4 },
+          { label: "5 - Severe headache", score: 5 },
+          { label: "6 - Very severe headache", score: 6 },
+          { label: "7 - Extremely severe headache", score: 7 }
         ]
       },
       {
-        text: "10. Orientation and Clouding of Sensorium\nAsk: 'What day is this? Where are you? Who am I?'",
+        text: "10. Orientation and Clouding of Sensorium\nAsk: 'What day is it? Where are you? Who am I?'",
         options: [
           { label: "0 - Oriented and can do serial additions", score: 0 },
-          { label: "1 - Cannot do serial additions or is uncertain about date", score: 1 },
+          { label: "1 - Cannot do serial additions or uncertain of date", score: 1 },
           { label: "2 - Disoriented for date by no more than 2 calendar days", score: 2 },
           { label: "3 - Disoriented for date by more than 2 calendar days", score: 3 },
           { label: "4 - Disoriented for place and/or person", score: 4 }
@@ -178,9 +696,9 @@ const scales = [
       type: "total",
       maxScore: 67,
       ranges: [
-        { min: 0, max: 9, severity: "Mild Withdrawal", interpretation: "Score < 10: Mild withdrawal. Minimal symptom-triggered pharmacotherapy required. Continue monitoring every 4-8 hours." },
-        { min: 10, max: 15, severity: "Moderate Withdrawal", interpretation: "Score 10-15: Moderate withdrawal. Administer protocol-driven oral benzodiazepines (e.g., Diazepam 10-20mg or Lorazepam 2mg). Reassess hourly." },
-        { min: 16, max: 67, severity: "Severe Withdrawal", interpretation: "Score >= 16: Severe withdrawal (High risk for Delirium Tremens & seizures). Frequent parenteral benzodiazepines, ICU monitoring, and supportive care indicated." }
+        { min: 0, max: 9, severity: "Mild Withdrawal", interpretation: "Score 0-9: Mild withdrawal. Supportive care, hydration, oral thiamine. Symptom-triggered medication usually not required." },
+        { min: 10, max: 15, severity: "Moderate Withdrawal", interpretation: "Score 10-15: Moderate withdrawal. Administer protocol-driven Benzodiazepines (e.g., Lorazepam 2 mg or Diazepam 10 mg PO)." },
+        { min: 16, max: 67, severity: "Severe Withdrawal", interpretation: "Score 16+: Severe alcohol withdrawal. High risk of delirium tremens and seizures. ICU/monitored setting, IV Benzodiazepines." }
       ]
     }
   },
@@ -188,23 +706,23 @@ const scales = [
     id: "cows",
     name: "COWS",
     fullName: "Clinical Opiate Withdrawal Scale",
-    description: "11-item clinician-rated instrument for assessing severity of opioid withdrawal symptoms during detoxification or buprenorphine induction.",
     category: "substance",
+    description: "11-item clinician-administered instrument for assessing opioid withdrawal severity to guide Buprenorphine induction.",
     estimatedTime: "3-5 min",
     questions: [
       {
-        text: "1. Resting Pulse Rate\nMeasured after patient has been sitting or lying for 1 minute.",
+        text: "1. Resting Pulse Rate (Measured after patient is resting for 1 minute)",
         options: [
-          { label: "0 - Pulse 80 or below", score: 0 },
-          { label: "1 - Pulse 81 to 100", score: 1 },
-          { label: "2 - Pulse 101 to 120", score: 2 },
-          { label: "4 - Pulse greater than 120", score: 4 }
+          { label: "0 - Pulse rate 80 or below", score: 0 },
+          { label: "1 - Pulse rate 81-100", score: 1 },
+          { label: "2 - Pulse rate 101-120", score: 2 },
+          { label: "4 - Pulse rate greater than 120", score: 4 }
         ]
       },
       {
-        text: "2. Sweating\nOver past 1/2 hour not accounted for by room temperature or patient activity.",
+        text: "2. Sweating (Over past 1/2 hour not related to room temperature)",
         options: [
-          { label: "0 - No report of chills or sweating", score: 0 },
+          { label: "0 - No report of chills or flushing", score: 0 },
           { label: "1 - Subjective report of chills or flushing", score: 1 },
           { label: "2 - Flushed or observable moistness on face", score: 2 },
           { label: "3 - Beads of sweat on brow or face", score: 3 },
@@ -212,7 +730,7 @@ const scales = [
         ]
       },
       {
-        text: "3. Restlessness\nObserved during interview.",
+        text: "3. Restlessness (Observed during interview)",
         options: [
           { label: "0 - Able to sit still", score: 0 },
           { label: "1 - Reports difficulty sitting still, but is able to do so", score: 1 },
@@ -230,7 +748,7 @@ const scales = [
         ]
       },
       {
-        text: "5. Bone or Joint Aches\nIf patient has baseline pain, rate only additional pain component.",
+        text: "5. Bone or Joint Aches (If patient had pain previously, score only additional pain)",
         options: [
           { label: "0 - Not present", score: 0 },
           { label: "1 - Mild diffuse bone or joint aches", score: 1 },
@@ -239,7 +757,7 @@ const scales = [
         ]
       },
       {
-        text: "6. Runny Nose or Tearing\nNot accounted for by cold symptoms or allergies.",
+        text: "6. Runny Nose or Tearing (Not accounted for by cold or allergies)",
         options: [
           { label: "0 - Not present", score: 0 },
           { label: "1 - Nasal stuffiness or unusually moist eyes", score: 1 },
@@ -248,7 +766,7 @@ const scales = [
         ]
       },
       {
-        text: "7. GI Upset\nOver past 1/2 hour.",
+        text: "7. GI Upset (Over past 1/2 hour)",
         options: [
           { label: "0 - No GI symptoms", score: 0 },
           { label: "1 - Stomach cramps", score: 1 },
@@ -258,16 +776,16 @@ const scales = [
         ]
       },
       {
-        text: "8. Tremor\nObserving outstretched hands.",
+        text: "8. Tremor (Observation of outstretched hands)",
         options: [
           { label: "0 - No tremor", score: 0 },
-          { label: "1 - Tremor can be felt but not seen", score: 1 },
+          { label: "1 - Tremor can be felt, but not seen", score: 1 },
           { label: "2 - Slight tremor observable", score: 2 },
           { label: "4 - Gross tremor or muscle twitching", score: 4 }
         ]
       },
       {
-        text: "9. Yawning\nObserved during interview.",
+        text: "9. Yawning (Observed during interview)",
         options: [
           { label: "0 - No yawning", score: 0 },
           { label: "1 - Yawning once or twice during interview", score: 1 },
@@ -280,16 +798,16 @@ const scales = [
         options: [
           { label: "0 - None", score: 0 },
           { label: "1 - Patient reports increasing irritability or anxiousness", score: 1 },
-          { label: "2 - Patient obviously irritable or anxious", score: 2 },
-          { label: "4 - Patient so irritable or anxious that participation in interview is difficult", score: 4 }
+          { label: "2 - Patient is obviously irritable or anxious", score: 2 },
+          { label: "4 - Patient shows severe anxiety, participating in interview with difficulty", score: 4 }
         ]
       },
       {
-        text: "11. Gooseflesh Skin\nSkin piloerection observed on arms or chest.",
+        text: "11. Gooseflesh Skin (Goosebumps)",
         options: [
           { label: "0 - Skin is smooth", score: 0 },
-          { label: "3 - Piloerection felt or visible on skin", score: 3 },
-          { label: "5 - Prominent piloerection (gooseflesh)", score: 5 }
+          { label: "3 - Piloerection felt or visible on arms/torso", score: 3 },
+          { label: "5 - Prominent piloerection (goosebumps)", score: 5 }
         ]
       }
     ],
@@ -297,11 +815,11 @@ const scales = [
       type: "total",
       maxScore: 48,
       ranges: [
-        { min: 0, max: 4, severity: "Minimal Withdrawal", interpretation: "Score 0-4: Minimal withdrawal. Safe to monitor. Buprenorphine induction should NOT be started yet due to risk of precipitated withdrawal." },
-        { min: 5, max: 12, severity: "Mild Withdrawal", interpretation: "Score 5-12: Mild withdrawal. Monitor closely. Re-assess COWS in 1-2 hours." },
-        { min: 13, max: 24, severity: "Moderate Withdrawal", interpretation: "Score 13-24: Moderate withdrawal. Appropriate severity to safely initiate Buprenorphine induction (first dose typically 2-4mg)." },
-        { min: 25, max: 36, severity: "Moderately Severe", interpretation: "Score 25-36: Moderately severe withdrawal. Initiate buprenorphine or symptomatic opioid withdrawal medication protocol immediately." },
-        { min: 37, max: 48, severity: "Severe Withdrawal", interpretation: "Score > 36: Severe withdrawal. Requires aggressive medical management, hydration, and induction protocol." }
+        { min: 0, max: 4, severity: "Minimal Withdrawal", interpretation: "Score 0-4: Minimal opiate withdrawal. Hold Buprenorphine induction; re-assess later." },
+        { min: 5, max: 12, severity: "Mild Opiate Withdrawal", interpretation: "Score 5-12: Mild withdrawal. Delay Buprenorphine induction until COWS > 12 to avoid precipitated withdrawal." },
+        { min: 13, max: 24, severity: "Moderate Withdrawal", interpretation: "Score 13-24: Moderate opiate withdrawal. Safe to initiate Buprenorphine/Naloxone induction (e.g. 2-4 mg sublingual)." },
+        { min: 25, max: 36, severity: "Moderately Severe Withdrawal", interpretation: "Score 25-36: Moderately severe withdrawal. Proceed with Buprenorphine induction; symptom management." },
+        { min: 37, max: 48, severity: "Severe Opiate Withdrawal", interpretation: "Score 37+: Severe withdrawal. Immediate Buprenorphine induction and supportive care." }
       ]
     }
   },
@@ -309,134 +827,41 @@ const scales = [
     id: "ybocs",
     name: "Y-BOCS",
     fullName: "Yale-Brown Obsessive Compulsive Scale",
-    description: "10-item clinician-rated gold standard scale for assessing OCD symptom severity (Obsession & Compulsion subscales).",
     category: "anxiety",
+    description: "10-item clinician-rated gold standard scale assessing severity of obsessive and compulsive symptoms (Goodman et al., 1989).",
     estimatedTime: "10-15 min",
+    options: [
+      { label: "0 - None", score: 0 },
+      { label: "1 - Mild (less than 1 hr/day)", score: 1 },
+      { label: "2 - Moderate (1 to 3 hrs/day)", score: 2 },
+      { label: "3 - Severe (3 to 8 hrs/day)", score: 3 },
+      { label: "4 - Extreme (greater than 8 hrs/day)", score: 4 }
+    ],
     subscales: [
       { id: "obsessions", name: "Obsessions Subscale", min: 0, max: 20 },
       { id: "compulsions", name: "Compulsions Subscale", min: 0, max: 20 }
     ],
     questions: [
-      {
-        text: "1. Time Spent on Obsessions\nHow much of your time is occupied by obsessive thoughts?",
-        subscale: "obsessions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild (less than 1 hr/day or occasional intrusion)", score: 1 },
-          { label: "2 - Moderate (1 to 3 hrs/day or frequent intrusion)", score: 2 },
-          { label: "3 - Severe (greater than 3 and up to 8 hrs/day or very frequent intrusion)", score: 3 },
-          { label: "4 - Extreme (greater than 8 hrs/day or near constant intrusion)", score: 4 }
-        ]
-      },
-      {
-        text: "2. Interference Due to Obsessions\nHow much do your obsessive thoughts interfere with your social or work functioning?",
-        subscale: "obsessions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild: slight interference with social or occupational activities, but overall performance not impaired", score: 1 },
-          { label: "2 - Moderate: definite interference with social or occupational performance, but still manageable", score: 2 },
-          { label: "3 - Severe: causes substantial impairment in social or occupational performance", score: 3 },
-          { label: "4 - Extreme: incapacitating", score: 4 }
-        ]
-      },
-      {
-        text: "3. Distress Associated with Obsessions\nHow much distress do your obsessive thoughts cause you?",
-        subscale: "obsessions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild: infrequent and not too disturbing", score: 1 },
-          { label: "2 - Moderate: frequent and disturbing, but still manageable", score: 2 },
-          { label: "3 - Severe: very frequent and very disturbing", score: 3 },
-          { label: "4 - Extreme: near constant and disabling distress", score: 4 }
-        ]
-      },
-      {
-        text: "4. Resistance Against Obsessions\nHow much of an effort do you make to resist the obsessive thoughts?",
-        subscale: "obsessions",
-        options: [
-          { label: "0 - Try to resist all the time", score: 0 },
-          { label: "1 - Try to resist most of the time", score: 1 },
-          { label: "2 - Make some effort to resist", score: 2 },
-          { label: "3 - Yield to all obsessions without attempting to control them, but with some reluctance", score: 3 },
-          { label: "4 - Completely and willingly yield to all obsessions", score: 4 }
-        ]
-      },
-      {
-        text: "5. Degree of Control Over Obsessions\nHow much control do you have over your obsessive thoughts?",
-        subscale: "obsessions",
-        options: [
-          { label: "0 - Complete control", score: 0 },
-          { label: "1 - Much control: usually able to stop or divert obsessions with some effort", score: 1 },
-          { label: "2 - Moderate control: sometimes able to stop or divert obsessions", score: 2 },
-          { label: "3 - Little control: rarely successful in stopping or dismissing obsessions", score: 3 },
-          { label: "4 - No control: experienced as completely involuntary", score: 4 }
-        ]
-      },
-      {
-        text: "6. Time Spent Performing Compulsions\nHow much time do you spend performing compulsive behaviors?",
-        subscale: "compulsions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild (less than 1 hr/day or occasional performance)", score: 1 },
-          { label: "2 - Moderate (1 to 3 hrs/day or frequent performance)", score: 2 },
-          { label: "3 - Severe (greater than 3 and up to 8 hrs/day or very frequent performance)", score: 3 },
-          { label: "4 - Extreme (greater than 8 hrs/day or near constant performance)", score: 4 }
-        ]
-      },
-      {
-        text: "7. Interference Due to Compulsions\nHow much do your compulsive behaviors interfere with your social or work functioning?",
-        subscale: "compulsions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild: slight interference, but overall performance not impaired", score: 1 },
-          { label: "2 - Moderate: definite interference, but manageable", score: 2 },
-          { label: "3 - Severe: substantial impairment in social or occupational performance", score: 3 },
-          { label: "4 - Extreme: incapacitating", score: 4 }
-        ]
-      },
-      {
-        text: "8. Distress Associated with Compulsions\nHow would you feel if prevented from performing your compulsion(s)?",
-        subscale: "compulsions",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild: only slight anxiety if compulsion prevented", score: 1 },
-          { label: "2 - Moderate: anxiety would mount but remains manageable", score: 2 },
-          { label: "3 - Severe: prominent and disturbing increase in anxiety", score: 3 },
-          { label: "4 - Extreme: overwhelming anxiety from any intervention", score: 4 }
-        ]
-      },
-      {
-        text: "9. Resistance Against Compulsions\nHow much of an effort do you make to resist compulsions?",
-        subscale: "compulsions",
-        options: [
-          { label: "0 - Try to resist all the time", score: 0 },
-          { label: "1 - Try to resist most of the time", score: 1 },
-          { label: "2 - Make some effort to resist", score: 2 },
-          { label: "3 - Yield to almost all compulsions with reluctance", score: 3 },
-          { label: "4 - Completely and willingly yield to all compulsions", score: 4 }
-        ]
-      },
-      {
-        text: "10. Degree of Control Over Compulsions\nHow strong is the drive to perform the compulsive behavior?",
-        subscale: "compulsions",
-        options: [
-          { label: "0 - Complete control", score: 0 },
-          { label: "1 - Much control: experienced as voluntary, able to delay or stop", score: 1 },
-          { label: "2 - Moderate control: strong drive, but can control with effort", score: 2 },
-          { label: "3 - Little control: very strong drive, must be carried to completion", score: 3 },
-          { label: "4 - No control: drive feels involuntary and overwhelming", score: 4 }
-        ]
-      }
+      { text: "1. Time Occupied by Obsessive Thoughts\nHow much of your time is occupied by obsessive thoughts?", subscale: "obsessions" },
+      { text: "2. Interference Due to Obsessive Thoughts\nHow much do your obsessive thoughts interfere with functioning?", subscale: "obsessions" },
+      { text: "3. Distress Associated with Obsessive Thoughts\nHow much distress do your obsessive thoughts cause you?", subscale: "obsessions" },
+      { text: "4. Resistance Against Obsessions\nHow much effort do you make to resist the obsessive thoughts?", subscale: "obsessions" },
+      { text: "5. Degree of Control Over Obsessive Thoughts\nHow much control do you have over your obsessive thoughts?", subscale: "obsessions" },
+      { text: "6. Time Spent Performing Compulsive Behaviors\nHow much time do you spend performing compulsive behaviors?", subscale: "compulsions" },
+      { text: "7. Interference Due to Compulsive Behaviors\nHow much do your compulsive behaviors interfere with functioning?", subscale: "compulsions" },
+      { text: "8. Distress Associated with Compulsive Behaviors\nHow would you feel if prevented from performing compulsions?", subscale: "compulsions" },
+      { text: "9. Resistance Against Compulsions\nHow much effort do you make to resist compulsions?", subscale: "compulsions" },
+      { text: "10. Degree of Control Over Compulsive Behavior\nHow much control do you have over compulsions?", subscale: "compulsions" }
     ],
     scoring: {
-      type: "subscale",
-      totalRange: { min: 0, max: 40 },
+      type: "total",
+      maxScore: 40,
       ranges: [
-        { min: 0, max: 7, severity: "Subclinical OCD", interpretation: "Score 0-7: Subclinical OCD symptoms. No intensive pharmacotherapy needed." },
-        { min: 8, max: 15, severity: "Mild OCD", interpretation: "Score 8-15: Mild OCD. First-line CBT with Exposure and Response Prevention (ERP) recommended; consider SSRI if ERP unavailable." },
-        { min: 16, max: 23, severity: "Moderate OCD", interpretation: "Score 16-23: Moderate OCD. Initiate high-dose SSRI (e.g., Fluoxetine 40-80mg, Sertraline 200mg, or Fluvoxamine 200-300mg) combined with ERP." },
-        { min: 24, max: 31, severity: "Severe OCD", interpretation: "Score 24-31: Severe OCD. Combination high-dose SSRI + ERP. Consider augmentation (Aripiprazole, Risperidone, or Clomipramine) if inadequate response." },
-        { min: 32, max: 40, severity: "Extreme OCD", interpretation: "Score 32-40: Extreme, incapacitating OCD. Specialized intensive outpatient or inpatient residential treatment program indicated." }
+        { min: 0, max: 7, severity: "Subclinical OCD", interpretation: "Score 0-7: Subclinical OCD symptoms. No active treatment required." },
+        { min: 8, max: 15, severity: "Mild OCD", interpretation: "Score 8-15: Mild OCD. Initiate Exposure and Response Prevention (ERP) CBT." },
+        { min: 16, max: 23, severity: "Moderate OCD", interpretation: "Score 16-23: Moderate OCD. Initiate high-dose SSRI (e.g. Sertraline, Fluoxetine) + ERP CBT." },
+        { min: 24, max: 31, severity: "Severe OCD", interpretation: "Score 24-31: Severe OCD. High-dose SSRI + Augmentation (Atypical Antipsychotic) + intensive ERP." },
+        { min: 32, max: 40, severity: "Extreme OCD", interpretation: "Score 32-40: Extreme incapacitating OCD. Specialist OCD clinic, refractory protocols." }
       ]
     }
   },
@@ -444,1260 +869,48 @@ const scales = [
     id: "bfcrs",
     name: "BFCRS",
     fullName: "Bush-Francis Catatonia Rating Scale",
-    description: "23-item clinician rating scale for diagnosing and assessing severity of catatonia (Items 1-14 serve as screening checklist).",
     category: "catatonia",
-    estimatedTime: "8-12 min",
+    description: "23-item standardized clinician rating scale for screening (items 1-14) and quantifying catatonia severity.",
+    estimatedTime: "10 min",
+    options: [
+      { label: "0 - Absent", score: 0 },
+      { label: "1 - Mild / Present occasionally", score: 1 },
+      { label: "2 - Moderate / Present frequently", score: 2 },
+      { label: "3 - Severe / Present continuously", score: 3 }
+    ],
     questions: [
-      {
-        text: "1. Immobility / Stupor\nExtreme hypoactivity, immobile, unresponsive to stimuli.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Sits/lies unnaturally still, brief spontaneous movements", score: 1 },
-          { label: "2 - Sits/lies immobile, very limited movement", score: 2 },
-          { label: "3 - Completely stuporous, unmovable", score: 3 }
-        ]
-      },
-      {
-        text: "2. Mutism\nVerbally unresponsive or minimal speech.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Speaks inaudibly or minimal words", score: 1 },
-          { label: "2 - Speaks fewer than 20 words per hour", score: 2 },
-          { label: "3 - Completely mute", score: 3 }
-        ]
-      },
-      {
-        text: "3. Staring\nFixed gaze, little blinking, unmoving eyes.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Poor eye contact, fixed gaze for <20 seconds", score: 1 },
-          { label: "2 - Gaze fixed for >20 seconds, minimal blinking", score: 2 },
-          { label: "3 - Non-responsive staring, fixed gaze uninterrupted by movement", score: 3 }
-        ]
-      },
-      {
-        text: "4. Posturing / Catalepsy\nSpontaneous maintenance of posture against gravity.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Holds posture <1 minute", score: 1 },
-          { label: "2 - Holds posture 1 to 15 minutes", score: 2 },
-          { label: "3 - Holds bizarre posture >15 minutes", score: 3 }
-        ]
-      },
-      {
-        text: "5. Grimacing\nMaintenance of odd facial expressions.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Fleeting odd facial movements", score: 1 },
-          { label: "2 - Holds odd facial expression <1 minute", score: 2 },
-          { label: "3 - Holds bizarre facial expression >1 minute", score: 3 }
-        ]
-      },
-      {
-        text: "6. Echopraxia / Echolalia\nMimicking examiner's movements or speech.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional or subtle copying", score: 1 },
-          { label: "2 - Frequent copying", score: 2 },
-          { label: "3 - Constant, compulsive copying", score: 3 }
-        ]
-      },
-      {
-        text: "7. Stereotypy\nRepetitive, non-goal-directed motor activity (e.g., body rocking).",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional stereotyped movements", score: 1 },
-          { label: "2 - Frequent stereotyped movements", score: 2 },
-          { label: "3 - Constant motor stereotypy", score: 3 }
-        ]
-      },
-      {
-        text: "8. Mannerisms\nOdd, purposeful movements (e.g., exaggerated salute, walking on toes).",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional mannerisms", score: 1 },
-          { label: "2 - Frequent mannerisms", score: 2 },
-          { label: "3 - Constant bizarre mannerisms", score: 3 }
-        ]
-      },
-      {
-        text: "9. Verbigeration\nRepetition of senseless phrases or words.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional repetition", score: 1 },
-          { label: "2 - Frequent repetition", score: 2 },
-          { label: "3 - Constant continuous verbigeration", score: 3 }
-        ]
-      },
-      {
-        text: "10. Rigidity\nMaintenance of rigid posture despite attempts to move patient.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild resistance", score: 1 },
-          { label: "2 - Moderate rigidity", score: 2 },
-          { label: "3 - Severe rigidity, lead-pipe quality", score: 3 }
-        ]
-      },
-      {
-        text: "11. Negativism\nOpposition or resistance to instructions/movement without apparent motive.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild resistance / hesitation", score: 1 },
-          { label: "2 - Moderate active opposition", score: 2 },
-          { label: "3 - Severe, continuous opposition or does exact opposite", score: 3 }
-        ]
-      },
-      {
-        text: "12. Waxy Flexibility\nInitial resistance to positioning followed by yielding (like bending a candle).",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild plastic resistance", score: 1 },
-          { label: "2 - Clear waxy flexibility", score: 2 },
-          { label: "3 - Complete waxy flexibility in multiple limbs", score: 3 }
-        ]
-      },
-      {
-        text: "13. Withdrawal\nRefusal to eat, drink, or make eye contact.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Minimal eye contact or reluctant eating", score: 1 },
-          { label: "2 - Avoids all eye contact, refuses food/water for 1 day", score: 2 },
-          { label: "3 - Complete refusal of food and fluids >1 day", score: 3 }
-        ]
-      },
-      {
-        text: "14. Impulsivity\nSudden, inappropriate motor behavior without provocation.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional impulsive act", score: 1 },
-          { label: "2 - Frequent impulsive behavior", score: 2 },
-          { label: "3 - Continuous violent or dangerous impulsive outbursts", score: 3 }
-        ]
-      },
-      {
-        text: "15. Automatic Obedience\nExaggerated compliance with trivial requests (e.g. sticking tongue out when examiner points needle).",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild automatic obedience", score: 1 },
-          { label: "2 - Moderate automatic obedience", score: 2 },
-          { label: "3 - Complete automatic obedience", score: 3 }
-        ]
-      },
-      {
-        text: "16. Mitgehen\n'Anglepoise lamp' phenomenon: moving limb with light pressure despite instruction to resist.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Light pressure moves arm slowly", score: 1 },
-          { label: "2 - Arm moves easily with feather light pressure", score: 2 },
-          { label: "3 - Limb yields instantly to any touch", score: 3 }
-        ]
-      },
-      {
-        text: "17. Gegenhalten\nInvoluntary resistance to passive movement equal in force to examiner's pressure.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild opposition", score: 1 },
-          { label: "2 - Moderate opposition proportional to force", score: 2 },
-          { label: "3 - Severe opposing force", score: 3 }
-        ]
-      },
-      {
-        text: "18. Ambendung\nPatient acts as if magnet is pulling them towards examiner.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Hesitant motor response", score: 1 },
-          { label: "2 - Clear magnet-like motor attraction", score: 2 },
-          { label: "3 - Compulsive physical movement towards examiner", score: 3 }
-        ]
-      },
-      {
-        text: "19. Perseveration\nRepeatedly returning to same topic or motor action.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Occasional motor or verbal repetition", score: 1 },
-          { label: "2 - Frequent perseveration", score: 2 },
-          { label: "3 - Constant perseveration", score: 3 }
-        ]
-      },
-      {
-        text: "20. Combativeness\nUnprovoked physical aggression.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Threatening gestures", score: 1 },
-          { label: "2 - Striking objects or physical aggression", score: 2 },
-          { label: "3 - Severe unprovoked assault", score: 3 }
-        ]
-      },
-      {
-        text: "21. Autonomic Abnormality\nTemperature >37.8°C, tachycardia >100, BP fluctuations, diaphoresis.",
-        options: [
-          { label: "0 - Normal vitals", score: 0 },
-          { label: "1 - Abnormality in 1 vital sign", score: 1 },
-          { label: "2 - Abnormality in 2 vital signs", score: 2 },
-          { label: "3 - Abnormality in 3+ vital signs (Malignant Catatonia risk)", score: 3 }
-        ]
-      },
-      {
-        text: "22. Excitement\nExcessive non-goal-directed motor activity.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Hyperactive", score: 1 },
-          { label: "2 - Extreme restlessness, pacing", score: 2 },
-          { label: "3 - Continuous frantic motor excitement", score: 3 }
-        ]
-      },
-      {
-        text: "23. Grasp Reflex\nInvoluntary grasping of examiner's hand when palm stroked.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Weak grasp response", score: 1 },
-          { label: "2 - Moderate grasp", score: 2 },
-          { label: "3 - Uncontrollable forcible grasp reflex", score: 3 }
-        ]
-      }
+      "1. Excitement: Excessive motor activity, apparent purposeless, not influenced by external stimuli.",
+      "2. Immobility/Stupor: Extreme hypoactivity, immobile, minimally responsive to stimuli.",
+      "3. Mutism: Verbally unresponsive or minimal comprehension.",
+      "4. Staring: Fixed gaze, little blinking, eyes open for extended periods.",
+      "5. Posturing/Catalepsy: Spontaneous maintenance of posture for extended time.",
+      "6. Grimacing: Maintenance of odd facial expressions.",
+      "7. Echopraxia/Echolalia: Mimicking examiner's movements or speech.",
+      "8. Stereotypy: Repetitive, non-goal-directed motor actions.",
+      "9. Mannerisms: Odd, stilted purposeful movements.",
+      "10. Verbigeration: Repetition of senseless phrases or sentences.",
+      "11. Mitgehen: 'Angled' exaggeration of cooperation with examiner's touch.",
+      "12. Waxy Flexibility: Resistance to positioning by examiner then maintenance of new position.",
+      "13. Negativism: Resistance to instructions or attempt to move patient.",
+      "14. Ambitendency: Patient appears stuck in indecisive movement.",
+      "15. Automatic Obedience: Exaggerated cooperation with examiner's requests.",
+      "16. Passive Obedience: Patient allows positioning without resistance.",
+      "17. Perseveration: Repeated execution of an action after original stimulus passed.",
+      "18. Combativeness: Direct physical aggression towards examiner/staff.",
+      "19. Autonomic Abnormality: Temperature, BP, pulse fluctuations, diaphoresis.",
+      "20. Grasp Reflex: Involuntary grasp upon light touch to palm.",
+      "21. Gegenhalten: Equal and opposite resistance to passive limb movement.",
+      "22. Myoclonus: Rapid involuntary muscle twitches.",
+      "23. Intestinal Obstruction / Retention: Abdominal distension, constipation, urinary retention."
     ],
     scoring: {
       type: "total",
       maxScore: 69,
       ranges: [
-        { min: 0, max: 0, severity: "No Catatonia", interpretation: "Score 0: No catatonia features observed." },
-        { min: 1, max: 7, severity: "Mild Catatonia", interpretation: "Score 1-7 (or >=2 positive screening items 1-14): Probable Catatonia. Perform Lorazepam challenge (1-2mg IV/IM). Monitor resolution within 30-60 mins." },
-        { min: 8, max: 19, severity: "Moderate Catatonia", interpretation: "Score 8-19: Moderate Catatonia. Initiate Lorazepam trial (6-16mg/day divided doses). Evaluate underlying etiology (affective, psychotic, or medical)." },
-        { min: 20, max: 69, severity: "Severe / Malignant Catatonia", interpretation: "Score >= 20 or Autonomic Instability: Severe/Malignant Catatonia. High risk for autonomic collapse. Emergency Lorazepam + Electroconvulsive Therapy (ECT) evaluation required immediately." }
-      ]
-    }
-  },
-  {
-    id: "ymrs",
-    name: "YMRS",
-    fullName: "Young Mania Rating Scale",
-    category: "mood",
-    description: "11-item clinician-rated scale for evaluating manic symptom severity in bipolar disorder.",
-    estimatedTime: "5-10 min",
-    questions: [
-      {
-        text: "1. Elevated Mood",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mildly or possibly increased on questioning", score: 1 },
-          { label: "2 - Definite subjective elevation; optimistic, self-confident; cheerful", score: 2 },
-          { label: "3 - Elevated, inappropriate to content; humorous", score: 3 },
-          { label: "4 - Euphoric; inappropriate laughter; singing", score: 4 }
-        ]
-      },
-      {
-        text: "2. Increased Motor Activity-Energy",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Subjectively increased", score: 1 },
-          { label: "2 - Animated; gestures increased", score: 2 },
-          { label: "3 - Excessive energy; hyperactive at times; restless", score: 3 },
-          { label: "4 - Motor excitement; continuous hyperactivity", score: 4 }
-        ]
-      },
-      {
-        text: "3. Sexual Interest",
-        options: [
-          { label: "0 - Normal; not increased", score: 0 },
-          { label: "1 - Mildly or possibly increased", score: 1 },
-          { label: "2 - Definite subjective increase on questioning", score: 2 },
-          { label: "3 - Spontaneous sexual content; hypersexual by report", score: 3 },
-          { label: "4 - Overt sexual acts toward others", score: 4 }
-        ]
-      },
-      {
-        text: "4. Sleep",
-        options: [
-          { label: "0 - Reports no decrease in sleep", score: 0 },
-          { label: "1 - Sleeping less than normal amount by up to 1 hour", score: 1 },
-          { label: "2 - Sleeping less than normal by more than 1 hour", score: 2 },
-          { label: "3 - Reports decreased need for sleep", score: 3 },
-          { label: "4 - Denies need for sleep", score: 4 }
-        ]
-      },
-      {
-        text: "5. Irritability (double-weighted)",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "2 - Subjectively increased", score: 2 },
-          { label: "4 - Irritable at times; recent anger episodes", score: 4 },
-          { label: "6 - Frequently irritable; short, curt throughout interview", score: 6 },
-          { label: "8 - Hostile, uncooperative; interview impossible", score: 8 }
-        ]
-      },
-      {
-        text: "6. Speech (Rate and Amount) (double-weighted)",
-        options: [
-          { label: "0 - No increase", score: 0 },
-          { label: "2 - Feels talkative", score: 2 },
-          { label: "4 - Increased rate or amount at times", score: 4 },
-          { label: "6 - Push; consistently increased rate; difficult to interrupt", score: 6 },
-          { label: "8 - Pressured; uninterruptible; continuous speech", score: 8 }
-        ]
-      },
-      {
-        text: "7. Language-Thought Disorder",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Circumstantial; mild distractibility; quick thoughts", score: 1 },
-          { label: "2 - Distractible; loses goal of thought; racing thoughts", score: 2 },
-          { label: "3 - Flight of ideas; tangentiality; rhyming, echolalia", score: 3 },
-          { label: "4 - Incoherent; communication impossible", score: 4 }
-        ]
-      },
-      {
-        text: "8. Content (double-weighted)",
-        options: [
-          { label: "0 - Normal", score: 0 },
-          { label: "2 - Questionable plans, new interests", score: 2 },
-          { label: "4 - Special project(s); hyperreligious", score: 4 },
-          { label: "6 - Grandiose or paranoid ideas; ideas of reference", score: 6 },
-          { label: "8 - Delusions; hallucinations", score: 8 }
-        ]
-      },
-      {
-        text: "9. Disruptive-Aggressive Behavior (double-weighted)",
-        options: [
-          { label: "0 - Absent, cooperative", score: 0 },
-          { label: "2 - Sarcastic; loud at times", score: 2 },
-          { label: "4 - Demanding; threats on ward", score: 4 },
-          { label: "6 - Threatens interviewer; shouting", score: 6 },
-          { label: "8 - Assaultive; destructive; interview impossible", score: 8 }
-        ]
-      },
-      {
-        text: "10. Appearance",
-        options: [
-          { label: "0 - Appropriate dress and grooming", score: 0 },
-          { label: "1 - Minimally unkempt", score: 1 },
-          { label: "2 - Poorly groomed; overdressed", score: 2 },
-          { label: "3 - Disheveled; partly clothed; garish make-up", score: 3 },
-          { label: "4 - Completely unkempt; bizarre garb", score: 4 }
-        ]
-      },
-      {
-        text: "11. Insight",
-        options: [
-          { label: "0 - Present; admits illness; agrees with need for treatment", score: 0 },
-          { label: "1 - Possibly ill", score: 1 },
-          { label: "2 - Admits behavior change, but denies illness", score: 2 },
-          { label: "3 - Admits possible change in behavior, but denies illness", score: 3 },
-          { label: "4 - Denies any behavior change", score: 4 }
-        ]
-      }
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 60,
-      ranges: [
-        { min: 0, max: 11, severity: "Remission", interpretation: "Score < 12: Euthymic / Remission. Continue maintenance mood stabilizer." },
-        { min: 12, max: 19, severity: "Mild Mania", interpretation: "Score 12-19: Mild mania / Hypomania. Consider outpatient mood stabilizer titration." },
-        { min: 20, max: 25, severity: "Moderate Mania", interpretation: "Score 20-25: Moderate mania. Intensify mood stabilizer + atypical antipsychotic therapy." },
-        { min: 26, max: 60, severity: "Severe Mania", interpretation: "Score >= 26: Severe mania. Inpatient admission recommended. Dual therapy (Lithium/Valproate + Antipsychotic)." }
-      ]
-    }
-  },
-  {
-    id: "panss",
-    name: "PANSS",
-    fullName: "Positive and Negative Syndrome Scale",
-    category: "psychosis",
-    description: "30-item comprehensive rating scale for schizophrenia (Positive, Negative, and General Psychopathology subscales).",
-    estimatedTime: "15-20 min",
-    subscales: [
-      { id: "positive", name: "Positive Symptoms", min: 7, max: 49 },
-      { id: "negative", name: "Negative Symptoms", min: 7, max: 49 },
-      { id: "general", name: "General Psychopathology", min: 16, max: 112 }
-    ],
-    questions: [
-      {
-        text: "P1. Delusions\nBeliefs which are unfounded, unrealistic, and idiosyncratic.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P2. Conceptual Disorganization\nDisorganized thinking characterized by loosening of associations, tangentiality.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P3. Hallucinatory Behavior\nPerceptions not generated by external stimuli.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P4. Excitement\nHyperactivity, elevated mood, increased energy.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P5. Grandiosity\nExaggerated self-opinion, unrealistic beliefs of superiority.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P6. Suspiciousness / Persecution\nUnrealistic distrust or persecutory beliefs.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "P7. Hostility\nVerbal or physical expressions of anger or aggression.",
-        subscale: "positive",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N1. Blunted Affect\nDiminished emotional responsiveness.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N2. Emotional Withdrawal\nLack of interest or involvement with interviewer.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N3. Poor Rapport\nLack of interpersonal connection or openness.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N4. Passive / Apathetic Social Withdrawal\nDiminished social interest and initiative.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N5. Difficulty in Abstract Thinking\nImpaired ability to use abstract concepts.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N6. Lack of Spontaneity & Flow of Conversation\nReduced normal flow of conversation.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "N7. Stereotyped Thinking\nRigid, repetitive thought content.",
-        subscale: "negative",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G1. Somatic Concern\nPreoccupation with physical health.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G2. Anxiety\nNervousness, worry, or apprehension.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G3. Guilt Feelings\nRemorse or self-blame.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G4. Tension\nObservable motor tension or restlessness.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G5. Mannerisms & Posturing\nBizarre movements or postures.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G6. Depression\nSadness, hopelessness, pessimism.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G7. Motor Retardation\nSlowing of movements and speech.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G8. Uncooperativeness\nActive refusal to comply with requests.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G9. Unusual Thought Content\nStrange or bizarre delusional thinking.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G10. Disorientation\nConfusion about person, place, or time.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G11. Poor Attention\nDifficulty focusing or sustaining attention.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G12. Lack of Judgment & Insight\nImpaired awareness of psychiatric condition.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G13. Disturbance of Volition\nImpaired ability to initiate goal-directed activity.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G14. Poor Impulse Control\nDifficulty regulating impulses.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G15. Preoccupation\nExcessive focus on internal thoughts.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      },
-      {
-        text: "G16. Active Social Avoidance\nAvoiding social contact due to fear/suspiciousness.",
-        subscale: "general",
-        options: [
-          { label: "1 - Absent", score: 1 },
-          { label: "2 - Minimal", score: 2 },
-          { label: "3 - Mild", score: 3 },
-          { label: "4 - Moderate", score: 4 },
-          { label: "5 - Moderate-Severe", score: 5 },
-          { label: "6 - Severe", score: 6 },
-          { label: "7 - Extreme", score: 7 }
-        ]
-      }
-    ],
-    scoring: {
-      type: "subscale",
-      totalRange: { min: 30, max: 210 },
-      ranges: [
-        { min: 30, max: 57, severity: "Mild Psychopathology", interpretation: "CGI: Mildly ill. Continue antipsychotic maintenance." },
-        { min: 58, max: 74, severity: "Mild to Moderate", interpretation: "CGI: Moderately ill. Assess medication adherence & dosage optimization." },
-        { min: 75, max: 94, severity: "Moderate Psychopathology", interpretation: "CGI: Markedly ill. Consider switching or augmenting antipsychotic." },
-        { min: 95, max: 115, severity: "Marked Psychopathology", interpretation: "CGI: Severely ill. Intensive inpatient care indicated." },
-        { min: 116, max: 210, severity: "Severe Psychopathology", interpretation: "CGI: Among the most extremely ill. Consider Clozapine if treatment resistant." }
-      ]
-    }
-  },
-  {
-    id: "hamd17",
-    name: "HAM-D (17)",
-    fullName: "Hamilton Depression Rating Scale",
-    category: "mood",
-    description: "17-item clinician-rated gold standard scale for depression severity.",
-    estimatedTime: "8-12 min",
-    questions: [
-      {
-        text: "1. Depressed Mood\nGloomy attitude, pessimism, hopelessness, worthlessness.",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Expressed only on questioning", score: 1 },
-          { label: "2 - Spontaneously reports depressed mood", score: 2 },
-          { label: "3 - Communicates nonverbally (posture, crying)", score: 3 },
-          { label: "4 - Overwhelming despair / exclusively nonverbal", score: 4 }
-        ]
-      },
-      {
-        text: "2. Feelings of Guilt",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Self-reproach", score: 1 },
-          { label: "2 - Ideas of guilt over past errors", score: 2 },
-          { label: "3 - Present illness is punishment; guilt delusions", score: 3 },
-          { label: "4 - Accusatory auditory or visual hallucinations", score: 4 }
-        ]
-      },
-      {
-        text: "3. Suicide",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Feels life is not worth living", score: 1 },
-          { label: "2 - Wishes to be dead", score: 2 },
-          { label: "3 - Suicidal ideas or gestures", score: 3 },
-          { label: "4 - Serious suicide attempt", score: 4 }
-        ]
-      },
-      {
-        text: "4. Insomnia — Early\nDifficulty falling asleep.",
-        options: [
-          { label: "0 - No difficulty", score: 0 },
-          { label: "1 - Occasional difficulty (>30 mins)", score: 1 },
-          { label: "2 - Nightly difficulty falling asleep", score: 2 }
-        ]
-      },
-      {
-        text: "5. Insomnia — Middle\nWaking during the night.",
-        options: [
-          { label: "0 - No difficulty", score: 0 },
-          { label: "1 - Restlessness / waking during night", score: 1 },
-          { label: "2 - Waking during night, getting out of bed", score: 2 }
-        ]
-      },
-      {
-        text: "6. Insomnia — Late\nEarly morning awakening.",
-        options: [
-          { label: "0 - No difficulty", score: 0 },
-          { label: "1 - Early waking but falls asleep again", score: 1 },
-          { label: "2 - Unable to fall asleep again", score: 2 }
-        ]
-      },
-      {
-        text: "7. Work and Activities",
-        options: [
-          { label: "0 - No difficulty", score: 0 },
-          { label: "1 - Feelings of incapacity related to work", score: 1 },
-          { label: "2 - Loss of interest in hobbies", score: 2 },
-          { label: "3 - Decreased productivity", score: 3 },
-          { label: "4 - Stopped working due to illness", score: 4 }
-        ]
-      },
-      {
-        text: "8. Retardation (Slowness of thought and speech)",
-        options: [
-          { label: "0 - Normal speech/thought", score: 0 },
-          { label: "1 - Slight retardation at interview", score: 1 },
-          { label: "2 - Obvious retardation at interview", score: 2 },
-          { label: "3 - Marked retardation", score: 3 },
-          { label: "4 - Complete stupor", score: 4 }
-        ]
-      },
-      {
-        text: "9. Agitation",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Fidgetiness", score: 1 },
-          { label: "2 - Playing with hands/hair", score: 2 },
-          { label: "3 - Moving about, cannot sit still", score: 3 },
-          { label: "4 - Hand wringing, nail biting", score: 4 }
-        ]
-      },
-      {
-        text: "10. Anxiety — Psychic",
-        options: [
-          { label: "0 - No difficulty", score: 0 },
-          { label: "1 - Subjective tension/irritability", score: 1 },
-          { label: "2 - Worrying about minor matters", score: 2 },
-          { label: "3 - Apprehensive attitude", score: 3 },
-          { label: "4 - Overwhelming panic", score: 4 }
-        ]
-      },
-      {
-        text: "11. Anxiety — Somatic (Autonomic symptoms)",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild", score: 1 },
-          { label: "2 - Moderate", score: 2 },
-          { label: "3 - Severe", score: 3 },
-          { label: "4 - Incapacitating", score: 4 }
-        ]
-      },
-      {
-        text: "12. Somatic Symptoms — GI",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Loss of appetite", score: 1 },
-          { label: "2 - Difficulty eating without persuasion / laxative use", score: 2 }
-        ]
-      },
-      {
-        text: "13. General Somatic Symptoms (Aches, fatigue)",
-        options: [
-          { label: "0 - None", score: 0 },
-          { label: "1 - Mild heaviness in limbs/head", score: 1 },
-          { label: "2 - Severe muscle aches or fatigue", score: 2 }
-        ]
-      },
-      {
-        text: "14. Genital Symptoms (Loss of libido)",
-        options: [
-          { label: "0 - Absent", score: 0 },
-          { label: "1 - Mild loss of interest", score: 1 },
-          { label: "2 - Severe loss of libido", score: 2 }
-        ]
-      },
-      {
-        text: "15. Hypochondriasis",
-        options: [
-          { label: "0 - Not present", score: 0 },
-          { label: "1 - Bodily self-absorption", score: 1 },
-          { label: "2 - Preoccupation with health", score: 2 },
-          { label: "3 - Frequent complaints", score: 3 },
-          { label: "4 - Hypochondriacal delusions", score: 4 }
-        ]
-      },
-      {
-        text: "16. Loss of Weight",
-        options: [
-          { label: "0 - No weight loss", score: 0 },
-          { label: "1 - Probable weight loss", score: 1 },
-          { label: "2 - Definite weight loss", score: 2 }
-        ]
-      },
-      {
-        text: "17. Insight",
-        options: [
-          { label: "0 - Acknowledges illness", score: 0 },
-          { label: "1 - Attributes illness to overwork/virus", score: 1 },
-          { label: "2 - Denies being ill", score: 2 }
-        ]
-      }
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 52,
-      ranges: [
-        { min: 0, max: 7, severity: "Normal", interpretation: "Score 0-7: Normal mood, no clinical depression." },
-        { min: 8, max: 13, severity: "Mild Depression", interpretation: "Score 8-13: Mild depression. Consider psychotherapy." },
-        { min: 14, max: 18, severity: "Moderate Depression", interpretation: "Score 14-18: Moderate depression. Initiate SSRI/SNRI antidepressant." },
-        { min: 19, max: 22, severity: "Severe Depression", interpretation: "Score 19-22: Severe depression. Optimize antidepressant or consider dual action/augmentation." },
-        { min: 23, max: 52, severity: "Very Severe", interpretation: "Score >= 23: Very severe depression. Evaluate for ECT and inpatient safety." }
-      ]
-    }
-  },
-  {
-    id: "cssrs",
-    name: "C-SSRS",
-    fullName: "Columbia-Suicide Severity Rating Scale",
-    category: "suicide",
-    description: "Evaluates suicidal ideation and behavior with dynamic branching logic to gauge immediate emergency risk.",
-    estimatedTime: "3-6 min",
-    questions: [
-      {
-        text: "1. Wish to be Dead\nHas patient wished they were dead or wished to go to sleep and not wake up?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "2. Non-Specific Active Suicidal Thoughts\nHas patient had any thoughts of killing themselves?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "3. Active Ideation with Methods\nHas patient thought of methods/ways to kill themselves? (Shown if Q2 = Yes)",
-        dependsOn: { question: 1, value: 1 },
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "4. Active Ideation with Some Intent\nHas patient had thoughts with intent to act? (Shown if Q2 = Yes)",
-        dependsOn: { question: 1, value: 1 },
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "5. Active Ideation with Specific Plan\nHas patient thought of a specific plan & intent? (Shown if Q2 = Yes)",
-        dependsOn: { question: 1, value: 1 },
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "6. Actual Attempt\nHas patient made an actual suicide attempt?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "7. Non-Suicidal Self-Injury\nSelf-injury without any intent to die?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "8. Interrupted Attempt\nStarted attempt but interrupted by external circumstance?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "9. Aborted Attempt\nStarted attempt but stopped themselves before act?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      },
-      {
-        text: "10. Preparatory Acts\nTaken steps like gathering pills, writing a note, giving away possessions?",
-        options: [
-          { label: "0 - No", score: 0 },
-          { label: "1 - Yes", score: 1 }
-        ]
-      }
-    ],
-    scoring: {
-      type: "cssrs",
-      ranges: [
-        { min: 0, max: 0, severity: "No Suicidal Ideation", interpretation: "No suicidal ideation or behavior reported." },
-        { min: 1, max: 5, severity: "Low Risk", interpretation: "Passive suicidal ideation only. Provide supportive counseling and safety plan." },
-        { min: 6, max: 49, severity: "Moderate Risk", interpretation: "Active suicidal ideation. Urgently establish safety plan, remove lethal means, schedule early follow-up." },
-        { min: 50, max: 99, severity: "High Risk - Emergency", interpretation: "Suicidal behavior present. Psychiatric Emergency. Immediate inpatient safety evaluation required." }
-      ]
-    }
-  },
-  {
-    id: "phq9",
-    name: "PHQ-9",
-    fullName: "Patient Health Questionnaire-9",
-    category: "mood",
-    description: "9-item self-report / clinician screening tool for major depressive disorder.",
-    estimatedTime: "2-4 min",
-    options: [
-      { label: "0 - Not at all", score: 0 },
-      { label: "1 - Several days", score: 1 },
-      { label: "2 - More than half the days", score: 2 },
-      { label: "3 - Nearly every day", score: 3 }
-    ],
-    questions: [
-      "1. Little interest or pleasure in doing things",
-      "2. Feeling down, depressed, or hopeless",
-      "3. Trouble falling or staying asleep, or sleeping too much",
-      "4. Feeling tired or having little energy",
-      "5. Poor appetite or overeating",
-      "6. Feeling bad about yourself — or that you are a failure",
-      "7. Trouble concentrating on things, such as reading or TV",
-      "8. Moving or speaking so slowly that others could have noticed",
-      "9. Thoughts that you would be better off dead or of hurting yourself"
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 27,
-      ranges: [
-        { min: 0, max: 4, severity: "Minimal Depression", interpretation: "Score 0-4: Minimal depression. No treatment required." },
-        { min: 5, max: 9, severity: "Mild Depression", interpretation: "Score 5-9: Mild depression. Watchful waiting; repeat PHQ-9 at follow-up." },
-        { min: 10, max: 14, severity: "Moderate Depression", interpretation: "Score 10-14: Moderate depression. Consider psychotherapy or pharmacotherapy." },
-        { min: 15, max: 19, severity: "Moderately Severe", interpretation: "Score 15-19: Moderately severe depression. Initiate antidepressant and/or psychotherapy." },
-        { min: 20, max: 27, severity: "Severe Depression", interpretation: "Score 20-27: Severe depression. Initiate antidepressant medication and immediate mental health referral." }
-      ]
-    }
-  },
-  {
-    id: "gad7",
-    name: "GAD-7",
-    fullName: "Generalized Anxiety Disorder 7-Item Scale",
-    category: "anxiety",
-    description: "7-item screening tool for generalized anxiety disorder severity.",
-    estimatedTime: "2-3 min",
-    options: [
-      { label: "0 - Not at all", score: 0 },
-      { label: "1 - Several days", score: 1 },
-      { label: "2 - More than half the days", score: 2 },
-      { label: "3 - Nearly every day", score: 3 }
-    ],
-    questions: [
-      "1. Feeling nervous, anxious, or on edge",
-      "2. Not being able to stop or control worrying",
-      "3. Worrying too much about different things",
-      "4. Trouble relaxing",
-      "5. Being so restless that it is hard to sit still",
-      "6. Becoming easily annoyed or irritable",
-      "7. Feeling afraid as if something awful might happen"
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 21,
-      ranges: [
-        { min: 0, max: 4, severity: "Minimal Anxiety", interpretation: "Score 0-4: Minimal anxiety." },
-        { min: 5, max: 9, severity: "Mild Anxiety", interpretation: "Score 5-9: Mild anxiety. Psychoeducation & relaxation exercises." },
-        { min: 10, max: 14, severity: "Moderate Anxiety", interpretation: "Score 10-14: Moderate anxiety. Evaluate for GAD; consider CBT or SSRI/SNRI." },
-        { min: 15, max: 21, severity: "Severe Anxiety", interpretation: "Score 15-21: Severe anxiety. Pharmacotherapy and CBT indicated." }
-      ]
-    }
-  },
-  {
-    id: "mmse",
-    name: "MMSE",
-    fullName: "Mini-Mental State Examination",
-    category: "cognitive",
-    description: "11-item cognitive screening test for orientation, memory, attention, and visual construction.",
-    estimatedTime: "7-10 min",
-    questions: [
-      {
-        text: "1. Orientation to Time (Year, Season, Month, Date, Day)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 },
-          { label: "3 correct", score: 3 },
-          { label: "4 correct", score: 4 },
-          { label: "5 correct", score: 5 }
-        ]
-      },
-      {
-        text: "2. Orientation to Place (Country, State, City, Hospital, Floor)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 },
-          { label: "3 correct", score: 3 },
-          { label: "4 correct", score: 4 },
-          { label: "5 correct", score: 5 }
-        ]
-      },
-      {
-        text: "3. Registration (Name 3 objects: Apple, Table, Penny)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 },
-          { label: "3 correct", score: 3 }
-        ]
-      },
-      {
-        text: "4. Attention & Calculation (Serial 7s from 100 or Spell WORLD backwards)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 },
-          { label: "3 correct", score: 3 },
-          { label: "4 correct", score: 4 },
-          { label: "5 correct", score: 5 }
-        ]
-      },
-      {
-        text: "5. Recall (3 objects from Q3)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 },
-          { label: "3 correct", score: 3 }
-        ]
-      },
-      {
-        text: "6. Naming (Pencil and Watch)",
-        options: [
-          { label: "0 correct", score: 0 },
-          { label: "1 correct", score: 1 },
-          { label: "2 correct", score: 2 }
-        ]
-      },
-      {
-        text: "7. Repetition ('No ifs, ands, or buts')",
-        options: [
-          { label: "0 - Incorrect", score: 0 },
-          { label: "1 - Correct", score: 1 }
-        ]
-      },
-      {
-        text: "8. 3-Stage Command (Take paper in right hand, fold in half, put on floor)",
-        options: [
-          { label: "0 steps correct", score: 0 },
-          { label: "1 step correct", score: 1 },
-          { label: "2 steps correct", score: 2 },
-          { label: "3 steps correct", score: 3 }
-        ]
-      },
-      {
-        text: "9. Reading (Read and obey 'Close your eyes')",
-        options: [
-          { label: "0 - Does not obey", score: 0 },
-          { label: "1 - Closes eyes", score: 1 }
-        ]
-      },
-      {
-        text: "10. Writing (Write a complete sentence)",
-        options: [
-          { label: "0 - No sentence", score: 0 },
-          { label: "1 - Meaningful sentence", score: 1 }
-        ]
-      },
-      {
-        text: "11. Visuospatial Copying (Copy intersecting pentagons)",
-        options: [
-          { label: "0 - Incorrect copy", score: 0 },
-          { label: "1 - Correct copy", score: 1 }
-        ]
-      }
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 30,
-      ranges: [
-        { min: 24, max: 30, severity: "Normal Cognition", interpretation: "Score 24-30: Normal cognition." },
-        { min: 18, max: 23, severity: "Mild Cognitive Impairment", interpretation: "Score 18-23: Mild cognitive impairment. Screen for underlying dementia or delirium." },
-        { min: 10, max: 17, severity: "Moderate Impairment", interpretation: "Score 10-17: Moderate cognitive impairment. Dementia workup indicated." },
-        { min: 0, max: 9, severity: "Severe Impairment", interpretation: "Score 0-9: Severe cognitive impairment." }
-      ]
-    }
-  },
-  {
-    id: "aims",
-    name: "AIMS",
-    fullName: "Abnormal Involuntary Movement Scale",
-    category: "catatonia",
-    description: "12-item clinician rating scale to detect and track Tardive Dyskinesia in patients taking antipsychotics.",
-    estimatedTime: "5-8 min",
-    options: [
-      { label: "0 - None", score: 0 },
-      { label: "1 - Minimal / Normal extreme", score: 1 },
-      { label: "2 - Mild", score: 2 },
-      { label: "3 - Moderate", score: 3 },
-      { label: "4 - Severe", score: 4 }
-    ],
-    questions: [
-      "1. Facial and Oral Movements: Muscles of facial expression (pouting, smacking, puckering)",
-      "2. Lips and Perioral Area (puckering, pouting, smacking)",
-      "3. Jaw (biting, clenching, chewing, mouth opening)",
-      "4. Tongue (darting, protrusion, tremor)",
-      "5. Extremity Movements: Upper (arms, wrists, hands, fingers)",
-      "6. Lower Extremities (legs, knees, ankles, toes, foot tapping)",
-      "7. Trunk Movements (neck, shoulders, hips, rocking, gyrating)",
-      "8. Global Severity of Abnormal Movements",
-      "9. Incapacitation Due to Abnormal Movements",
-      "10. Patient's Awareness of Movements"
-    ],
-    scoring: {
-      type: "total",
-      maxScore: 40,
-      ranges: [
-        { min: 0, max: 1, severity: "No Tardive Dyskinesia", interpretation: "No abnormal movements detected." },
-        { min: 2, max: 15, severity: "Mild / Suspected TD", interpretation: "Mild dyskinesia in >=2 body areas or moderate in 1 area. Meets diagnostic criteria for Tardive Dyskinesia. Consider VMAT2 inhibitor (Valbenazine / Deutetrabenazine) or switching to Clozapine/Quetiapine." },
-        { min: 16, max: 40, severity: "Moderate-Severe TD", interpretation: "Moderate to severe Tardive Dyskinesia. Initiate VMAT2 inhibitor treatment; reassess antipsychotic requirement." }
+        { min: 0, max: 0, severity: "No Catatonia", interpretation: "Score 0: Catatonia absent." },
+        { min: 1, max: 5, severity: "Mild Catatonia", interpretation: "Score 1-5: Positive catatonia screening (>=2 items 1-14). Perform Lorazepam Challenge Test (1-2 mg IV/IM)." },
+        { min: 6, max: 15, severity: "Moderate Catatonia", interpretation: "Score 6-15: Moderate catatonia. Initiate Lorazepam 6-12 mg/day in divided doses." },
+        { min: 16, max: 69, severity: "Severe / Malignant Catatonia", interpretation: "Score 16+: Severe catatonia. Risk of Malignant Catatonia / NMS. Prepare for ECT (Electroconvulsive Therapy)." }
       ]
     }
   }
