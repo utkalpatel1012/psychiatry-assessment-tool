@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Psychiatry Assessment Scales — DNB Clinical Tool Suite</title>
-  <meta name="description" content="Comprehensive standardized psychiatric rating scale suite featuring CIWA-Ar, COWS, Y-BOCS, BFCRS, MADRS, PANSS, YMRS, HAM-D, MMSE, and C-SSRS with Google Drive Auto-Sync.">
+  <title>Hospital Information System (HIS) — Clinical Assessment Suite</title>
+  <meta name="description" content="Enterprise clinical psychiatry rating scale suite with HIS/EHR integration, FHIR export, and Google Drive patient records sync.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,41 +14,62 @@
     <header class="navbar">
       <div class="nav-brand" id="brand-home-link">
         <div class="brand-icon">
-          <i class="fas fa-brain"></i>
+          <i class="fas fa-hospital-user"></i>
         </div>
         <div class="brand-text">
-          <h1>Psychiatry Rating Scales</h1>
-          <span>DNB Clinical Assessment Tool Suite</span>
+          <h1>Clinical Assessment Module</h1>
+          <span>Hospital Information System (HIS / EHR Integration)</span>
         </div>
       </div>
 
       <div class="search-container">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="search-input" class="search-input" placeholder="Search scales (e.g. CIWA-Ar, COWS, Y-BOCS, MADRS)...">
+        <input type="text" id="search-input" class="search-input" placeholder="Filter 22 scales (e.g. BPRS, MoCA, ISAA, HAM-A)...">
       </div>
 
       <div class="nav-actions">
         <!-- Google Account Login Container -->
         <div id="google-auth-container">
-          <button id="google-login-btn" class="google-btn-native" onclick="GoogleDriveService.requestAccessToken()">
-            <svg class="google-logo-svg" width="18" height="18" viewBox="0 0 18 18">
+          <button id="google-login-btn" class="google-btn-native" onclick="GoogleDriveService.requestDrivePermission()">
+            <svg class="google-logo-svg" width="16" height="16" viewBox="0 0 18 18">
               <path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/>
               <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.97 13.06C2.45 16.02 5.48 18 9 18z"/>
               <path fill="#FBBC05" d="M3.87 10.8c-.18-.53-.28-1.1-.28-1.8s.1-1.27.28-1.8L.97 4.94C.35 6.16 0 7.54 0 9s.35 2.84.97 4.06l2.9-2.26z"/>
               <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 1.98.97 4.94l2.9 2.26C4.59 5.05 6.62 3.58 9 3.58z"/>
             </svg>
-            <span>Continue with Google</span>
+            <span>Drive Sync</span>
           </button>
         </div>
 
         <button id="history-btn" class="btn-pill" title="Patient Case History & Score Trends">
-          <i class="fas fa-folder-open"></i> Patient Records
+          <i class="fas fa-notes-medical"></i> Patient History
         </button>
-        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Light/Dark Theme">
+        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Theme">
           <i class="fas fa-moon"></i>
         </button>
       </div>
     </header>
+
+    <!-- EHR Patient Context Bar -->
+    <div class="patient-context-bar">
+      <div class="patient-info-items">
+        <div class="patient-info-item">
+          <i class="fas fa-user-circle" style="color: var(--accent-cyan);"></i>
+          <span>Active Patient: <strong id="active-patient-name">Selected Patient (HIS-MRN-2026)</strong></span>
+        </div>
+        <div class="patient-info-item">
+          <span>MRN: <strong id="active-patient-mrn">PT-8841</strong></span>
+        </div>
+        <div class="patient-info-item">
+          <span>Ward: <strong>Psychiatry Inpatient B</strong></span>
+        </div>
+      </div>
+      <div>
+        <button id="btn-change-patient" class="patient-badge-active" onclick="promptChangePatient()">
+          <i class="fas fa-exchange-alt"></i> Change Patient Context
+        </button>
+      </div>
+    </div>
 
     <!-- Main Content Area -->
     <main class="main-container">
@@ -57,41 +78,43 @@
       <section id="home-view">
         
         <!-- Google Sign In Banner -->
-        <div id="google-welcome-banner" class="google-banner-card">
+        <div id="google-welcome-banner" class="google-banner-card" style="display: none;">
           <div class="google-banner-left">
             <div class="google-banner-icon">
               <i class="fab fa-google-drive"></i>
             </div>
             <div>
-              <h3>Sign in with Google to Sync Your Assessments</h3>
-              <p>Automatically backup patient evaluation reports to your personal Google Drive and sync across all devices.</p>
+              <h3>Google Drive Patient Backup Active</h3>
+              <p>Automatically backup patient evaluation reports directly to your personal Google Drive account.</p>
             </div>
           </div>
-          <button id="google-banner-login-btn" class="google-btn-native" onclick="GoogleDriveService.requestAccessToken()">
+          <button id="google-banner-login-btn" class="google-btn-native" onclick="GoogleDriveService.requestDrivePermission()">
             <svg class="google-logo-svg" width="18" height="18" viewBox="0 0 18 18">
               <path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/>
               <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.97 13.06C2.45 16.02 5.48 18 9 18z"/>
               <path fill="#FBBC05" d="M3.87 10.8c-.18-.53-.28-1.1-.28-1.8s.1-1.27.28-1.8L.97 4.94C.35 6.16 0 7.54 0 9s.35 2.84.97 4.06l2.9-2.26z"/>
               <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 1.98.97 4.94l2.9 2.26C4.59 5.05 6.62 3.58 9 3.58z"/>
             </svg>
-            <span>Continue with Google</span>
+            <span>Grant Drive Permission</span>
           </button>
         </div>
 
         <div class="hero-banner">
           <h2 class="hero-title">Standardized Clinical <span>Psychiatry Scales</span></h2>
           <p class="hero-desc">
-            Evidence-based clinician-rated & self-report rating scales for DNB Psychiatry Residents. Includes protocol-guided scoring for Substance Withdrawal (CIWA-Ar, COWS), OCD (Y-BOCS), Catatonia (BFCRS), Psychosis (PANSS), Mania (YMRS), Depression (HAM-D, MADRS, PHQ-9), and Suicide Risk (C-SSRS).
+            Enterprise clinical rating scale suite ready for hospital EMR integration. Features 22 validated instruments including PANSS, BPRS, YMRS, HAM-D, HAM-A, MoCA, ISAA, AUDIT, GSAQ, DASS-21, BARS, PHQ-9, MADRS, CIWA-Ar, COWS, Y-BOCS, BFCRS, and C-SSRS (Acute & Lifetime).
           </p>
           <div class="quick-tags">
-            <span class="category-tag active" data-category="all">All Scales</span>
-            <span class="category-tag" data-category="substance">Substance Withdrawal (CIWA/COWS)</span>
-            <span class="category-tag" data-category="anxiety">Anxiety & OCD (Y-BOCS)</span>
-            <span class="category-tag" data-category="catatonia">Catatonia & Movement (BFCRS/AIMS)</span>
-            <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D/MADRS)</span>
-            <span class="category-tag" data-category="psychosis">Psychosis (PANSS)</span>
-            <span class="category-tag" data-category="cognitive">Cognitive (MMSE)</span>
-            <span class="category-tag" data-category="suicide">Suicide Risk (C-SSRS)</span>
+            <span class="category-tag active" data-category="all">All 22 Scales</span>
+            <span class="category-tag" data-category="psychosis">Psychosis (PANSS/BPRS)</span>
+            <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D/MADRS/PHQ-9/DASS-21)</span>
+            <span class="category-tag" data-category="anxiety">Anxiety & OCD (HAM-A/Y-BOCS/GAD-7)</span>
+            <span class="category-tag" data-category="cognitive">Cognition (MoCA/MMSE)</span>
+            <span class="category-tag" data-category="neurodevelopmental">Autism (ISAA)</span>
+            <span class="category-tag" data-category="substance">Substance Withdrawal (CIWA/COWS/AUDIT)</span>
+            <span class="category-tag" data-category="catatonia">Catatonia & Movement (BFCRS/BARS/AIMS)</span>
+            <span class="category-tag" data-category="sleep">Sleep (GSAQ)</span>
+            <span class="category-tag" data-category="suicide">Suicide Risk (C-SSRS Acute/Lifetime)</span>
           </div>
         </div>
 
@@ -144,17 +167,17 @@
       <section id="results-view" style="display: none;">
         <div class="results-card">
           <div class="results-header-box">
-            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 0.5rem;"></i>
-            <h2 style="font-family: var(--font-heading); font-size: 1.8rem;">Clinical Assessment Complete</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Automated Score Calculation & Google Drive Auto-Sync</p>
+            <i class="fas fa-check-circle" style="font-size: 2.8rem; color: var(--accent-cyan); margin-bottom: 0.4rem;"></i>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem;">Clinical Assessment Complete</h2>
+            <p style="color: var(--text-secondary); font-size: 0.88rem;">Automated Score Calculation & EMR Note Generator</p>
           </div>
 
           <!-- Radial Gauge Display -->
           <div class="gauge-wrapper">
             <div class="radial-gauge">
-              <svg width="180" height="180">
-                <circle class="radial-bg" cx="90" cy="90" r="70"></circle>
-                <circle id="radial-progress-circle" class="radial-progress" cx="90" cy="90" r="70"></circle>
+              <svg width="160" height="160">
+                <circle class="radial-bg" cx="80" cy="80" r="62"></circle>
+                <circle id="radial-progress-circle" class="radial-progress" cx="80" cy="80" r="62"></circle>
               </svg>
               <div class="gauge-center-text">
                 <div id="score-main" class="score-main">0</div>
@@ -169,6 +192,17 @@
 
           <!-- Clinical Interpretation Box -->
           <div id="interpretation-text" class="interpretation-box"></div>
+
+          <!-- EMR Note Preview -->
+          <div style="margin-top: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4 style="font-size: 0.9rem; color: var(--text-primary);"><i class="fas fa-file-medical"></i> EMR Clinical Note (SOAP Entry)</h4>
+              <button id="btn-copy-emr" class="btn-pill" style="font-size: 0.78rem;">
+                <i class="fas fa-copy"></i> Copy to EMR Clipboard
+              </button>
+            </div>
+            <pre id="emr-note-text" class="emr-note-preview"></pre>
+          </div>
 
           <!-- Detailed Item Breakdown Accordion -->
           <div id="answers-accordion"></div>
@@ -194,7 +228,7 @@
     <div id="history-modal" class="modal-overlay">
       <div class="modal-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="font-family: var(--font-heading); font-size: 1.3rem;"><i class="fas fa-history" style="color: var(--accent-cyan);"></i> Saved Patient Assessments</h3>
+          <h3 style="font-family: var(--font-heading); font-size: 1.2rem;"><i class="fas fa-notes-medical" style="color: var(--accent-cyan);"></i> Patient Evaluation Records</h3>
           <button id="close-modal-btn" class="btn-icon"><i class="fas fa-times"></i></button>
         </div>
         <div id="records-container" class="records-list"></div>

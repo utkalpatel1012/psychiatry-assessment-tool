@@ -4,6 +4,9 @@ let answers = [];
 let activeCategory = 'all';
 let searchQuery = '';
 
+let activePatientName = localStorage.getItem('active_patient_name') || 'Rahul Sharma';
+let activePatientMRN = localStorage.getItem('active_patient_mrn') || 'HIS-2026-8841';
+
 // DOM Elements
 const homeView = document.getElementById('home-view');
 const assessmentView = document.getElementById('assessment-view');
@@ -18,6 +21,11 @@ const closeModalBtn = document.getElementById('close-modal-btn');
 const recordsContainer = document.getElementById('records-container');
 const googleAuthContainer = document.getElementById('google-auth-container');
 const googleWelcomeBanner = document.getElementById('google-welcome-banner');
+
+const activePatientNameEl = document.getElementById('active-patient-name');
+const activePatientMRNEl = document.getElementById('active-patient-mrn');
+const emrNoteTextEl = document.getElementById('emr-note-text');
+const btnCopyEmr = document.getElementById('btn-copy-emr');
 
 // Assessment View Elements
 const assessmentScaleName = document.getElementById('assessment-scale-name');
@@ -43,11 +51,29 @@ const answersAccordion = document.getElementById('answers-accordion');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+  updatePatientUI();
   renderBentoGrid();
   setupEventListeners();
   setupKeyboardShortcuts();
   setupGoogleAuth();
 });
+
+function updatePatientUI() {
+  if (activePatientNameEl) activePatientNameEl.textContent = activePatientName;
+  if (activePatientMRNEl) activePatientMRNEl.textContent = activePatientMRN;
+}
+
+window.promptChangePatient = function() {
+  const name = prompt("Enter Patient Full Name:", activePatientName);
+  if (name) {
+    const mrn = prompt("Enter Patient MRN / UHID:", activePatientMRN);
+    activePatientName = name.trim();
+    activePatientMRN = (mrn || 'MRN-UNASSIGNED').trim();
+    localStorage.setItem('active_patient_name', activePatientName);
+    localStorage.setItem('active_patient_mrn', activePatientMRN);
+    updatePatientUI();
+  }
+};
 
 function getQuestionText(q) {
   return typeof q === 'string' ? q : q.text;
@@ -92,14 +118,12 @@ function renderBentoGrid() {
   }
 
   bentoGrid.innerHTML = filtered.map(scale => {
-    const isNew = ['ciwa-ar', 'cows', 'ybocs', 'bfcrs', 'madrs'].includes(scale.id);
     return `
       <div class="bento-card" data-scale-id="${scale.id}">
         <div>
           <div class="card-top">
             <span class="scale-abbr">${scale.name}</span>
             <div class="card-badge-container">
-              ${isNew ? '<span class="badge-new">NEW</span>' : ''}
               <span class="badge-category">${(scale.category || 'general').toUpperCase()}</span>
             </div>
           </div>
@@ -206,6 +230,7 @@ function showQuestion() {
 function showResults() {
   showView(resultsView);
   calculateAndDisplayScores();
+  generateEMRClinicalNote();
   renderDetailedAnswers();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -264,14 +289,14 @@ function calculateAndDisplayScores() {
   // SVG Radial Gauge offset
   if (radialProgressCircle) {
     const pct = Math.min(100, Math.max(0, (totalScore / maxScore) * 100));
-    const circleCircumference = 440;
+    const circleCircumference = 390;
     const offset = circleCircumference - (pct / 100) * circleCircumference;
     radialProgressCircle.style.strokeDashoffset = offset;
   }
 
   if (interpretationTextEl) {
     interpretationTextEl.innerHTML = `
-      <strong>Clinical Interpretation & Management Guidelines:</strong><br>
+      <strong>Clinical Guidelines & Management Protocol:</strong><br>
       ${range ? range.interpretation : 'Assessment completed.'}
     `;
   }
@@ -290,11 +315,11 @@ function displayCSSRSResults() {
   let interpretation = "No suicidal ideation or behavior reported.";
   if (anyBehavior) {
     severityStr = "High Risk - Emergency";
-    interpretation = "Suicidal behavior present. Immediate psychiatric emergency evaluation required.";
+    interpretation = "Suicidal behavior present. Immediate emergency psychiatric evaluation & 1-on-1 observation required.";
   } else if (anyIdeation) {
     if (a[1] === 1 || a[2] === 1 || a[3] === 1 || a[4] === 1) {
       severityStr = "Moderate Risk";
-      interpretation = "Active suicidal ideation present. Urgent safety plan & outpatient care.";
+      interpretation = "Active suicidal ideation present. Urgent safety plan & psychiatric evaluation.";
     } else if (a[0] === 1) {
       severityStr = "Low Risk";
       interpretation = "Passive suicidal ideation (wish to be dead). Reinforce safety plan.";
@@ -308,7 +333,7 @@ function displayCSSRSResults() {
     severityPillEl.className = 'severity-pill severity-high-risk';
   }
 
-  if (radialProgressCircle) radialProgressCircle.style.strokeDashoffset = anyBehavior ? 0 : 220;
+  if (radialProgressCircle) radialProgressCircle.style.strokeDashoffset = anyBehavior ? 0 : 200;
 
   if (interpretationTextEl) {
     interpretationTextEl.innerHTML = `
@@ -321,9 +346,29 @@ function displayCSSRSResults() {
   window._lastSeverity = severityStr;
 }
 
+function generateEMRClinicalNote() {
+  if (!emrNoteTextEl) return;
+  const dateStr = new Date().toLocaleString();
+  let note = `====================================================\n`;
+  note += `HOSPITAL EMR CLINICAL PSYCHIATRY EVALUATION NOTE\n`;
+  note += `====================================================\n`;
+  note += `PATIENT NAME : ${activePatientName}\n`;
+  note += `PATIENT MRN  : ${activePatientMRN}\n`;
+  note += `DATE/TIME    : ${dateStr}\n`;
+  note += `INSTRUMENT   : ${currentScale.name} (${currentScale.fullName})\n`;
+  note += `TOTAL SCORE  : ${window._lastScore} (Severity: ${window._lastSeverity})\n`;
+  note += `----------------------------------------------------\n`;
+  note += `CLINICAL IMPRESSION & GUIDELINES:\n`;
+  const range = currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max);
+  note += `${range ? range.interpretation : 'Assessment completed.'}\n`;
+  note += `====================================================\n`;
+  
+  emrNoteTextEl.textContent = note;
+}
+
 function renderDetailedAnswers() {
   if (!answersAccordion) return;
-  let html = '<div style="margin-top: 1.5rem;"><h4 style="margin-bottom: 0.75rem; font-family: var(--font-heading);">Detailed Item Responses</h4>';
+  let html = '<div style="margin-top: 1.25rem;"><h4 style="margin-bottom: 0.6rem; font-family: var(--font-heading);">Detailed Item Responses</h4>';
   
   currentScale.questions.forEach((q, i) => {
     const ans = answers[i];
@@ -331,13 +376,13 @@ function renderDetailedAnswers() {
     const text = getQuestionText(q).split('\n')[0];
     
     if (ans == null) {
-      html += `<div style="padding: 0.6rem; border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--text-muted);">
+      html += `<div style="padding: 0.5rem; border-bottom: 1px solid var(--glass-border); font-size: 0.82rem; color: var(--text-muted);">
         Item ${i + 1}: ${text} — <em>Skipped</em>
       </div>`;
     } else {
       const opt = opts.find(o => o.score === ans);
       const label = opt ? opt.label : `Score ${ans}`;
-      html += `<div style="padding: 0.6rem; border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; display: flex; justify-content: space-between;">
+      html += `<div style="padding: 0.5rem; border-bottom: 1px solid var(--glass-border); font-size: 0.82rem; display: flex; justify-content: space-between;">
         <span><strong>Item ${i + 1}:</strong> ${text}</span>
         <span style="color: var(--accent-cyan); font-weight: 600;">${label}</span>
       </div>`;
@@ -360,11 +405,11 @@ function setupGoogleAuth() {
       if (googleWelcomeBanner) googleWelcomeBanner.style.display = 'none';
       if (googleAuthContainer) {
         googleAuthContainer.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0, 242, 254, 0.1); padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(0, 242, 254, 0.3);">
-            <img src="${user.picture || 'https://lh3.googleusercontent.com/a/default-user'}" style="width: 24px; height: 24px; border-radius: 50%;">
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--accent-cyan);">${user.name.split(' ')[0]}</span>
+          <div style="display: flex; align-items: center; gap: 0.4rem; background: rgba(14, 165, 233, 0.1); padding: 0.3rem 0.75rem; border-radius: var(--radius-md); border: 1px solid rgba(14, 165, 233, 0.3);">
+            <img src="${user.picture || 'https://lh3.googleusercontent.com/a/default-user'}" style="width: 22px; height: 22px; border-radius: 50%;">
+            <span style="font-size: 0.78rem; font-weight: 600; color: var(--accent-cyan);">${user.name.split(' ')[0]}</span>
             <i class="fab fa-google-drive" style="color: var(--accent-cyan);" title="Google Drive Auto-Sync Active"></i>
-            <button id="google-logout-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: 0.3rem;" title="Sign out of Google">
+            <button id="google-logout-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: 0.2rem;" title="Sign out">
               <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
@@ -378,13 +423,13 @@ function setupGoogleAuth() {
       if (googleAuthContainer) {
         googleAuthContainer.innerHTML = `
           <button id="google-login-btn" class="google-btn-native">
-            <svg class="google-logo-svg" width="18" height="18" viewBox="0 0 18 18">
+            <svg class="google-logo-svg" width="16" height="16" viewBox="0 0 18 18">
               <path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/>
               <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.97 13.06C2.45 16.02 5.48 18 9 18z"/>
               <path fill="#FBBC05" d="M3.87 10.8c-.18-.53-.28-1.1-.28-1.8s.1-1.27.28-1.8L.97 4.94C.35 6.16 0 7.54 0 9s.35 2.84.97 4.06l2.9-2.26z"/>
               <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 1.98.97 4.94l2.9 2.26C4.59 5.05 6.62 3.58 9 3.58z"/>
             </svg>
-            <span>Continue with Google</span>
+            <span>Drive Sync</span>
           </button>
         `;
         document.getElementById('google-login-btn')?.addEventListener('click', triggerDriveAuth);
@@ -423,6 +468,16 @@ function setupEventListeners() {
     });
   }
 
+  // Copy EMR Note Button
+  if (btnCopyEmr) {
+    btnCopyEmr.addEventListener('click', () => {
+      if (emrNoteTextEl) {
+        navigator.clipboard.writeText(emrNoteTextEl.textContent);
+        alert('EMR Clinical Note copied to clipboard!');
+      }
+    });
+  }
+
   // Previous Question
   if (btnPrev) {
     btnPrev.addEventListener('click', () => {
@@ -455,20 +510,18 @@ function setupEventListeners() {
     });
   }
 
-  // Save Patient Record & Google Drive Permission Prompt
+  // Save Patient Record
   if (btnSaveRecord) {
     btnSaveRecord.addEventListener('click', () => {
-      const patientId = prompt("Enter Patient ID or Initials (e.g. PT-104):");
-      if (patientId && typeof StorageService !== 'undefined') {
+      if (typeof StorageService !== 'undefined') {
         const record = StorageService.saveRecord({
-          patientId,
+          patientId: activePatientName + ' (' + activePatientMRN + ')',
           scaleId: currentScale.id,
           scaleName: currentScale.name,
           score: window._lastScore,
           severity: window._lastSeverity
         });
 
-        // Trigger Google Drive Permission Consent & Upload
         if (typeof GoogleDriveService !== 'undefined') {
           GoogleDriveService.saveRecordToDrive(record);
         }
