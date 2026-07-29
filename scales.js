@@ -1208,23 +1208,23 @@ const scales = [
     }
   },
   {
-    id: "cssrs",
-    name: "C-SSRS",
-    fullName: "Columbia-Suicide Severity Rating Scale",
+    id: "cssrs-lifetime",
+    name: "C-SSRS (Lifetime)",
+    fullName: "Columbia-Suicide Severity Rating Scale — Lifetime / Baseline",
     category: "suicide",
-    description: "Standardized clinician-administered suicide risk assessment tool evaluating suicidal ideation, intent, and suicidal behaviors.",
+    description: "Standardized baseline scale assessing lifetime history and past 12-month baseline of suicidal ideation, intent, and suicidal behaviors.",
     estimatedTime: "5 min",
     options: [
       { label: "0 - No", score: 0 },
       { label: "1 - Yes", score: 1 }
     ],
     questions: [
-      { text: "1. Wish to be Dead: Have you wished you were dead or wished you could go to sleep and not wake up?" },
+      { text: "1. Wish to be Dead (Lifetime & Past 12 Months): Have you wished you were dead or wished you could go to sleep and not wake up?" },
       { text: "2. Suicidal Thoughts: Have you actually had any thoughts of killing yourself?" },
       { text: "3. Suicidal Thoughts with Method: Have you been thinking about how you might kill yourself?", dependsOn: { question: 1, value: 1 } },
       { text: "4. Suicidal Intent: Have you had these thoughts and had some intention of acting on them?", dependsOn: { question: 1, value: 1 } },
       { text: "5. Intent with Specific Plan: Have you started to work out or worked out the details of how to kill yourself?", dependsOn: { question: 1, value: 1 } },
-      { text: "6. Actual Attempt: Have you ever done anything, started to do anything, or prepared to do anything to end your life?" },
+      { text: "6. Actual Attempt (Lifetime & Past 3 Months): Have you ever done anything or started to do anything to end your life?" },
       { text: "7. Interrupted Attempt: Has there been a time when you were about to do something to end your life but someone stopped you?" },
       { text: "8. Aborted Attempt: Has there been a time when you were about to do something to end your life but you stopped yourself?" },
       { text: "9. Preparatory Acts: Have you taken any steps towards an attempt (e.g. buying pills, writing a note)?" },
@@ -1234,10 +1234,44 @@ const scales = [
       type: "cssrs",
       maxScore: 10,
       ranges: [
-        { min: 0, max: 0, severity: "No Risk", interpretation: "No suicidal ideation or behavior reported." },
-        { min: 1, max: 2, severity: "Low Risk", interpretation: "Passive suicidal ideation reported. Provide safety plan and routine outpatient follow-up." },
-        { min: 3, max: 5, severity: "Moderate Risk", interpretation: "Active suicidal ideation with method or intent. Initiate urgent safety planning and psychiatric evaluation." },
-        { min: 6, max: 10, severity: "High Risk - Emergency", interpretation: "Active suicidal intent with plan or recent suicidal behavior. Immediate emergency psychiatric admission and continuous 1-on-1 observation." }
+        { min: 0, max: 0, severity: "No Lifetime Risk", interpretation: "No lifetime suicidal ideation or behavior reported." },
+        { min: 1, max: 2, severity: "Low Lifetime Risk", interpretation: "Passive suicidal ideation reported. Provide safety plan and routine outpatient follow-up." },
+        { min: 3, max: 5, severity: "Moderate Lifetime Risk", interpretation: "Active suicidal ideation with method or intent. Initiate urgent safety planning and psychiatric evaluation." },
+        { min: 6, max: 10, severity: "High Lifetime Risk - Emergency", interpretation: "Active suicidal intent with plan or recent suicidal behavior. Immediate emergency psychiatric admission and continuous 1-on-1 observation." }
+      ]
+    }
+  },
+  {
+    id: "cssrs-acute",
+    name: "C-SSRS (Acute / Since Last Visit)",
+    fullName: "Columbia-Suicide Severity Rating Scale — Since Last Visit (Acute Risk)",
+    category: "suicide",
+    description: "Acute screening tool assessing suicidal ideation, intent, and behavior since the patient's last clinical contact or visit (ER / Inpatient protocol).",
+    estimatedTime: "3 min",
+    options: [
+      { label: "0 - No", score: 0 },
+      { label: "1 - Yes", score: 1 }
+    ],
+    questions: [
+      { text: "1. Wish to be Dead (Since Last Visit): Have you wished you were dead or wished you could go to sleep and not wake up?" },
+      { text: "2. Active Suicidal Thoughts (Since Last Visit): Have you actually had any thoughts of killing yourself?" },
+      { text: "3. Active Suicidal Thoughts with Method (Since Last Visit): Have you been thinking about how you might kill yourself?", dependsOn: { question: 1, value: 1 } },
+      { text: "4. Suicidal Intent (Since Last Visit): Have you had these thoughts and had some intention of acting on them?", dependsOn: { question: 1, value: 1 } },
+      { text: "5. Intent with Specific Plan (Since Last Visit): Have you started to work out or worked out the details of how to kill yourself?", dependsOn: { question: 1, value: 1 } },
+      { text: "6. Actual Attempt Since Last Visit: Have you made a suicide attempt since your last visit?" },
+      { text: "7. Interrupted Attempt Since Last Visit: Has anyone stopped you when you were about to end your life since last visit?" },
+      { text: "8. Aborted Attempt Since Last Visit: Have you stopped yourself from a suicide attempt since last visit?" },
+      { text: "9. Preparatory Acts Since Last Visit: Have you taken any steps or prepared to end your life since last visit?" },
+      { text: "10. Non-Suicidal Self-Injurious Behavior (NSSI) Since Last Visit: Have you engaged in self-harm without suicidal intent since last visit?" }
+    ],
+    scoring: {
+      type: "cssrs",
+      maxScore: 10,
+      ranges: [
+        { min: 0, max: 0, severity: "No Acute Risk", interpretation: "No suicidal ideation or behavior since last clinical visit." },
+        { min: 1, max: 2, severity: "Low Acute Risk", interpretation: "Passive suicidal ideation since last visit. Re-evaluate outpatient safety plan." },
+        { min: 3, max: 5, severity: "Moderate Acute Risk", interpretation: "Active suicidal ideation since last visit. Immediate psychiatric consultation and line-of-sight observation." },
+        { min: 6, max: 10, severity: "High Acute Risk - Emergency", interpretation: "Acute suicidal behavior or intent with plan since last visit. Immediate emergency room / 1-on-1 constant observation and emergency admission." }
       ]
     }
   },
