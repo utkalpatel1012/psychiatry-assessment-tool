@@ -1,5 +1,244 @@
 const scales = [
   {
+    id: "panss",
+    name: "PANSS",
+    fullName: "Positive and Negative Syndrome Scale",
+    category: "psychosis",
+    description: "30-item clinician-rated instrument for detailed operationalized assessment of schizophrenia symptoms across Positive, Negative, and General Psychopathology subscales.",
+    estimatedTime: "30-45 min",
+    options: [
+      { label: "1 - Absent", score: 1 },
+      { label: "2 - Minimal", score: 2 },
+      { label: "3 - Mild", score: 3 },
+      { label: "4 - Moderate", score: 4 },
+      { label: "5 - Moderate Severe", score: 5 },
+      { label: "6 - Severe", score: 6 },
+      { label: "7 - Extreme", score: 7 }
+    ],
+    subscales: [
+      { id: "positive", name: "Positive Scale (P1-P7)", min: 7, max: 49 },
+      { id: "negative", name: "Negative Scale (N1-N7)", min: 7, max: 49 },
+      { id: "general", name: "General Psychopathology (G1-G16)", min: 16, max: 112 }
+    ],
+    questions: [
+      { text: "P1. Delusions: Beliefs unsupported by reality.", subscale: "positive" },
+      { text: "P2. Conceptual Disorganization: Disorganized thought processes.", subscale: "positive" },
+      { text: "P3. Hallucinatory Behavior: Perceptual experiences without external stimuli.", subscale: "positive" },
+      { text: "P4. Excitement: Hyper-reactivity, motor agitation.", subscale: "positive" },
+      { text: "P5. Grandiosity: Exaggerated self-opinion or inflated power.", subscale: "positive" },
+      { text: "P6. Suspiciousness/Persecution: Unfounded beliefs that others mean harm.", subscale: "positive" },
+      { text: "P7. Hostility: Animosity, anger, or verbal/physical aggression.", subscale: "positive" },
+      { text: "N1. Blunted Affect: Reduced emotional expressiveness and responsiveness.", subscale: "negative" },
+      { text: "N2. Emotional Withdrawal: Lack of interest or involvement in social interactions.", subscale: "negative" },
+      { text: "N3. Poor Rapport: Lack of empathy, interpersonal openness, or closeness.", subscale: "negative" },
+      { text: "N4. Passive/Apathetic Social Withdrawal: Diminished interest in social life.", subscale: "negative" },
+      { text: "N5. Difficulty in Abstract Thinking: Impairment in abstract reasoning.", subscale: "negative" },
+      { text: "N6. Lack of Spontaneity and Flow of Conversation: Reduced fluid dialogue.", subscale: "negative" },
+      { text: "N7. Stereotyped Thinking: Repetitive, rigid, or restricted thought content.", subscale: "negative" },
+      { text: "G1. Somatic Concern: Excessive concern over bodily health.", subscale: "general" },
+      { text: "G2. Anxiety: Nervousness, worry, or apprehension.", subscale: "general" },
+      { text: "G3. Guilt Feelings: Self-blame or remorse for real/imagined misdeeds.", subscale: "general" },
+      { text: "G4. Tension: Overt manifestations of nervous tension.", subscale: "general" },
+      { text: "G5. Mannerisms and Posturing: Odd or unnatural motor behavior.", subscale: "general" },
+      { text: "G6. Depression: Subjective despondency, sadness, or hopelessness.", subscale: "general" },
+      { text: "G7. Motor Retardation: Slowing of movement, speech, or reactivity.", subscale: "general" },
+      { text: "G8. Uncooperativeness: Active refusal or resistance during evaluation.", subscale: "general" },
+      { text: "G9. Unusual Thought Content: Absurd, bizarre, or idiosyncratic ideas.", subscale: "general" },
+      { text: "G10. Disorientation: Confusion regarding time, place, or person.", subscale: "general" },
+      { text: "G11. Poor Attention: Distractibility or impaired focus.", subscale: "general" },
+      { text: "G12. Lack of Judgment and Insight: Unawareness of psychiatric condition.", subscale: "general" },
+      { text: "G13. Disturbance of Volition: Impairment in initiation and drive.", subscale: "general" },
+      { text: "G14. Poor Impulse Control: Uncontrolled expression of drives and urges.", subscale: "general" },
+      { text: "G15. Preoccupation: Absorption with internal thoughts or worries.", subscale: "general" },
+      { text: "G16. Active Social Avoidance: Unwillingness to engage with others due to fear/paranoid ideas.", subscale: "general" }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 210,
+      ranges: [
+        { min: 30, max: 58, severity: "Mild / Remission", interpretation: "Score 30-58: Minimal to mild illness. Maintain low-dose antipsychotic regimen and psychosocial support." },
+        { min: 59, max: 75, severity: "Moderate Psychosis", interpretation: "Score 59-75: Moderate symptom severity. Adjust antipsychotic therapy and address specific subscale elevations." },
+        { min: 76, max: 95, severity: "Marked Psychosis", interpretation: "Score 76-95: Marked symptom severity. Optimize medication dosing, consider Clozapine if treatment-resistant." },
+        { min: 96, max: 210, severity: "Severe Psychosis", interpretation: "Score 96+: Severe psychotic exacerbation. Inpatient stabilization, intensive nursing supervision, and emergency pharmacotherapy." }
+      ]
+    }
+  },
+  {
+    id: "ymrs",
+    name: "YMRS",
+    fullName: "Young Mania Rating Scale",
+    category: "mood",
+    description: "11-item clinician-rated instrument assessing core manic symptoms based on patient report and behavioral observation during the interview.",
+    estimatedTime: "15-20 min",
+    questions: [
+      {
+        text: "1. Elevated Mood",
+        options: [
+          { label: "0 - Absent", score: 0 },
+          { label: "1 - Mildly or possibly elevated, optimistic, self-confident", score: 1 },
+          { label: "2 - Definite elevation; optimistic, self-confident; cheerful", score: 2 },
+          { label: "3 - Elevated, inappropriate to context; humorous", score: 3 },
+          { label: "4 - Euphoric; inappropriate laughter; singing", score: 4 }
+        ]
+      },
+      {
+        text: "2. Increased Motor Activity-Energy",
+        options: [
+          { label: "0 - Absent", score: 0 },
+          { label: "1 - Subjectively increased", score: 1 },
+          { label: "2 - Animated; gestures increased", score: 2 },
+          { label: "3 - Excessive energy; hyperactive at times; restless", score: 3 },
+          { label: "4 - Motor excitement; continuous hyperactivity", score: 4 }
+        ]
+      },
+      {
+        text: "3. Sexual Interest",
+        options: [
+          { label: "0 - Normal; not increased", score: 0 },
+          { label: "1 - Mildly or possibly increased", score: 1 },
+          { label: "2 - Definite subjective increase on questioning", score: 2 },
+          { label: "3 - Spontaneous sexual topics; hypersexual behavior", score: 3 },
+          { label: "4 - Overt sexual acts towards staff/patients", score: 4 }
+        ]
+      },
+      {
+        text: "4. Sleep",
+        options: [
+          { label: "0 - Reports no decrease in sleep", score: 0 },
+          { label: "1 - Sleeping less than normal up to 1 hour", score: 1 },
+          { label: "2 - Sleeping 1 to 2 hours less than normal", score: 2 },
+          { label: "3 - Sleeping > 2 hours less than normal", score: 3 },
+          { label: "4 - Denies need for sleep", score: 4 }
+        ]
+      },
+      {
+        text: "5. Irritability (Double weighted)",
+        options: [
+          { label: "0 - Absent", score: 0 },
+          { label: "2 - Subjectively increased; subjective tension", score: 2 },
+          { label: "4 - Irritable at times during interview", score: 4 },
+          { label: "6 - Frequently irritable; hostile / abrupt", score: 6 },
+          { label: "8 - Hostile, uncooperative; interview impossible", score: 8 }
+        ]
+      },
+      {
+        text: "6. Speech (Rate and Amount - Double weighted)",
+        options: [
+          { label: "0 - No increase", score: 0 },
+          { label: "2 - Talkative at times; increased rate", score: 2 },
+          { label: "4 - Rapid rate; loquacious; difficult to interrupt", score: 4 },
+          { label: "6 - Push of speech; continuous stream of words", score: 6 },
+          { label: "8 - Pressure of speech; incoherent; impossible to interrupt", score: 8 }
+        ]
+      },
+      {
+        text: "7. Language-Thought Disorder",
+        options: [
+          { label: "0 - Absent", score: 0 },
+          { label: "1 - Circumstantial; distractible; loses train of thought", score: 1 },
+          { label: "2 - Flight of ideas; tangentiality; rhyming/punning", score: 2 },
+          { label: "3 - Incoherent; clang associations", score: 3 },
+          { label: "4 - Neologisms; word salad", score: 4 }
+        ]
+      },
+      {
+        text: "8. Thought Content (Double weighted)",
+        options: [
+          { label: "0 - Normal", score: 0 },
+          { label: "2 - Special plans or interests; grandiosity", score: 2 },
+          { label: "4 - Special powers, connection with higher beings", score: 4 },
+          { label: "6 - Delusions of grandeur / persecution", score: 6 },
+          { label: "8 - Delusional ideas dominate; hallucinations", score: 8 }
+        ]
+      },
+      {
+        text: "9. Disruptive-Aggressive Behavior (Double weighted)",
+        options: [
+          { label: "0 - Absent", score: 0 },
+          { label: "2 - Loud; sarcastic; loud voice at times", score: 2 },
+          { label: "4 - Demanding; loud; argumentative", score: 4 },
+          { label: "6 - Threatening; destructive; destructive of property", score: 6 },
+          { label: "8 - Physical assault; violent towards others", score: 8 }
+        ]
+      },
+      {
+        text: "10. Appearance",
+        options: [
+          { label: "0 - Appropriate dress and grooming", score: 0 },
+          { label: "1 - Slightly unkempt or over-dressed", score: 1 },
+          { label: "2 - Moderately unkempt; bright colors; garish", score: 2 },
+          { label: "3 - Disheveled; inappropriate clothing", score: 3 },
+          { label: "4 - Completely unkempt; bizarre decorations", score: 4 }
+        ]
+      },
+      {
+        text: "11. Insight",
+        options: [
+          { label: "0 - Full insight; admits illness and need for treatment", score: 0 },
+          { label: "1 - Admits change in mood, but denies illness", score: 1 },
+          { label: "2 - Admits illness, but attributes to external cause", score: 2 },
+          { label: "3 - Admits change in behavior, denies mental illness", score: 3 },
+          { label: "4 - Complete denial of any change or illness", score: 4 }
+        ]
+      }
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 60,
+      ranges: [
+        { min: 0, max: 12, severity: "Euthymic / Minimal Symptoms", interpretation: "Score <= 12: Remission / Euthymia. Continue mood stabilizer maintenance therapy (Lithium / Valproate)." },
+        { min: 13, max: 19, severity: "Hypomania / Mild Mania", interpretation: "Score 13-19: Hypomania. Optimize primary mood stabilizer dose; check serum levels." },
+        { min: 20, max: 25, severity: "Moderate Mania", interpretation: "Score 20-25: Moderate manic episode. Add atypical antipsychotic (Olanzapine/Risperidone/Aripiprazole)." },
+        { min: 26, max: 60, severity: "Severe Mania", interpretation: "Score >= 26: Severe acute mania. Inpatient admission, combination therapy (Lithium/Valproate + Antipsychotic + Benzodiazepine)." }
+      ]
+    }
+  },
+  {
+    id: "hamd",
+    name: "HAM-D (17)",
+    fullName: "Hamilton Depression Rating Scale (17-Item)",
+    category: "mood",
+    description: "Standard 17-item clinician-rated instrument for assessing depression severity in adults.",
+    estimatedTime: "15-20 min",
+    options: [
+      { label: "0 - Absent", score: 0 },
+      { label: "1 - Mild / Doubtful", score: 1 },
+      { label: "2 - Moderate", score: 2 },
+      { label: "3 - Severe", score: 3 },
+      { label: "4 - Extremely Severe", score: 4 }
+    ],
+    questions: [
+      "1. Depressed Mood (Gloomy, helpless, hopeless, worthless)",
+      "2. Feelings of Guilt (Self-reproach, feels he has let people down)",
+      "3. Suicide (Feels life is not worth living, wishes to be dead, suicidal gestures)",
+      "4. Insomnia - Early (Difficulty falling asleep)",
+      "5. Insomnia - Middle (Waking during the night)",
+      "6. Insomnia - Late (Early morning awakening)",
+      "7. Work and Activities (Loss of interest, decreased productivity)",
+      "8. Retardation (Slowness of thought and speech, impaired concentration)",
+      "9. Agitation (Restlessness, fidgeting, hand-wringing)",
+      "10. Anxiety - Psychic (Subjective tension, worry, irritability)",
+      "11. Anxiety - Somatic (GI, cardiovascular, respiratory symptoms of anxiety)",
+      "12. Somatic Symptoms - GI (Loss of appetite, heavy feeling in abdomen)",
+      "13. Somatic Symptoms - General (Heaviness in limbs, backaches, muscle aches)",
+      "14. Genital Symptoms (Loss of libido, menstrual disturbances)",
+      "15. Hypochondriasis (Self-absorption in physical symptoms)",
+      "16. Loss of Weight (Rated by history or actual weight loss)",
+      "17. Insight (Acknowledges being depressed and ill)"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 52,
+      ranges: [
+        { min: 0, max: 7, severity: "Normal / Remission", interpretation: "Score 0-7: Normal / Remission. No significant depressive symptoms." },
+        { min: 8, max: 13, severity: "Mild Depression", interpretation: "Score 8-13: Mild depression. Psychoeducation, supportive therapy, consider SSRI." },
+        { min: 14, max: 18, severity: "Moderate Depression", interpretation: "Score 14-18: Moderate depression. Initiate SSRI/SNRI antidepressant and CBT." },
+        { min: 19, max: 22, severity: "Severe Depression", interpretation: "Score 19-22: Severe depression. Pharmacotherapy with dual-action agents, consider augmentation." },
+        { min: 23, max: 52, severity: "Very Severe Depression", interpretation: "Score 23+: Very severe depression. Evaluate for inpatient admission, suicide safety, and ECT." }
+      ]
+    }
+  },
+  {
     id: "hama",
     name: "HAM-A",
     fullName: "Hamilton Anxiety Rating Scale",
@@ -94,6 +333,60 @@ const scales = [
         { min: 37, max: 53, severity: "Mild Symptom Severity", interpretation: "Score 37-53: Mild symptoms. Low-dose antipsychotic maintenance and psychosocial rehabilitation." },
         { min: 54, max: 70, severity: "Moderate Psychosis", interpretation: "Score 54-70: Moderate symptom severity. Optimize antipsychotic regimen and monitor for side effects." },
         { min: 71, max: 168, severity: "Severe Psychosis / Crisis", interpretation: "Score 71+: Severe psychotic exacerbation. Urgent inpatient psychiatric stabilization and high-potency antipsychotic intervention." }
+      ]
+    }
+  },
+  {
+    id: "mmse",
+    name: "MMSE",
+    fullName: "Mini-Mental State Examination",
+    category: "cognitive",
+    description: "30-point questionnaire used extensively in clinical practice to screen for cognitive impairment and dementia.",
+    estimatedTime: "10 min",
+    options: [
+      { label: "0 - Incorrect", score: 0 },
+      { label: "1 - Correct", score: 1 }
+    ],
+    questions: [
+      "1. Orientation - Year",
+      "2. Orientation - Season",
+      "3. Orientation - Date",
+      "4. Orientation - Day of week",
+      "5. Orientation - Month",
+      "6. Orientation - State / Region",
+      "7. Orientation - Country",
+      "8. Orientation - Town / City",
+      "9. Orientation - Hospital / Clinic",
+      "10. Orientation - Floor / Ward",
+      "11. Registration - Word 1 ('Apple')",
+      "12. Registration - Word 2 ('Penny')",
+      "13. Registration - Word 3 ('Table')",
+      "14. Attention/Calculation - Serial 7s (100-7 = 93)",
+      "15. Attention/Calculation - Serial 7s (93-7 = 86)",
+      "16. Attention/Calculation - Serial 7s (86-7 = 79)",
+      "17. Attention/Calculation - Serial 7s (79-7 = 72)",
+      "18. Attention/Calculation - Serial 7s (72-7 = 65)",
+      "19. Recall - Word 1 ('Apple')",
+      "20. Recall - Word 2 ('Penny')",
+      "21. Recall - Word 3 ('Table')",
+      "22. Language - Name object 1 (Pencil)",
+      "23. Language - Name object 2 (Watch)",
+      "24. Language - Repeat phrase ('No ifs, ands, or buts')",
+      "25. Language - Follow 3-stage command (Take paper in right hand)",
+      "26. Language - Follow 3-stage command (Fold paper in half)",
+      "27. Language - Follow 3-stage command (Put paper on floor)",
+      "28. Language - Read and obey ('Close your eyes')",
+      "29. Language - Write a complete sentence",
+      "30. Language - Copy overlapping pentagons design"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 30,
+      ranges: [
+        { min: 24, max: 30, severity: "Normal Cognition", interpretation: "Score 24-30: Normal cognitive function." },
+        { min: 19, max: 23, severity: "Mild Cognitive Impairment", interpretation: "Score 19-23: Mild cognitive impairment. Investigate reversible causes (B12, TSH, MRI brain)." },
+        { min: 10, max: 18, severity: "Moderate Dementia", interpretation: "Score 10-18: Moderate cognitive impairment / dementia. Consider cholinesterase inhibitors." },
+        { min: 0, max: 9, severity: "Severe Dementia", interpretation: "Score 0-9: Severe dementia. High dependency care required." }
       ]
     }
   },
@@ -911,6 +1204,112 @@ const scales = [
         { min: 1, max: 5, severity: "Mild Catatonia", interpretation: "Score 1-5: Positive catatonia screening (>=2 items 1-14). Perform Lorazepam Challenge Test (1-2 mg IV/IM)." },
         { min: 6, max: 15, severity: "Moderate Catatonia", interpretation: "Score 6-15: Moderate catatonia. Initiate Lorazepam 6-12 mg/day in divided doses." },
         { min: 16, max: 69, severity: "Severe / Malignant Catatonia", interpretation: "Score 16+: Severe catatonia. Risk of Malignant Catatonia / NMS. Prepare for ECT (Electroconvulsive Therapy)." }
+      ]
+    }
+  },
+  {
+    id: "cssrs",
+    name: "C-SSRS",
+    fullName: "Columbia-Suicide Severity Rating Scale",
+    category: "suicide",
+    description: "Standardized clinician-administered suicide risk assessment tool evaluating suicidal ideation, intent, and suicidal behaviors.",
+    estimatedTime: "5 min",
+    options: [
+      { label: "0 - No", score: 0 },
+      { label: "1 - Yes", score: 1 }
+    ],
+    questions: [
+      { text: "1. Wish to be Dead: Have you wished you were dead or wished you could go to sleep and not wake up?" },
+      { text: "2. Suicidal Thoughts: Have you actually had any thoughts of killing yourself?" },
+      { text: "3. Suicidal Thoughts with Method: Have you been thinking about how you might kill yourself?", dependsOn: { question: 1, value: 1 } },
+      { text: "4. Suicidal Intent: Have you had these thoughts and had some intention of acting on them?", dependsOn: { question: 1, value: 1 } },
+      { text: "5. Intent with Specific Plan: Have you started to work out or worked out the details of how to kill yourself?", dependsOn: { question: 1, value: 1 } },
+      { text: "6. Actual Attempt: Have you ever done anything, started to do anything, or prepared to do anything to end your life?" },
+      { text: "7. Interrupted Attempt: Has there been a time when you were about to do something to end your life but someone stopped you?" },
+      { text: "8. Aborted Attempt: Has there been a time when you were about to do something to end your life but you stopped yourself?" },
+      { text: "9. Preparatory Acts: Have you taken any steps towards an attempt (e.g. buying pills, writing a note)?" },
+      { text: "10. Suicidal Behavior in last 3 months: Have you engaged in any suicidal behavior in the past 3 months?" }
+    ],
+    scoring: {
+      type: "cssrs",
+      maxScore: 10,
+      ranges: [
+        { min: 0, max: 0, severity: "No Risk", interpretation: "No suicidal ideation or behavior reported." },
+        { min: 1, max: 2, severity: "Low Risk", interpretation: "Passive suicidal ideation reported. Provide safety plan and routine outpatient follow-up." },
+        { min: 3, max: 5, severity: "Moderate Risk", interpretation: "Active suicidal ideation with method or intent. Initiate urgent safety planning and psychiatric evaluation." },
+        { min: 6, max: 10, severity: "High Risk - Emergency", interpretation: "Active suicidal intent with plan or recent suicidal behavior. Immediate emergency psychiatric admission and continuous 1-on-1 observation." }
+      ]
+    }
+  },
+  {
+    id: "gad7",
+    name: "GAD-7",
+    fullName: "Generalized Anxiety Disorder (7-Item)",
+    category: "anxiety",
+    description: "7-item self-report questionnaire for screening and assessing severity of generalized anxiety disorder.",
+    estimatedTime: "2-3 min",
+    options: [
+      { label: "0 - Not at all", score: 0 },
+      { label: "1 - Several days", score: 1 },
+      { label: "2 - More than half the days", score: 2 },
+      { label: "3 - Nearly every day", score: 3 }
+    ],
+    questions: [
+      "1. Feeling nervous, anxious, or on edge",
+      "2. Not being able to stop or control worrying",
+      "3. Worrying too much about different things",
+      "4. Trouble relaxing",
+      "5. Being so restless that it is hard to sit still",
+      "6. Becoming easily annoyed or irritable",
+      "7. Feeling afraid, as if something awful might happen"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 21,
+      ranges: [
+        { min: 0, max: 4, severity: "Minimal Anxiety", interpretation: "Score 0-4: Minimal anxiety. No active treatment indicated." },
+        { min: 5, max: 9, severity: "Mild Anxiety", interpretation: "Score 5-9: Mild anxiety. Psychoeducation and watchful waiting." },
+        { min: 10, max: 14, severity: "Moderate Anxiety", interpretation: "Score 10-14: Moderate anxiety. Consider CBT and/or SSRI/SNRI medication." },
+        { min: 15, max: 21, severity: "Severe Anxiety", interpretation: "Score 15-21: Severe anxiety. Initiate pharmacotherapy and psychotherapy." }
+      ]
+    }
+  },
+  {
+    id: "aims",
+    name: "AIMS",
+    fullName: "Abnormal Involuntary Movement Scale",
+    category: "catatonia",
+    description: "12-item clinician-rated scale to assess severity of tardive dyskinesia and extrapyramidal involuntary movements.",
+    estimatedTime: "5-10 min",
+    options: [
+      { label: "0 - None", score: 0 },
+      { label: "1 - Minimal / Normal", score: 1 },
+      { label: "2 - Mild", score: 2 },
+      { label: "3 - Moderate", score: 3 },
+      { label: "4 - Severe", score: 4 }
+    ],
+    questions: [
+      "1. Facial and Oral Movements: Muscles of facial expression (e.g., brow, eyes, cheeks)",
+      "2. Facial and Oral Movements: Lips and perioral area (e.g., puckering, pouting, smacking)",
+      "3. Facial and Oral Movements: Jaw (e.g., biting, clenching, chewing, lateral movement)",
+      "4. Facial and Oral Movements: Tongue (e.g., darting, tremor, protrusion)",
+      "5. Extremity Movements: Upper extremities (arms, hands, fingers)",
+      "6. Extremity Movements: Lower extremities (legs, feet, toes)",
+      "7. Trunk Movements: Neck, shoulders, hips (e.g., rocking, twisting, pelvic gyrations)",
+      "8. Global Judgment: Severity of abnormal movements overall",
+      "9. Global Judgment: Incapacity due to abnormal movements",
+      "10. Global Judgment: Patient's awareness of movements and distress",
+      "11. Dental Status: Current dental condition / dentures",
+      "12. Dental Status: Does patient usually wear dentures?"
+    ],
+    scoring: {
+      type: "total",
+      maxScore: 48,
+      ranges: [
+        { min: 0, max: 1, severity: "No Tardive Dyskinesia", interpretation: "Score 0-1: No evidence of tardive dyskinesia." },
+        { min: 2, max: 7, severity: "Mild Tardive Dyskinesia", interpretation: "Score 2-7: Mild abnormal movements in 2 areas or moderate in 1 area. Monitor closely, evaluate VMAT2 inhibitor (Valbenazine/Deutetrabenazine)." },
+        { min: 8, max: 15, severity: "Moderate Tardive Dyskinesia", interpretation: "Score 8-15: Moderate tardive dyskinesia. Reduce or switch offending antipsychotic; initiate VMAT2 inhibitor." },
+        { min: 16, max: 48, severity: "Severe Tardive Dyskinesia", interpretation: "Score 16+: Severe tardive dyskinesia. Urgent neurological/psychiatric review, VMAT2 inhibitor therapy." }
       ]
     }
   }
