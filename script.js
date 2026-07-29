@@ -19,8 +19,6 @@ const historyBtn = document.getElementById('history-btn');
 const historyModal = document.getElementById('history-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const recordsContainer = document.getElementById('records-container');
-const googleAuthContainer = document.getElementById('google-auth-container');
-const googleWelcomeBanner = document.getElementById('google-welcome-banner');
 
 const activePatientNameEl = document.getElementById('active-patient-name');
 const activePatientMRNEl = document.getElementById('active-patient-mrn');
@@ -34,7 +32,6 @@ const questionCounterText = document.getElementById('question-counter-text');
 const questionTextEl = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options-container');
 const btnPrev = document.getElementById('btn-prev');
-const btnNext = document.getElementById('btn-next');
 const btnCancelAssessment = document.getElementById('btn-cancel-assessment');
 
 // Results View Elements
@@ -55,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBentoGrid();
   setupEventListeners();
   setupKeyboardShortcuts();
-  setupGoogleAuth();
 });
 
 function updatePatientUI() {
@@ -393,52 +389,6 @@ function renderDetailedAnswers() {
   answersAccordion.innerHTML = html;
 }
 
-function setupGoogleAuth() {
-  if (typeof GoogleDriveService === 'undefined') return;
-
-  const triggerDriveAuth = () => {
-    GoogleDriveService.requestDrivePermission();
-  };
-
-  GoogleDriveService.init((user, isAuthenticated) => {
-    if (isAuthenticated && user) {
-      if (googleWelcomeBanner) googleWelcomeBanner.style.display = 'none';
-      if (googleAuthContainer) {
-        googleAuthContainer.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 0.4rem; background: rgba(14, 165, 233, 0.1); padding: 0.3rem 0.75rem; border-radius: var(--radius-md); border: 1px solid rgba(14, 165, 233, 0.3);">
-            <img src="${user.picture || 'https://lh3.googleusercontent.com/a/default-user'}" style="width: 22px; height: 22px; border-radius: 50%;">
-            <span style="font-size: 0.78rem; font-weight: 600; color: var(--accent-cyan);">${user.name.split(' ')[0]}</span>
-            <i class="fab fa-google-drive" style="color: var(--accent-cyan);" title="Google Drive Auto-Sync Active"></i>
-            <button id="google-logout-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: 0.2rem;" title="Sign out">
-              <i class="fas fa-sign-out-alt"></i>
-            </button>
-          </div>
-        `;
-        document.getElementById('google-logout-btn')?.addEventListener('click', () => {
-          GoogleDriveService.signOut();
-        });
-      }
-    } else {
-      if (googleWelcomeBanner) googleWelcomeBanner.style.display = 'flex';
-      if (googleAuthContainer) {
-        googleAuthContainer.innerHTML = `
-          <button id="google-login-btn" class="google-btn-native">
-            <svg class="google-logo-svg" width="16" height="16" viewBox="0 0 18 18">
-              <path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/>
-              <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.97 13.06C2.45 16.02 5.48 18 9 18z"/>
-              <path fill="#FBBC05" d="M3.87 10.8c-.18-.53-.28-1.1-.28-1.8s.1-1.27.28-1.8L.97 4.94C.35 6.16 0 7.54 0 9s.35 2.84.97 4.06l2.9-2.26z"/>
-              <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 1.98.97 4.94l2.9 2.26C4.59 5.05 6.62 3.58 9 3.58z"/>
-            </svg>
-            <span>Drive Sync</span>
-          </button>
-        `;
-        document.getElementById('google-login-btn')?.addEventListener('click', triggerDriveAuth);
-      }
-      document.getElementById('google-banner-login-btn')?.addEventListener('click', triggerDriveAuth);
-    }
-  });
-}
-
 function setupEventListeners() {
   // Category Tag Filters
   document.querySelectorAll('.category-tag').forEach(tag => {
@@ -510,7 +460,7 @@ function setupEventListeners() {
     });
   }
 
-  // Save Patient Record
+  // Save Patient Record in Browser Local Storage
   if (btnSaveRecord) {
     btnSaveRecord.addEventListener('click', () => {
       if (typeof StorageService !== 'undefined') {
@@ -522,9 +472,7 @@ function setupEventListeners() {
           severity: window._lastSeverity
         });
 
-        if (typeof GoogleDriveService !== 'undefined') {
-          GoogleDriveService.saveRecordToDrive(record);
-        }
+        alert(`Evaluation record for ${activePatientName} saved permanently in your browser local storage!`);
       }
     });
   }
@@ -553,14 +501,15 @@ function renderHistoryModal() {
   }
 
   recordsContainer.innerHTML = records.map(r => `
-    <div class="record-item">
+    <div style="padding: 0.85rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <div style="font-weight: 700; font-family: var(--font-heading); color: var(--accent-cyan);">${r.patientId}</div>
-        <div style="font-size: 0.8rem; color: var(--text-secondary);">${r.scaleName} — ${r.dateFormatted}</div>
+        <div style="font-weight: 700; font-family: var(--font-heading); color: var(--accent-cyan); font-size: 0.95rem;">${r.patientId}</div>
+        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-top: 0.1rem;">${r.scaleName}</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);"><i class="far fa-clock"></i> ${r.dateFormatted}</div>
       </div>
-      <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span class="severity-pill" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;">${r.severity} (Score: ${r.score})</span>
-        <button onclick="deleteRecordItem('${r.id}')" style="background: none; border: none; color: var(--accent-rose); margin-left: 0.5rem; cursor: pointer;">
+        <button onclick="deleteRecordItem('${r.id}')" style="background: none; border: none; color: var(--accent-rose); cursor: pointer; padding: 0.3rem;" title="Delete record">
           <i class="fas fa-trash"></i>
         </button>
       </div>
@@ -569,8 +518,17 @@ function renderHistoryModal() {
 }
 
 window.deleteRecordItem = function(id) {
-  if (typeof StorageService !== 'undefined') StorageService.deleteRecord(id);
-  renderHistoryModal();
+  if (confirm("Delete this patient evaluation record from local storage?")) {
+    if (typeof StorageService !== 'undefined') StorageService.deleteRecord(id);
+    renderHistoryModal();
+  }
+};
+
+window.clearAllPatientRecords = function() {
+  if (confirm("Are you sure you want to clear ALL patient evaluation records from your browser?")) {
+    if (typeof StorageService !== 'undefined') StorageService.clearAllRecords();
+    renderHistoryModal();
+  }
 };
 
 function setupKeyboardShortcuts() {

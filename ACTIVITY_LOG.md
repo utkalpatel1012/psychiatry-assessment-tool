@@ -89,6 +89,12 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - Resolved `Error 401: invalid_client` by adding an interactive Client ID prompt when connecting Google Account.
 - Configured local storage fallback and graceful error catching for domain-level Google OAuth authentication.
 
+### Phase 8: Migration to Permanent Local Browser Storage
+- Removed Google Drive sync options, buttons, and external OAuth scripts as requested by user.
+- Enforced permanent browser `localStorage` storage for all completed patient evaluations under `psychiatry_assessment_patient_records`.
+- Every saved record includes full timestamp, date, time, active Patient Name, MRN/UHID, Scale Name, Score, Severity, and detailed answers.
+- Added 1-click **Export Backup (.json)** and **Import Backup** feature for easy local data migration.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers

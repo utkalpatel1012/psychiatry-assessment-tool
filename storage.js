@@ -6,7 +6,7 @@ const StorageService = {
       const data = localStorage.getItem(STORAGE_KEY);
       return data ? JSON.parse(data) : [];
     } catch (e) {
-      console.error('Error reading patient records:', e);
+      console.error('Error reading local patient records:', e);
       return [];
     }
   },
@@ -14,10 +14,11 @@ const StorageService = {
   saveRecord(record) {
     try {
       const records = this.getRecords();
+      const now = new Date();
       const newRecord = {
         id: 'REC_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-        timestamp: new Date().toISOString(),
-        dateFormatted: new Date().toLocaleDateString('en-US', {
+        timestamp: now.toISOString(),
+        dateFormatted: now.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -28,15 +29,9 @@ const StorageService = {
       };
       records.unshift(newRecord);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-
-      // Trigger Google Drive Auto-Sync if user is authenticated
-      if (typeof GoogleDriveService !== 'undefined') {
-        GoogleDriveService.saveRecordToDrive(newRecord);
-      }
-
       return newRecord;
     } catch (e) {
-      console.error('Error saving patient record:', e);
+      console.error('Error saving local patient record:', e);
       return null;
     }
   },
@@ -49,6 +44,15 @@ const StorageService = {
       return true;
     } catch (e) {
       console.error('Error deleting record:', e);
+      return false;
+    }
+  },
+
+  clearAllRecords() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      return true;
+    } catch (e) {
       return false;
     }
   },
@@ -68,7 +72,7 @@ const StorageService = {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `psychiatry_records_backup_${new Date().toISOString().slice(0, 10)}.json`);
+    downloadAnchor.setAttribute("download", `psychiatry_patient_records_${new Date().toISOString().slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
