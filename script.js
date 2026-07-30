@@ -193,12 +193,36 @@ function showQuestion() {
   if (progressBarFill) progressBarFill.style.width = `${pct}%`;
 
   if (optionsContainer) {
-    optionsContainer.innerHTML = options.map((opt, idx) => `
-      <button class="option-btn" data-score="${opt.score}">
-        <span class="option-shortcut-badge">${idx}</span>
-        ${opt.label}
-      </button>
-    `).join('');
+    optionsContainer.innerHTML = options.map((opt, idx) => {
+      let labelText = opt.label;
+      let descText = opt.description || opt.desc || '';
+      
+      // Extract title and operational description if formatted with colon or dash
+      if (!descText && labelText.includes(' - ')) {
+        const parts = labelText.split(' - ');
+        if (parts.length > 2) {
+          labelText = parts[0] + ' - ' + parts[1];
+          descText = parts.slice(2).join(' - ');
+        } else if (parts.length === 2 && parts[1].length > 40) {
+          labelText = parts[0];
+          descText = parts[1];
+        }
+      } else if (!descText && labelText.includes(': ')) {
+        const parts = labelText.split(': ');
+        labelText = parts[0];
+        descText = parts.slice(1).join(': ');
+      }
+
+      return `
+        <button class="option-btn" data-score="${opt.score}">
+          <span class="option-shortcut-badge">${idx}</span>
+          <div class="option-content-box">
+            <div class="option-title-text">${labelText}</div>
+            ${descText ? `<div class="option-desc-text">${descText}</div>` : ''}
+          </div>
+        </button>
+      `;
+    }).join('');
 
     document.querySelectorAll('.option-btn').forEach(btn => {
       btn.addEventListener('click', function () {

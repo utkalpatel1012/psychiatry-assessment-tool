@@ -95,6 +95,11 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - Every saved record includes full timestamp, date, time, active Patient Name, MRN/UHID, Scale Name, Score, Severity, and detailed answers.
 - Added 1-click **Export Backup (.json)** and **Import Backup** feature for easy local data migration.
 
+### Phase 9: Operationalized Clinical Option Descriptions & Response Criteria
+- Enriched all 22 rating scales in `scales.js` with comprehensive, operationalized clinical explanations for EVERY response option.
+- Clinicians can read explicit diagnostic criteria (frequency, intensity, behavioral manifestation, and functional impact) directly under each option before making a selection.
+- Updated option button UI (`script.js`, `app.js`, `style.css`) with clean 2-line layout (`.option-title-text` + `.option-desc-text`).
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers
