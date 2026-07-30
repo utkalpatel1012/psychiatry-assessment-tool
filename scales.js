@@ -7,13 +7,13 @@ const scales = [
     description: "30-item clinician-rated instrument for operationalized assessment of schizophrenia symptoms across Positive, Negative, and General Psychopathology subscales.",
     estimatedTime: "30-45 min",
     options: [
-      { label: "1 - Absent - Definition does not apply; symptom is completely absent or not present." },
-      { label: "2 - Minimal - Questionable or subtle pathology; may be at the upper limit of normal behavior." },
-      { label: "3 - Mild - Symptom is present and produces mild disruption or distress, but without significant impairment in daily social or occupational functioning." },
-      { label: "4 - Moderate - Symptom is clearly present and causes noticeable interference with daily social, occupational, or personal functioning." },
-      { label: "5 - Moderate Severe - Symptom exerts a serious disruption on functioning; requires close clinical supervision and medication adjustment." },
-      { label: "6 - Severe - Symptom dominates patient's life, severely limits functional capacity, and requires intensive inpatient intervention." },
-      { label: "7 - Extreme - Grossly severe manifestation; patient is completely incapacitated, unresponsive, or requires continuous emergency containment." }
+      { label: "1 - Absent - Definition does not apply; symptom is completely absent or not present.", score: 1 },
+      { label: "2 - Minimal - Questionable or subtle pathology; may be at the upper limit of normal behavior.", score: 2 },
+      { label: "3 - Mild - Symptom is present and produces mild disruption or distress, but without significant impairment in daily social or occupational functioning.", score: 3 },
+      { label: "4 - Moderate - Symptom is clearly present and causes noticeable interference with daily social, occupational, or personal functioning.", score: 4 },
+      { label: "5 - Moderate Severe - Symptom exerts a serious disruption on functioning; requires close clinical supervision and medication adjustment.", score: 5 },
+      { label: "6 - Severe - Symptom dominates patient's life, severely limits functional capacity, and requires intensive inpatient intervention.", score: 6 },
+      { label: "7 - Extreme - Grossly severe manifestation; patient is completely incapacitated, unresponsive, or requires continuous emergency containment.", score: 7 }
     ],
     subscales: [
       { id: "positive", name: "Positive Scale (P1-P7)", min: 7, max: 49 },
@@ -201,11 +201,11 @@ const scales = [
     description: "Standard 17-item clinician-rated instrument for assessing depression severity in adults.",
     estimatedTime: "15-20 min",
     options: [
-      { label: "0 - Absent - Symptom is completely absent or normal baseline." },
-      { label: "1 - Mild - Symptom is mild, occasional, or reported only on direct questioning." },
-      { label: "2 - Moderate - Symptom is clearly present, causes noticeable distress, and interferes with daily tasks." },
-      { label: "3 - Severe - Symptom is severe, continuous, or spontaneous without prompting." },
-      { label: "4 - Extremely Severe - Incapacitating severity; overwhelming manifestation." }
+      { label: "0 - Absent - Symptom is completely absent or normal baseline.", score: 0 },
+      { label: "1 - Mild - Symptom is mild, occasional, or reported only on direct questioning.", score: 1 },
+      { label: "2 - Moderate - Symptom is clearly present, causes noticeable distress, and interferes with daily tasks.", score: 2 },
+      { label: "3 - Severe - Symptom is severe, continuous, or spontaneous without prompting.", score: 3 },
+      { label: "4 - Extremely Severe - Incapacitating severity; overwhelming manifestation.", score: 4 }
     ],
     questions: [
       "1. Depressed Mood (Gloomy, helpless, hopeless, worthless)",
@@ -246,11 +246,11 @@ const scales = [
     description: "14-item clinician-rated scale to evaluate severity of anxiety symptoms, distinguishing psychic and somatic anxiety.",
     estimatedTime: "5-10 min",
     options: [
-      { label: "0 - Not Present - Symptom is completely absent." },
-      { label: "1 - Mild - Occasional or mild intensity; minor tension or worry without daily dysfunction." },
-      { label: "2 - Moderate - Symptom occurs frequently; produces noticeable distress and mild interference with work or social activities." },
-      { label: "3 - Severe - Symptom is continuous or high-intensity; causes marked distress and significant functional impairment." },
-      { label: "4 - Very Severe / Incapacitating - Extreme, continuous, or overwhelming manifestation; incapacitates daily functioning." }
+      { label: "0 - Not Present - Symptom is completely absent.", score: 0 },
+      { label: "1 - Mild - Occasional or mild intensity; minor tension or worry without daily dysfunction.", score: 1 },
+      { label: "2 - Moderate - Symptom occurs frequently; produces noticeable distress and mild interference with work or social activities.", score: 2 },
+      { label: "3 - Severe - Symptom is continuous or high-intensity; causes marked distress and significant functional impairment.", score: 3 },
+      { label: "4 - Very Severe / Incapacitating - Extreme, continuous, or overwhelming manifestation; incapacitates daily functioning.", score: 4 }
     ],
     subscales: [
       { id: "psychic", name: "Psychic Anxiety", min: 0, max: 28 },
@@ -291,13 +291,13 @@ const scales = [
     description: "24-item clinician-rated instrument assessing overall psychotic, affective, and behavioral symptoms.",
     estimatedTime: "10-15 min",
     options: [
-      { label: "1 - Not Present - Symptom is completely absent or normal baseline." },
-      { label: "2 - Very Mild - Questionable or subtle pathology; barely perceptible." },
-      { label: "3 - Mild - Present but causes minimal distress or impairment." },
-      { label: "4 - Moderate - Clearly present; causes moderate distress or noticeable functional interference." },
-      { label: "5 - Moderately Severe - Prominent symptom; noticeable disruption of social or occupational roles." },
-      { label: "6 - Severe - Severe symptom expression; requires close psychiatric supervision." },
-      { label: "7 - Extremely Severe - Incapacitating severity; requires emergency containment or intensive inpatient care." }
+      { label: "1 - Not Present - Symptom is completely absent or normal baseline.", score: 1 },
+      { label: "2 - Very Mild - Questionable or subtle pathology; barely perceptible.", score: 2 },
+      { label: "3 - Mild - Present but causes minimal distress or impairment.", score: 3 },
+      { label: "4 - Moderate - Clearly present; causes moderate distress or noticeable functional interference.", score: 4 },
+      { label: "5 - Moderately Severe - Prominent symptom; noticeable disruption of social or occupational roles.", score: 5 },
+      { label: "6 - Severe - Severe symptom expression; requires close psychiatric supervision.", score: 6 },
+      { label: "7 - Extremely Severe - Incapacitating severity; requires emergency containment or intensive inpatient care.", score: 7 }
     ],
     questions: [
       "1. Somatic Concern: Excessive concern over bodily health, fears of physical illness.",
@@ -344,8 +344,8 @@ const scales = [
     description: "30-point questionnaire used extensively in clinical practice to screen for cognitive impairment and dementia.",
     estimatedTime: "10 min",
     options: [
-      { label: "0 - Incorrect / Failed - Patient failed task or gave incorrect response." },
-      { label: "1 - Correct / Passed - Patient successfully executed task without assistance." }
+      { label: "0 - Incorrect / Failed - Patient failed task or gave incorrect response.", score: 0 },
+      { label: "1 - Correct / Passed - Patient successfully executed task without assistance.", score: 1 }
     ],
     questions: [
       "1. Orientation - Year",
@@ -398,8 +398,8 @@ const scales = [
     description: "30-point screening tool for Mild Cognitive Impairment (MCI) and early dementia across 8 cognitive domains.",
     estimatedTime: "10 min",
     options: [
-      { label: "0 - Incorrect / Failed - Patient failed task or gave incorrect response." },
-      { label: "1 - Correct / Passed - Patient successfully executed task without assistance." }
+      { label: "0 - Incorrect / Failed - Patient failed task or gave incorrect response.", score: 0 },
+      { label: "1 - Correct / Passed - Patient successfully executed task without assistance.", score: 1 }
     ],
     questions: [
       "1. Visuospatial - Alternating Trail Making B (1 -> A -> 2 -> B -> 3 -> C -> 4 -> D -> 5 -> E)",
@@ -452,11 +452,11 @@ const scales = [
     description: "40-item standardized rating scale developed by Govt of India (NIMH/NIEPID) for diagnosing and quantifying Autism Spectrum Disorder (ASD) severity.",
     estimatedTime: "15-20 min",
     options: [
-      { label: "1 - Rarely / Never (< 20% of time) - Behavior is absent or observed less than 20% of the time." },
-      { label: "2 - Sometimes (21–40% of time) - Behavior occurs occasionally, between 21% and 40% of observation period." },
-      { label: "3 - Frequently (41–60% of time) - Behavior occurs regularly, between 41% and 60% of observation period." },
-      { label: "4 - Mostly (61–80% of time) - Behavior is present during most activities, between 61% and 80% of the time." },
-      { label: "5 - Always (81–100% of time) - Behavior is persistent, occurring between 81% and 100% of the observation period." }
+      { label: "1 - Rarely / Never (< 20% of time) - Behavior is absent or observed less than 20% of the time.", score: 1 },
+      { label: "2 - Sometimes (21–40% of time) - Behavior occurs occasionally, between 21% and 40% of observation period.", score: 2 },
+      { label: "3 - Frequently (41–60% of time) - Behavior occurs regularly, between 41% and 60% of observation period.", score: 3 },
+      { label: "4 - Mostly (61–80% of time) - Behavior is present during most activities, between 61% and 80% of the time.", score: 4 },
+      { label: "5 - Always (81–100% of time) - Behavior is persistent, occurring between 81% and 100% of the observation period.", score: 5 }
     ],
     questions: [
       "1. Has poor eye contact",
@@ -635,10 +635,10 @@ const scales = [
     description: "11-item validated self-report screening tool for common clinical sleep disorders.",
     estimatedTime: "4-6 min",
     options: [
-      { label: "0 - Never (0 days/week) - Symptom never occurs or applies 0 days per week." },
-      { label: "1 - Sometimes (1-2 days/week) - Occurs occasionally, 1 to 2 days per week." },
-      { label: "2 - Usually (3-4 days/week) - Occurs frequently, 3 to 4 days per week." },
-      { label: "3 - Always (5-7 days/week) - Occurs persistently, 5 to 7 days per week." }
+      { label: "0 - Never (0 days/week) - Symptom never occurs or applies 0 days per week.", score: 0 },
+      { label: "1 - Sometimes (1-2 days/week) - Occurs occasionally, 1 to 2 days per week.", score: 1 },
+      { label: "2 - Usually (3-4 days/week) - Occurs frequently, 3 to 4 days per week.", score: 2 },
+      { label: "3 - Always (5-7 days/week) - Occurs persistently, 5 to 7 days per week.", score: 3 }
     ],
     questions: [
       "1. How often do you have difficulty falling asleep at night?",
@@ -672,10 +672,10 @@ const scales = [
     description: "21-item quantitative self-report measure of emotional states across Depression, Anxiety, and Stress.",
     estimatedTime: "5-7 min",
     options: [
-      { label: "0 - Did not apply to me at all - Never or rarely experienced over the past week." },
-      { label: "1 - Applied to me to some degree - Experienced occasionally or to a mild degree over the past week." },
-      { label: "2 - Applied to me to a considerable degree - Experienced frequently or to a moderate-to-severe degree over the past week." },
-      { label: "3 - Applied to me very much - Experienced almost constantly or to an extreme degree over the past week." }
+      { label: "0 - Did not apply to me at all - Never or rarely experienced over the past week.", score: 0 },
+      { label: "1 - Applied to me to some degree - Experienced occasionally or to a mild degree over the past week.", score: 1 },
+      { label: "2 - Applied to me to a considerable degree - Experienced frequently or to a moderate-to-severe degree over the past week.", score: 2 },
+      { label: "3 - Applied to me very much - Experienced almost constantly or to an extreme degree over the past week.", score: 3 }
     ],
     subscales: [
       { id: "dep", name: "Depression", min: 0, max: 21 },
@@ -782,10 +782,10 @@ const scales = [
     description: "9-item self-report scale based on DSM-5 major depressive episode criteria.",
     estimatedTime: "3 min",
     options: [
-      { label: "0 - Not at all - Experienced 0 to 1 day over the past 2 weeks." },
-      { label: "1 - Several days - Experienced 2 to 6 days over the past 2 weeks." },
-      { label: "2 - More than half the days - Experienced 7 to 11 days over the past 2 weeks." },
-      { label: "3 - Nearly every day - Experienced 12 to 14 days over the past 2 weeks." }
+      { label: "0 - Not at all - Experienced 0 to 1 day over the past 2 weeks.", score: 0 },
+      { label: "1 - Several days - Experienced 2 to 6 days over the past 2 weeks.", score: 1 },
+      { label: "2 - More than half the days - Experienced 7 to 11 days over the past 2 weeks.", score: 2 },
+      { label: "3 - Nearly every day - Experienced 12 to 14 days over the past 2 weeks.", score: 3 }
     ],
     questions: [
       "1. Little interest or pleasure in doing things (Anhedonia)",
@@ -818,13 +818,13 @@ const scales = [
     description: "10-item clinician-rated scale sensitive to change in depression severity over treatment.",
     estimatedTime: "5-8 min",
     options: [
-      { label: "0 - Normal - Normal affect; brightens up appropriately." },
-      { label: "1 - Slight - Slight despondency or sadness." },
-      { label: "2 - Sad - Looks sad but brightens up on interaction." },
-      { label: "3 - Moderate - Moderate sadness; gloomy most of the time." },
-      { label: "4 - Pervasive Sadness - Pervasive sadness; gloomy and despondent most of the day." },
-      { label: "5 - Severe - Severe continuous sadness." },
-      { label: "6 - Extreme Misery - Extreme continuous misery and despondency." }
+      { label: "0 - Normal - Normal affect; brightens up appropriately.", score: 0 },
+      { label: "1 - Slight - Slight despondency or sadness.", score: 1 },
+      { label: "2 - Sad - Looks sad but brightens up on interaction.", score: 2 },
+      { label: "3 - Moderate - Moderate sadness; gloomy most of the time.", score: 3 },
+      { label: "4 - Pervasive Sadness - Pervasive sadness; gloomy and despondent most of the day.", score: 4 },
+      { label: "5 - Severe - Severe continuous sadness.", score: 5 },
+      { label: "6 - Extreme Misery - Extreme continuous misery and despondency.", score: 6 }
     ],
     questions: [
       "1. Apparent Sadness: Despondency, gloom and despair rated on observed affect",
@@ -1124,11 +1124,11 @@ const scales = [
     description: "10-item clinician-rated gold standard scale assessing severity of obsessive and compulsive symptoms.",
     estimatedTime: "10-15 min",
     options: [
-      { label: "0 - None - No symptoms present; 0 hours per day." },
-      { label: "1 - Mild - Less than 1 hour per day; minimal interference and distress." },
-      { label: "2 - Moderate - 1 to 3 hours per day; definite interference but manageable." },
-      { label: "3 - Severe - 3 to 8 hours per day; substantial impairment in daily functioning." },
-      { label: "4 - Extreme - Greater than 8 hours per day; complete incapacitation." }
+      { label: "0 - None - No symptoms present; 0 hours per day.", score: 0 },
+      { label: "1 - Mild - Less than 1 hour per day; minimal interference and distress.", score: 1 },
+      { label: "2 - Moderate - 1 to 3 hours per day; definite interference but manageable.", score: 2 },
+      { label: "3 - Severe - 3 to 8 hours per day; substantial impairment in daily functioning.", score: 3 },
+      { label: "4 - Extreme - Greater than 8 hours per day; complete incapacitation.", score: 4 }
     ],
     subscales: [
       { id: "obsessions", name: "Obsessions Subscale", min: 0, max: 20 },
@@ -1166,10 +1166,10 @@ const scales = [
     description: "23-item standardized clinician rating scale for screening (items 1-14) and quantifying catatonia severity.",
     estimatedTime: "10 min",
     options: [
-      { label: "0 - Absent - Sign is completely absent." },
-      { label: "1 - Mild - Present occasionally or with mild intensity." },
-      { label: "2 - Moderate - Present frequently with moderate severity." },
-      { label: "3 - Severe - Present continuously with extreme severity." }
+      { label: "0 - Absent - Sign is completely absent.", score: 0 },
+      { label: "1 - Mild - Present occasionally or with mild intensity.", score: 1 },
+      { label: "2 - Moderate - Present frequently with moderate severity.", score: 2 },
+      { label: "3 - Severe - Present continuously with extreme severity.", score: 3 }
     ],
     questions: [
       "1. Excitement: Excessive motor activity, apparent purposeless, not influenced by external stimuli.",
@@ -1283,10 +1283,10 @@ const scales = [
     description: "7-item self-report questionnaire for screening and assessing severity of generalized anxiety disorder.",
     estimatedTime: "2-3 min",
     options: [
-      { label: "0 - Not at all - Experienced 0 to 1 day over the past 2 weeks." },
-      { label: "1 - Several days - Experienced 2 to 6 days over the past 2 weeks." },
-      { label: "2 - More than half the days - Experienced 7 to 11 days over the past 2 weeks." },
-      { label: "3 - Nearly every day - Experienced 12 to 14 days over the past 2 weeks." }
+      { label: "0 - Not at all - Experienced 0 to 1 day over the past 2 weeks.", score: 0 },
+      { label: "1 - Several days - Experienced 2 to 6 days over the past 2 weeks.", score: 1 },
+      { label: "2 - More than half the days - Experienced 7 to 11 days over the past 2 weeks.", score: 2 },
+      { label: "3 - Nearly every day - Experienced 12 to 14 days over the past 2 weeks.", score: 3 }
     ],
     questions: [
       "1. Feeling nervous, anxious, or on edge",
@@ -1316,11 +1316,11 @@ const scales = [
     description: "12-item clinician-rated scale to assess severity of tardive dyskinesia and extrapyramidal involuntary movements.",
     estimatedTime: "5-10 min",
     options: [
-      { label: "0 - None - No involuntary movements observed." },
-      { label: "1 - Minimal / Normal - Minimal or questionable involuntary movements; may be within normal physiological variation." },
-      { label: "2 - Mild - Distinct involuntary movements present in 1 body area or mild in 2 areas." },
-      { label: "3 - Moderate - Moderate involuntary movements causing noticeable motor disturbance." },
-      { label: "4 - Severe - Severe, persistent involuntary movements causing significant disability." }
+      { label: "0 - None - No involuntary movements observed.", score: 0 },
+      { label: "1 - Minimal / Normal - Minimal or questionable involuntary movements; may be within normal physiological variation.", score: 1 },
+      { label: "2 - Mild - Distinct involuntary movements present in 1 body area or mild in 2 areas.", score: 2 },
+      { label: "3 - Moderate - Moderate involuntary movements causing noticeable motor disturbance.", score: 3 },
+      { label: "4 - Severe - Severe, persistent involuntary movements causing significant disability.", score: 4 }
     ],
     questions: [
       "1. Facial and Oral Movements: Muscles of facial expression (e.g., brow, eyes, cheeks)",

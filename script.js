@@ -197,13 +197,20 @@ function showQuestion() {
       let labelText = opt.label;
       let descText = opt.description || opt.desc || '';
       
+      // Determine explicit numerical score
+      let optScore = opt.score;
+      if (optScore === undefined || optScore === null || isNaN(optScore)) {
+        const match = labelText.match(/^(\d+)/);
+        optScore = match ? parseInt(match[1]) : idx;
+      }
+      
       // Extract title and operational description if formatted with colon or dash
       if (!descText && labelText.includes(' - ')) {
         const parts = labelText.split(' - ');
         if (parts.length > 2) {
           labelText = parts[0] + ' - ' + parts[1];
           descText = parts.slice(2).join(' - ');
-        } else if (parts.length === 2 && parts[1].length > 40) {
+        } else if (parts.length === 2 && parts[1].length > 35) {
           labelText = parts[0];
           descText = parts[1];
         }
@@ -214,7 +221,7 @@ function showQuestion() {
       }
 
       return `
-        <button class="option-btn" data-score="${opt.score}">
+        <button class="option-btn" data-score="${optScore}">
           <span class="option-shortcut-badge">${idx}</span>
           <div class="option-content-box">
             <div class="option-title-text">${labelText}</div>
@@ -226,7 +233,9 @@ function showQuestion() {
 
     document.querySelectorAll('.option-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        const score = parseInt(this.dataset.score);
+        let score = parseInt(this.dataset.score);
+        if (isNaN(score)) score = 0;
+
         answers.push(score);
 
         document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
@@ -269,26 +278,28 @@ function calculateAndDisplayScores() {
     currentScale.subscales.forEach(ss => { subscores[ss.id] = 0; });
 
     currentScale.questions.forEach((q, i) => {
-      if (q.subscale && subscores[q.subscale] !== undefined && answers[i] != null) {
-        subscores[q.subscale] += answers[i];
+      const val = answers[i];
+      const validVal = typeof val === 'number' && !isNaN(val) ? val : 0;
+      if (q.subscale && subscores[q.subscale] !== undefined) {
+        subscores[q.subscale] += validVal;
       }
     });
 
-    totalScore = Object.values(subscores).reduce((a, b) => a + b, 0);
+    totalScore = Object.values(subscores).reduce((a, b) => a + (typeof b === 'number' && !isNaN(b) ? b : 0), 0);
     if (subscalesGridEl) {
       subscalesGridEl.style.display = 'grid';
       subscalesGridEl.innerHTML = currentScale.subscales.map(ss => `
-        <div class="subscale-card">
-          <div class="subscale-title">${ss.name}</div>
-          <div class="subscale-score-val">${subscores[ss.id]}</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted);">Range: ${ss.min} – ${ss.max}</div>
+        <div class="subscale-card" style="background: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">${ss.name}</div>
+          <div style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);">${subscores[ss.id]}</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">Scale Range: ${ss.min} – ${ss.max}</div>
         </div>
       `).join('');
     }
     window._subscores = subscores;
   } else {
     if (subscalesGridEl) subscalesGridEl.style.display = 'none';
-    totalScore = answers.reduce((sum, val) => sum + (val || 0), 0);
+    totalScore = answers.reduce((sum, val) => sum + (typeof val === 'number' && !isNaN(val) ? val : 0), 0);
   }
 
   const maxScore = currentScale.scoring.maxScore || 
@@ -400,7 +411,11 @@ function renderDetailedAnswers() {
         Item ${i + 1}: ${text} — <em>Skipped</em>
       </div>`;
     } else {
-      const opt = opts.find(o => o.score === ans);
+      const opt = opts.find(o => {
+        if (o.score !== undefined) return o.score === ans;
+        const match = o.label.match(/^(\d+)/);
+        return match ? parseInt(match[1]) === ans : false;
+      });
       const label = opt ? opt.label : `Score ${ans}`;
       html += `<div style="padding: 0.5rem; border-bottom: 1px solid var(--glass-border); font-size: 0.82rem; display: flex; justify-content: space-between;">
         <span><strong>Item ${i + 1}:</strong> ${text}</span>
