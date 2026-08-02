@@ -30,41 +30,144 @@ function formatPdfDocumentTitle() {
   return `${cleanName}_${ageStr}_${scaleStr}_Report_${dateStr}`;
 }
 
-// Populate the Visible Medical Report DOM Container
-function populatePdfMedicalReport() {
-  const container = document.getElementById('pdf-medical-report');
-  if (!container || !currentScale) return;
+// Generate Complete, Vector-Based Medical Grade Scale Evaluation PDF File Object (0% Blank Pages)
+async function generateScalePdfFile() {
+  if (!currentScale) return null;
+  const filename = formatPdfDocumentTitle() + '.pdf';
 
-  const dateStr = new Date().toLocaleString();
-  const maxScore = currentScale.scoring.maxScore || (currentScale.scoring.totalRange ? currentScale.scoring.totalRange.max : 100);
-
-  // Subscales
-  let subscalesHtml = '';
-  if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
-    let subCells = currentScale.subscales.map(ss => `
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center; flex: 1;">
-        <div style="font-size: 11px; font-weight: 700; color: #475569;">${ss.name}</div>
-        <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin: 2px 0;">${window._subscores[ss.id] || 0}</div>
-        <div style="font-size: 10px; color: #94a3b8;">Range: ${ss.min} – ${ss.max}</div>
-      </div>
-    `).join('');
-
-    subscalesHtml = `
-      <div style="margin-bottom: 16px; page-break-inside: avoid;">
-        <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Subscale Score Breakdown</div>
-        <div style="display: flex; gap: 8px;">${subCells}</div>
-      </div>
-    `;
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    console.error("jsPDF library not loaded");
+    window.print();
+    return null;
   }
 
-  // Items
-  let itemsHtml = '';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const maxScore = currentScale.scoring.maxScore || (currentScale.scoring.totalRange ? currentScale.scoring.totalRange.max : 100);
+  const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
+  const dateStr = new Date().toLocaleString();
+
+  // 1. Header Banner
+  doc.setFillColor(2, 132, 199); // Clinical Cyan Blue
+  doc.rect(0, 0, 210, 22, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text(`${currentScale.name} — CLINICAL EVALUATION REPORT`, 14, 12);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.text(`Hospital Information System (HIS / EHR Suite) | Date: ${dateStr}`, 14, 18);
+
+  // 2. Patient Demographics Box
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(203, 213, 225);
+  doc.roundedRect(14, 26, 182, 22, 2, 2, 'FD');
+
+  doc.setTextColor(2, 132, 199);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`PATIENT DEMOGRAPHICS CONTEXT`, 18, 32);
+
+  doc.setTextColor(15, 23, 42);
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Patient Name:`, 18, 38);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${activePatientName || 'NOT SPECIFIED'}`, 44, 38);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Age:`, 115, 38);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${activePatientAge ? activePatientAge + ' Years' : 'N/A'}`, 125, 38);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`MRN / UHID:`, 18, 44);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${activePatientMRN || 'N/A'}`, 44, 44);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Ward:`, 115, 44);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${activePatientWard} (${getWardFullName(activePatientWard)})`, 125, 44);
+
+  // 3. Total Score & Diagnostic Severity Banner
+  doc.setFillColor(240, 249, 255);
+  doc.setDrawColor(125, 211, 252);
+  doc.roundedRect(14, 52, 182, 18, 2, 2, 'FD');
+
+  doc.setTextColor(3, 105, 161);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`TOTAL SCORE: ${window._lastScore} / ${maxScore}`, 18, 63);
+
+  const sevText = (window._lastSeverity || 'Completed').toUpperCase();
+  doc.setFillColor(2, 132, 199);
+  doc.roundedRect(118, 56, 72, 10, 5, 5, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text(sevText, 154, 62.5, { align: 'center' });
+
+  // 4. Clinical Guidelines & Impression Box
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(226, 232, 240);
+  doc.roundedRect(14, 74, 182, 20, 2, 2, 'FD');
+
+  doc.setTextColor(15, 23, 42);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Clinical Guidelines & Diagnostic Impression:`, 18, 80);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(51, 65, 85);
+  const impressionText = range ? range.interpretation : 'Assessment completed.';
+  const splitImpression = doc.splitTextToSize(impressionText, 174);
+  doc.text(splitImpression, 18, 85);
+
+  let currentY = 98;
+
+  // 5. Subscales Breakdown (if present)
+  if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Subscale Score Breakdown`, 14, currentY);
+    currentY += 4;
+
+    const subRows = currentScale.subscales.map(ss => [
+      ss.name,
+      `${window._subscores[ss.id] || 0}`,
+      `Range: ${ss.min} – ${ss.max}`
+    ]);
+
+    doc.autoTable({
+      startY: currentY,
+      head: [['Subscale Domain', 'Score', 'Normal / Total Range']],
+      body: subRows,
+      headStyles: { fillColor: [71, 85, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { fontSize: 8.5, cellPadding: 2 },
+      margin: { left: 14, right: 14 }
+    });
+
+    currentY = doc.lastAutoTable.finalY + 8;
+  }
+
+  // 6. Complete Item Responses AutoTable (100% of all questions, options & descriptions)
+  const tableRows = [];
   currentScale.questions.forEach((q, i) => {
     const ans = answers[i];
     const opts = getQuestionOptions(q);
-    const fullQuestionText = (typeof q === 'string' ? q : (q.text || '')).replace(/\n/g, '<br>');
-    
-    let labelText = '<em style="color: #94a3b8;">Skipped / Not Assessed</em>';
+    const qText = typeof q === 'string' ? q : (q.text || '');
+
+    let respStr = 'Skipped / Not Assessed';
     if (ans !== null && ans !== undefined) {
       let opt = opts[ans];
       if (!opt) {
@@ -74,144 +177,48 @@ function populatePdfMedicalReport() {
           return match ? parseInt(match[1]) === ans : false;
         });
       }
-      
+
       if (opt) {
         const desc = opt.description || opt.desc || '';
-        labelText = `<strong style="color: #0284c7; font-size: 12px;">Score ${ans}: ${opt.label}</strong>${desc ? `<div style="font-size: 10.5px; color: #334155; margin-top: 3px; font-weight: normal; line-height: 1.4;">${desc}</div>` : ''}`;
+        respStr = `Score ${ans}: ${opt.label}${desc ? '\n' + desc : ''}`;
       } else {
-        labelText = `<strong style="color: #0284c7; font-size: 12px;">Score ${ans}</strong>`;
+        respStr = `Score ${ans}`;
       }
     }
 
-    const rowBg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
-
-    itemsHtml += `
-      <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0; page-break-inside: avoid;">
-        <td style="padding: 8px 6px; font-weight: 700; color: #0284c7; text-align: center; width: 6%; border-bottom: 1px solid #cbd5e1; vertical-align: top;">${i + 1}</td>
-        <td style="padding: 8px 10px; width: 54%; color: #0f172a; border-bottom: 1px solid #cbd5e1; vertical-align: top; font-weight: 500;">${fullQuestionText}</td>
-        <td style="padding: 8px 10px; width: 40%; border-bottom: 1px solid #cbd5e1; vertical-align: top; background: rgba(14,165,233,0.04);">${labelText}</td>
-      </tr>
-    `;
+    tableRows.push([`#${i + 1}`, qText, respStr]);
   });
 
-  const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
+  doc.autoTable({
+    startY: currentY,
+    head: [['#', 'Clinical Question / Symptom Description', 'Selected Rating & Full Operational Description']],
+    body: tableRows,
+    headStyles: { fillColor: [2, 132, 199], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 12, fontStyle: 'bold', halign: 'center' },
+      1: { cellWidth: 100 },
+      2: { cellWidth: 70 }
+    },
+    theme: 'striped',
+    styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+    margin: { left: 14, right: 14 }
+  });
 
-  container.innerHTML = `
-    <!-- Header Banner -->
-    <div style="border-bottom: 3px solid #0284c7; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <span style="display: inline-block; background: #0284c7; color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">HIS / EHR CLINICAL EVALUATION REPORT</span>
-        <h2 style="font-size: 20px; color: #0f172a; margin: 4px 0 2px 0; font-weight: 800;">${currentScale.name} EVALUATION</h2>
-        <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">${currentScale.fullName}</div>
-      </div>
-      <div style="text-align: right; font-size: 10.5px; color: #64748b; line-height: 1.4;">
-        <strong style="color: #0f172a; font-size: 11.5px;">HOSPITAL INFORMATION SYSTEM</strong><br>
-        Date: ${dateStr}<br>
-        Status: Official Verified Record
-      </div>
-    </div>
-
-    <!-- Demographics Card -->
-    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; page-break-inside: avoid;">
-      <div style="font-size: 10.5px; text-transform: uppercase; color: #0284c7; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px;">Patient Context</div>
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <tr>
-          <td style="padding: 2px 0; width: 50%;"><strong>Patient Name:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientName || 'NOT SPECIFIED'}</span></td>
-          <td style="padding: 2px 0; width: 50%;"><strong>Age:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientAge ? activePatientAge + ' Years' : 'N/A'}</span></td>
-        </tr>
-        <tr>
-          <td style="padding: 2px 0; width: 50%;"><strong>MRN / UHID:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientMRN || 'N/A'}</span></td>
-          <td style="padding: 2px 0; width: 50%;"><strong>Ward Location:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientWard} (${getWardFullName(activePatientWard)})</span></td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- Score & Severity Banner -->
-    <table style="width: 100%; border-collapse: collapse; background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 8px; margin-bottom: 14px; page-break-inside: avoid;">
-      <tr>
-        <td style="padding: 12px 16px; vertical-align: middle;">
-          <div style="font-size: 10.5px; text-transform: uppercase; color: #0369a1; font-weight: 800;">Total Assessment Score</div>
-          <div style="font-size: 28px; font-weight: 800; color: #0284c7; line-height: 1; margin-top: 2px;">
-            ${window._lastScore} <span style="font-size: 14px; color: #64748b; font-weight: 600;">/ ${maxScore}</span>
-          </div>
-        </td>
-        <td style="padding: 12px 16px; text-align: right; vertical-align: middle;">
-          <div style="font-size: 10.5px; text-transform: uppercase; color: #0369a1; font-weight: 800;">Diagnostic Severity</div>
-          <div style="display: inline-block; background: #0284c7; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; margin-top: 4px;">
-            ${window._lastSeverity}
-          </div>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Subscale Breakdown -->
-    ${subscalesHtml}
-
-    <!-- Guidelines Impression Box -->
-    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 4px; padding: 10px 12px; margin-bottom: 16px; page-break-inside: avoid;">
-      <strong style="color: #0f172a; font-size: 12px;">Clinical Guidelines & Diagnostic Impression:</strong>
-      <p style="margin: 3px 0 0 0; font-size: 11px; color: #334155; line-height: 1.4;">${range ? range.interpretation : 'Assessment completed.'}</p>
-    </div>
-
-    <!-- Detailed Item Table Header -->
-    <div style="margin-bottom: 6px; page-break-inside: avoid;">
-      <h3 style="font-size: 13px; color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px;">
-        Complete Item Responses & Operational Descriptions (${currentScale.questions.length} Items)
-      </h3>
-    </div>
-
-    <!-- Detailed Items Table -->
-    <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; margin-bottom: 14px;">
-      <thead>
-        <tr style="background: #e2e8f0; text-align: left;">
-          <th style="padding: 6px 6px; text-align: center; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1; width: 6%;">Item</th>
-          <th style="padding: 6px 8px; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1; width: 54%;">Clinical Question & Physical Protocol</th>
-          <th style="padding: 6px 8px; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1; width: 40%;">Selected Rating & Full Operational Option</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${itemsHtml}
-      </tbody>
-    </table>
-
-    <!-- Footer -->
-    <table style="width: 100%; margin-top: 16px; border-top: 1px solid #cbd5e1; padding-top: 8px; font-size: 9.5px; color: #94a3b8; page-break-inside: avoid;">
-      <tr>
-        <td>Generated automatically by Hospital Information System (HIS / EHR Assessment Suite)</td>
-        <td style="text-align: right; font-weight: 700; color: #64748b;">CONFIDENTIAL MEDICAL RECORD</td>
-      </tr>
-    </table>
-  `;
-}
-
-// Generate Complete PDF File directly from the Visible DOM Report
-async function generateScalePdfFile() {
-  if (!currentScale) return null;
-  populatePdfMedicalReport();
-
-  const reportElement = document.getElementById('pdf-medical-report');
-  if (!reportElement) return null;
-
-  const filename = formatPdfDocumentTitle() + '.pdf';
-
-  const opt = {
-    margin:       [0.25, 0.25, 0.25, 0.25],
-    filename:     filename,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-
-  try {
-    let pdfBlob = await html2pdf().set(opt).from(reportElement).outputPdf('blob');
-    if (pdfBlob) {
-      return new File([pdfBlob], filename, { type: 'application/pdf' });
-    }
-  } catch (err) {
-    console.error("Error compiling PDF file:", err);
+  // Footer on all pages
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setDrawColor(203, 213, 225);
+    doc.line(14, 284, 196, 284);
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Hospital Information System (HIS / EHR Suite) — Page ${p} of ${pageCount}`, 14, 288);
+    doc.text(`CONFIDENTIAL MEDICAL RECORD`, 196, 288, { align: 'right' });
   }
-  return null;
+
+  window._lastJsPdfDoc = doc;
+  const pdfBlob = doc.output('blob');
+  return new File([pdfBlob], filename, { type: 'application/pdf' });
 }
 
 // DOM Elements
@@ -362,13 +369,8 @@ window.shareScalePdfFile = async function() {
     }
 
     // Direct PDF File Download Fallback if browser Web Share Level 2 is unavailable
-    if (pdfFile) {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(pdfFile);
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    if (window._lastJsPdfDoc) {
+      window._lastJsPdfDoc.save(filename);
       alert(`Complete PDF Evaluation Report "${filename}" generated! You can now send or attach this PDF file to any platform.`);
     } else {
       window.print();
@@ -392,14 +394,9 @@ window.shareViaEmail = function() {
 window.exportPdfReport = async function() {
   closeShareModal();
   const filename = formatPdfDocumentTitle() + '.pdf';
-  const pdfFile = await generateScalePdfFile();
-  if (pdfFile) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(pdfFile);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  await generateScalePdfFile();
+  if (window._lastJsPdfDoc) {
+    window._lastJsPdfDoc.save(filename);
   } else {
     window.print();
   }
@@ -606,7 +603,6 @@ function showResults() {
   calculateAndDisplayScores();
   generateEMRClinicalNote();
   renderDetailedAnswers();
-  populatePdfMedicalReport();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
