@@ -106,6 +106,16 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - Implemented **item-specific 0-3 response options for ALL 23 items of the Bush-Francis Catatonia Rating Scale (BFCRS)**, including explicit step-by-step instructions for testing physical signs (Mitgehen, Gegenhalten, Waxy Flexibility, Grasp Reflex, Automatic Obedience).
 - Added explicit item-by-item scoring anchors for PANSS (1-7), HAM-D (0-4), MADRS (0-6), and AIMS (0-4) so medical students and novice clinicians can apply them with zero ambiguity.
 
+### Phase 11: Patient Demographic Data Entry Upgrade & 4-Ward Selection Integration
+- Redesigned Patient Demographic Data Entry into an interactive modal drawer accessible from the top Patient Context Bar (`Edit Patient Demographics`).
+- Added blank form input fields for **Patient Full Name**, **Age (in years)**, and **MRN / UHID**.
+- Integrated a 4-option Ward Selection Grid featuring:
+  - **GMW**: General Male Ward
+  - **GFW**: General Female Ward
+  - **AMW**: Acute Male Ward
+  - **AFW**: Acute Female Ward
+- Updated EMR Clinical SOAP Note generator (`generateEMRClinicalNote()`), Patient Context Header, and `localStorage` saved patient history records to reflect Name, Age, MRN, and Selected Ward location.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers

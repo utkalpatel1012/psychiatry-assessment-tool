@@ -42,18 +42,21 @@
       <div class="patient-info-items">
         <div class="patient-info-item">
           <i class="fas fa-user-circle" style="color: var(--accent-cyan);"></i>
-          <span>Active Patient: <strong id="active-patient-name">Rahul Sharma</strong></span>
+          <span>Patient Name: <strong id="active-patient-name">Rahul Sharma</strong></span>
+        </div>
+        <div class="patient-info-item">
+          <span>Age: <strong id="active-patient-age">32 yrs</strong></span>
         </div>
         <div class="patient-info-item">
           <span>MRN: <strong id="active-patient-mrn">HIS-2026-8841</strong></span>
         </div>
         <div class="patient-info-item">
-          <span>Ward: <strong>Psychiatry Inpatient B</strong></span>
+          <span>Ward: <strong id="active-patient-ward" class="ward-badge">GMW</strong></span>
         </div>
       </div>
       <div>
-        <button id="btn-change-patient" class="patient-badge-active" onclick="promptChangePatient()">
-          <i class="fas fa-exchange-alt"></i> Change Patient Context
+        <button id="btn-change-patient" class="patient-badge-active" onclick="openPatientModal()">
+          <i class="fas fa-user-edit"></i> Edit Patient Demographics
         </button>
       </div>
     </div>
@@ -73,121 +76,192 @@
             <span class="category-tag active" data-category="all">All 22 Scales</span>
             <span class="category-tag" data-category="psychosis">Psychosis (PANSS/BPRS)</span>
             <span class="category-tag" data-category="mood">Mood (YMRS/HAM-D/MADRS/PHQ-9/DASS-21)</span>
-            <span class="category-tag" data-category="anxiety">Anxiety & OCD (HAM-A/Y-BOCS/GAD-7)</span>
-            <span class="category-tag" data-category="cognitive">Cognition (MoCA/MMSE)</span>
+            <span class="category-tag" data-category="anxiety">Anxiety (HAM-A/GAD-7/Y-BOCS)</span>
+            <span class="category-tag" data-category="cognitive">Cognitive (MoCA/MMSE)</span>
+            <span class="category-tag" data-category="substance">Substance (AUDIT/CIWA-Ar/COWS)</span>
+            <span class="category-tag" data-category="catatonia">Catatonia (BFCRS/BARS/AIMS)</span>
+            <span class="category-tag" data-category="suicide">Suicide (C-SSRS)</span>
             <span class="category-tag" data-category="neurodevelopmental">Autism (ISAA)</span>
-            <span class="category-tag" data-category="substance">Substance Withdrawal (CIWA/COWS/AUDIT)</span>
-            <span class="category-tag" data-category="catatonia">Catatonia & Movement (BFCRS/BARS/AIMS)</span>
-            <span class="category-tag" data-category="sleep">Sleep (GSAQ)</span>
-            <span class="category-tag" data-category="suicide">Suicide Risk (C-SSRS Acute/Lifetime)</span>
           </div>
         </div>
 
         <div class="section-header">
-          <h3 class="section-title">
-            <i class="fas fa-th-large" style="color: var(--accent-cyan);"></i> Scales Library
+          <div class="section-title">
+            <i class="fas fa-th-large" style="color: var(--accent-cyan);"></i> Available Clinical Instruments
             <span id="scale-count-badge" class="scale-count-badge">22 Scales</span>
-          </h3>
+          </div>
         </div>
 
-        <div id="bento-grid" class="bento-grid">
-          <!-- Dynamically populated Bento scale cards -->
-        </div>
+        <!-- Bento Grid Scale Directory -->
+        <div id="bento-grid" class="bento-grid"></div>
       </section>
 
-      <!-- View 2: Active Assessment View -->
+      <!-- View 2: Active Scale Assessment Mode -->
       <section id="assessment-view" style="display: none;">
         <div class="assessment-card">
-          <div class="assessment-header">
-            <div class="assessment-meta-bar">
-              <h2 id="assessment-scale-name" class="assessment-title"></h2>
-              <button id="btn-cancel-assessment" class="btn-icon" title="Cancel Assessment">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="progress-bar-track">
-              <div id="progress-bar-fill" class="progress-bar-fill"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted);">
-              <span id="question-counter-text">Question 1 of 10</span>
-              <span><i class="far fa-keyboard"></i> Press keys 0–7 for quick selection</span>
-            </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h2 id="assessment-scale-name" class="assessment-title">Scale Name</h2>
+            <button id="btn-cancel-assessment" class="btn-pill" style="font-size: 0.75rem; color: var(--accent-rose);">
+              <i class="fas fa-times"></i> Exit Assessment
+            </button>
           </div>
 
+          <div class="progress-bar-track">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">
+            <span id="question-counter-text">Question 1 of 10</span>
+            <span>Keyboard shortcuts: [0-7] Select, [←] Back</span>
+          </div>
+
+          <!-- Question Prompt Container -->
           <div class="question-box">
-            <p id="question-text" class="question-text"></p>
+            <div id="question-text" class="question-text">Question text goes here...</div>
             <div id="options-container" class="options-list"></div>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
             <button id="btn-prev" class="btn-pill" style="display: none;">
-              <i class="fas fa-arrow-left"></i> Previous Item
+              <i class="fas fa-arrow-left"></i> Previous Question
             </button>
-            <span></span>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">
+              Selected responses are processed immediately.
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- View 3: Results & Interpretation View -->
+      <!-- View 3: Results & Clinical EMR Report -->
       <section id="results-view" style="display: none;">
         <div class="results-card">
-          <div class="results-header-box">
-            <i class="fas fa-check-circle" style="font-size: 2.8rem; color: var(--accent-cyan); margin-bottom: 0.4rem;"></i>
-            <h2 style="font-family: var(--font-heading); font-size: 1.6rem;">Clinical Assessment Complete</h2>
-            <p style="color: var(--text-secondary); font-size: 0.88rem;">Automated Score Calculation & EMR Note Generator</p>
+          <div style="text-align: center; margin-bottom: 1.25rem;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.25rem;">Clinical Evaluation Summary</h2>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Standardized Diagnostic Report & EMR Impression</p>
           </div>
 
-          <!-- Radial Gauge Display -->
+          <!-- Score Gauge Container -->
           <div class="gauge-wrapper">
             <div class="radial-gauge">
-              <svg width="140" height="140">
-                <circle class="radial-bg" cx="70" cy="70" r="55"></circle>
-                <circle id="radial-progress-circle" class="radial-progress" cx="70" cy="70" r="55"></circle>
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle class="radial-bg" cx="70" cy="70" r="62"></circle>
+                <circle id="radial-progress-circle" class="radial-progress" cx="70" cy="70" r="62"></circle>
               </svg>
               <div class="gauge-center-text">
                 <div id="score-main" class="score-main">0</div>
-                <div id="score-max" class="score-max">/ 60</div>
+                <div id="score-max" class="score-max">/ 0</div>
               </div>
             </div>
-            <div id="severity-pill" class="severity-pill">Severe</div>
+            <span id="severity-pill" class="severity-pill">Completed</span>
           </div>
 
-          <!-- Subscales Breakdown (if applicable) -->
-          <div id="subscales-grid" class="subscale-grid" style="display: none;"></div>
+          <!-- Subscale Breakdown Grid -->
+          <div id="subscales-grid" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin: 1.25rem 0;"></div>
 
-          <!-- Clinical Interpretation Box -->
+          <!-- Diagnostic Impression Box -->
           <div id="interpretation-text" class="interpretation-box"></div>
 
-          <!-- EMR Note Preview -->
+          <!-- Hospital EMR Clinical Note Generator -->
           <div style="margin-top: 1.25rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h4 style="font-size: 0.9rem; color: var(--text-primary);"><i class="fas fa-file-medical"></i> EMR Clinical Note (SOAP Entry)</h4>
-              <button id="btn-copy-emr" class="btn-pill" style="font-size: 0.78rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <h4 style="font-family: var(--font-heading); font-size: 0.95rem;">Hospital EMR Clinical Note</h4>
+              <button id="btn-copy-emr" class="btn-pill" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
                 <i class="fas fa-copy"></i> Copy to EMR Clipboard
               </button>
             </div>
-            <pre id="emr-note-text" class="emr-note-preview"></pre>
+            <div id="emr-note-text" class="emr-note-preview"></div>
           </div>
 
-          <!-- Detailed Item Breakdown Accordion -->
+          <!-- Detailed Item Answers Breakdown -->
           <div id="answers-accordion"></div>
 
           <!-- Action Buttons -->
           <div class="action-bar">
-            <button id="btn-save-record" class="btn-pill" style="background: var(--accent-cyan); color: #FFF; border: none;">
-              <i class="fas fa-save"></i> Save Record in Browser
+            <button id="btn-save-record" class="btn-start" style="background: var(--accent-emerald);">
+              <i class="fas fa-save"></i> Save Record in Local History
             </button>
             <button id="btn-print-pdf" class="btn-pill">
-              <i class="fas fa-print"></i> Export / Print Medical Report
+              <i class="fas fa-print"></i> Print / Export PDF
             </button>
-            <button id="btn-restart" class="btn-start">
-              <i class="fas fa-redo"></i> New Assessment
+            <button id="btn-restart" class="btn-pill">
+              <i class="fas fa-redo"></i> Conduct Another Scale
             </button>
           </div>
         </div>
       </section>
 
     </main>
+
+    <!-- Modal Drawer: Edit Patient Demographics -->
+    <div id="patient-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 500px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--text-primary);"><i class="fas fa-id-card" style="color: var(--accent-cyan);"></i> Patient Demographic Data Entry</h3>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Enter patient details to bind with all clinical evaluations & EMR notes</span>
+          </div>
+          <button id="close-patient-modal-btn" class="btn-icon" onclick="closePatientModal()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="patient-demographics-form" onsubmit="savePatientDemographics(event)">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-secondary);">Patient Full Name *</label>
+            <input type="text" id="input-patient-name" class="form-input-field" placeholder="Enter patient full name..." required style="width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; outline: none;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-secondary);">Age (Years) *</label>
+              <input type="number" id="input-patient-age" class="form-input-field" placeholder="e.g. 35" min="1" max="120" required style="width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; outline: none;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-secondary);">MRN / UHID</label>
+              <input type="text" id="input-patient-mrn" class="form-input-field" placeholder="e.g. HIS-2026-8841" style="width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; outline: none;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary);">Ward Selection *</label>
+            <div class="ward-options-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem;">
+              <label class="ward-option-card">
+                <input type="radio" name="ward-selection" value="GMW" checked>
+                <div class="ward-card-content">
+                  <strong>GMW</strong>
+                  <span>General Male Ward</span>
+                </div>
+              </label>
+              <label class="ward-option-card">
+                <input type="radio" name="ward-selection" value="GFW">
+                <div class="ward-card-content">
+                  <strong>GFW</strong>
+                  <span>General Female Ward</span>
+                </div>
+              </label>
+              <label class="ward-option-card">
+                <input type="radio" name="ward-selection" value="AMW">
+                <div class="ward-card-content">
+                  <strong>AMW</strong>
+                  <span>Acute Male Ward</span>
+                </div>
+              </label>
+              <label class="ward-option-card">
+                <input type="radio" name="ward-selection" value="AFW">
+                <div class="ward-card-content">
+                  <strong>AFW</strong>
+                  <span>Acute Female Ward</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem;">
+            <button type="button" class="btn-pill" onclick="closePatientModal()">Cancel</button>
+            <button type="submit" class="btn-start" style="padding: 0.55rem 1.25rem;">
+              <i class="fas fa-check-circle"></i> Save Demographics
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Modal Drawer: Patient Records History -->
     <div id="history-modal" class="modal-overlay">

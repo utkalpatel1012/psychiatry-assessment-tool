@@ -5,7 +5,20 @@ let activeCategory = 'all';
 let searchQuery = '';
 
 let activePatientName = localStorage.getItem('active_patient_name') || 'Rahul Sharma';
+let activePatientAge = localStorage.getItem('active_patient_age') || '32';
 let activePatientMRN = localStorage.getItem('active_patient_mrn') || 'HIS-2026-8841';
+let activePatientWard = localStorage.getItem('active_patient_ward') || 'GMW';
+
+// Ward Name Mapping Helper
+function getWardFullName(code) {
+  const map = {
+    'GMW': 'General Male Ward',
+    'GFW': 'General Female Ward',
+    'AMW': 'Acute Male Ward',
+    'AFW': 'Acute Female Ward'
+  };
+  return map[code] || code || 'General Male Ward';
+}
 
 // DOM Elements
 const homeView = document.getElementById('home-view');
@@ -21,7 +34,9 @@ const closeModalBtn = document.getElementById('close-modal-btn');
 const recordsContainer = document.getElementById('records-container');
 
 const activePatientNameEl = document.getElementById('active-patient-name');
+const activePatientAgeEl = document.getElementById('active-patient-age');
 const activePatientMRNEl = document.getElementById('active-patient-mrn');
+const activePatientWardEl = document.getElementById('active-patient-ward');
 const emrNoteTextEl = document.getElementById('emr-note-text');
 const btnCopyEmr = document.getElementById('btn-copy-emr');
 
@@ -55,20 +70,54 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updatePatientUI() {
-  if (activePatientNameEl) activePatientNameEl.textContent = activePatientName;
-  if (activePatientMRNEl) activePatientMRNEl.textContent = activePatientMRN;
+  if (activePatientNameEl) activePatientNameEl.textContent = activePatientName || 'Not Specified';
+  if (activePatientAgeEl) activePatientAgeEl.textContent = activePatientAge ? `${activePatientAge} yrs` : 'N/A';
+  if (activePatientMRNEl) activePatientMRNEl.textContent = activePatientMRN || 'N/A';
+  if (activePatientWardEl) activePatientWardEl.textContent = activePatientWard || 'GMW';
 }
 
-window.promptChangePatient = function() {
-  const name = prompt("Enter Patient Full Name:", activePatientName);
-  if (name) {
-    const mrn = prompt("Enter Patient MRN / UHID:", activePatientMRN);
-    activePatientName = name.trim();
-    activePatientMRN = (mrn || 'MRN-UNASSIGNED').trim();
-    localStorage.setItem('active_patient_name', activePatientName);
-    localStorage.setItem('active_patient_mrn', activePatientMRN);
-    updatePatientUI();
-  }
+window.openPatientModal = function() {
+  const nameInput = document.getElementById('input-patient-name');
+  const ageInput = document.getElementById('input-patient-age');
+  const mrnInput = document.getElementById('input-patient-mrn');
+  const modal = document.getElementById('patient-modal');
+
+  if (nameInput) nameInput.value = activePatientName;
+  if (ageInput) ageInput.value = activePatientAge;
+  if (mrnInput) mrnInput.value = activePatientMRN;
+
+  const wardRadios = document.querySelectorAll('input[name="ward-selection"]');
+  wardRadios.forEach(r => {
+    r.checked = (r.value === activePatientWard);
+  });
+
+  if (modal) modal.classList.add('active');
+};
+
+window.closePatientModal = function() {
+  const modal = document.getElementById('patient-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.savePatientDemographics = function(e) {
+  if (e) e.preventDefault();
+  const nameInput = document.getElementById('input-patient-name');
+  const ageInput = document.getElementById('input-patient-age');
+  const mrnInput = document.getElementById('input-patient-mrn');
+  const selectedWard = document.querySelector('input[name="ward-selection"]:checked');
+
+  activePatientName = nameInput ? nameInput.value.trim() : '';
+  activePatientAge = ageInput ? ageInput.value.trim() : '';
+  activePatientMRN = mrnInput ? (mrnInput.value.trim() || 'MRN-UNASSIGNED') : 'MRN-UNASSIGNED';
+  activePatientWard = selectedWard ? selectedWard.value : 'GMW';
+
+  localStorage.setItem('active_patient_name', activePatientName);
+  localStorage.setItem('active_patient_age', activePatientAge);
+  localStorage.setItem('active_patient_mrn', activePatientMRN);
+  localStorage.setItem('active_patient_ward', activePatientWard);
+
+  updatePatientUI();
+  closePatientModal();
 };
 
 function getQuestionText(q) {
@@ -383,8 +432,10 @@ function generateEMRClinicalNote() {
   let note = `====================================================\n`;
   note += `HOSPITAL EMR CLINICAL PSYCHIATRY EVALUATION NOTE\n`;
   note += `====================================================\n`;
-  note += `PATIENT NAME : ${activePatientName}\n`;
-  note += `PATIENT MRN  : ${activePatientMRN}\n`;
+  note += `PATIENT NAME : ${activePatientName || 'NOT SPECIFIED'}\n`;
+  note += `AGE          : ${activePatientAge ? activePatientAge + ' YRS' : 'N/A'}\n`;
+  note += `PATIENT MRN  : ${activePatientMRN || 'N/A'}\n`;
+  note += `WARD LOCATION: ${activePatientWard} (${getWardFullName(activePatientWard)})\n`;
   note += `DATE/TIME    : ${dateStr}\n`;
   note += `INSTRUMENT   : ${currentScale.name} (${currentScale.fullName})\n`;
   note += `TOTAL SCORE  : ${window._lastScore} (Severity: ${window._lastSeverity})\n`;
@@ -504,7 +555,11 @@ function setupEventListeners() {
     btnSaveRecord.addEventListener('click', () => {
       if (typeof StorageService !== 'undefined') {
         const record = StorageService.saveRecord({
-          patientId: activePatientName + ' (' + activePatientMRN + ')',
+          patientId: activePatientName + ' (' + (activePatientAge ? activePatientAge + 'y, ' : '') + activePatientWard + ')',
+          patientName: activePatientName,
+          patientAge: activePatientAge,
+          mrn: activePatientMRN,
+          ward: activePatientWard,
           scaleId: currentScale.id,
           scaleName: currentScale.name,
           score: window._lastScore,
@@ -542,8 +597,8 @@ function renderHistoryModal() {
   recordsContainer.innerHTML = records.map(r => `
     <div style="padding: 0.85rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <div style="font-weight: 700; font-family: var(--font-heading); color: var(--accent-cyan); font-size: 0.95rem;">${r.patientId}</div>
-        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-top: 0.1rem;">${r.scaleName}</div>
+        <div style="font-weight: 700; font-family: var(--font-heading); color: var(--accent-cyan); font-size: 0.95rem;">${r.patientName || r.patientId} ${r.patientAge ? '(' + r.patientAge + ' yrs)' : ''}</div>
+        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-top: 0.1rem;">${r.scaleName} — <span style="color: var(--accent-cyan);">${r.ward || 'GMW'}</span></div>
         <div style="font-size: 0.72rem; color: var(--text-muted);"><i class="far fa-clock"></i> ${r.dateFormatted}</div>
       </div>
       <div style="display: flex; align-items: center; gap: 0.5rem;">
