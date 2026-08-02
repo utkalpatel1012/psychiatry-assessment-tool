@@ -120,6 +120,65 @@ window.savePatientDemographics = function(e) {
   closePatientModal();
 };
 
+window.openShareModal = function() {
+  const modal = document.getElementById('share-modal');
+  const previewEl = document.getElementById('share-text-preview');
+  if (previewEl && emrNoteTextEl) {
+    previewEl.textContent = emrNoteTextEl.textContent;
+  }
+  if (modal) modal.classList.add('active');
+};
+
+window.closeShareModal = function() {
+  const modal = document.getElementById('share-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.shareViaNativeApi = async function() {
+  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
+  const title = `${currentScale ? currentScale.name : 'Psychiatry'} Clinical Assessment — ${activePatientName}`;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: title,
+        text: shareText
+      });
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+      }
+    }
+  } else {
+    alert("Web Share API is not supported on this browser. Use WhatsApp, Email, or Print PDF options below!");
+  }
+};
+
+window.shareViaWhatsApp = function() {
+  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+  window.open(url, '_blank');
+};
+
+window.shareViaEmail = function() {
+  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
+  const subject = `[HIS EMR Report] ${currentScale ? currentScale.name : 'Psychiatry Scale'} Evaluation — ${activePatientName} (${activePatientMRN})`;
+  const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareText)}`;
+  window.open(url, '_self');
+};
+
+window.exportPdfReport = function() {
+  closeShareModal();
+  window.print();
+};
+
+window.copyShareText = function() {
+  if (emrNoteTextEl) {
+    navigator.clipboard.writeText(emrNoteTextEl.textContent);
+    alert('Clinical Evaluation Summary copied to clipboard!');
+  }
+};
+
 function getQuestionText(q) {
   return typeof q === 'string' ? q : q.text;
 }

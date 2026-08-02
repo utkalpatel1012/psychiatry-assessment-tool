@@ -116,6 +116,15 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
   - **AFW**: Acute Female Ward
 - Updated EMR Clinical SOAP Note generator (`generateEMRClinicalNote()`), Patient Context Header, and `localStorage` saved patient history records to reflect Name, Age, MRN, and Selected Ward location.
 
+### Phase 12: Multi-Platform PDF Report Share Button Integration
+- Added **Share Report (PDF / Apps)** button on completion of any scale evaluation in the main Action Bar and next to the Hospital EMR Note header.
+- Implemented **Web Share API** (`shareViaNativeApi()`) for direct system share sheet integration on Android/iOS/Windows (WhatsApp, Mail, Drive, Telegram).
+- Integrated direct platform share channels:
+  - 💚 **WhatsApp Direct**: Share pre-formatted EMR evaluation summary to contacts/doctors.
+  - ✉️ **Email / Outlook**: Generate pre-filled subject and EMR report body.
+  - 📄 **Export PDF Document**: Trigger formatted print to PDF dialog.
+  - 📋 **Copy EMR Text**: 1-click clipboard copy.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers

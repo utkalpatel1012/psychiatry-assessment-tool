@@ -164,9 +164,14 @@
           <div style="margin-top: 1.25rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
               <h4 style="font-family: var(--font-heading); font-size: 0.95rem;">Hospital EMR Clinical Note</h4>
-              <button id="btn-copy-emr" class="btn-pill" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
-                <i class="fas fa-copy"></i> Copy to EMR Clipboard
-              </button>
+              <div style="display: flex; gap: 0.4rem;">
+                <button id="btn-share-emr" class="btn-pill" onclick="openShareModal()" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; color: var(--accent-cyan); border-color: rgba(14, 165, 233, 0.4);">
+                  <i class="fas fa-share-alt"></i> Share PDF / Note
+                </button>
+                <button id="btn-copy-emr" class="btn-pill" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
+                  <i class="fas fa-copy"></i> Copy to EMR Clipboard
+                </button>
+              </div>
             </div>
             <div id="emr-note-text" class="emr-note-preview"></div>
           </div>
@@ -179,6 +184,9 @@
             <button id="btn-save-record" class="btn-start" style="background: var(--accent-emerald);">
               <i class="fas fa-save"></i> Save Record in Local History
             </button>
+            <button id="btn-share-report" class="btn-pill" onclick="openShareModal()" style="color: var(--accent-cyan); border-color: rgba(14, 165, 233, 0.4);">
+              <i class="fas fa-share-alt"></i> Share Report (PDF / Apps)
+            </button>
             <button id="btn-print-pdf" class="btn-pill">
               <i class="fas fa-print"></i> Print / Export PDF
             </button>
@@ -190,6 +198,67 @@
       </section>
 
     </main>
+
+    <!-- Modal Drawer: Share Clinical Evaluation & PDF Report -->
+    <div id="share-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 480px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--text-primary);"><i class="fas fa-share-alt" style="color: var(--accent-cyan);"></i> Share Clinical PDF Report</h3>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Directly export or send evaluation report across messaging & EMR platforms</span>
+          </div>
+          <button id="close-share-modal-btn" class="btn-icon" onclick="closeShareModal()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="share-options-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.25rem;">
+          <button class="share-card-btn" onclick="shareViaNativeApi()">
+            <div class="share-card-icon" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-cyan);">
+              <i class="fas fa-share-nodes"></i>
+            </div>
+            <strong>Native App Share</strong>
+            <span>WhatsApp, System, Drive</span>
+          </button>
+
+          <button class="share-card-btn" onclick="shareViaWhatsApp()">
+            <div class="share-card-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <strong>WhatsApp Direct</strong>
+            <span>Send to Doctor / Patient</span>
+          </button>
+
+          <button class="share-card-btn" onclick="shareViaEmail()">
+            <div class="share-card-icon" style="background: rgba(37, 99, 235, 0.15); color: var(--accent-blue);">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <strong>Email / Outlook</strong>
+            <span>Attach PDF / SOAP Note</span>
+          </button>
+
+          <button class="share-card-btn" onclick="exportPdfReport()">
+            <div class="share-card-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <strong>Export PDF File</strong>
+            <span>Print / Save as PDF</span>
+          </button>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border); font-size: 0.8rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <span style="font-weight: 600; color: var(--text-primary);"><i class="fas fa-link"></i> Summary & EMR Report Text</span>
+            <button onclick="copyShareText()" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+              <i class="fas fa-copy"></i> Copy Text
+            </button>
+          </div>
+          <p id="share-text-preview" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); white-space: pre-wrap; max-height: 80px; overflow-y: auto;"></p>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button class="btn-pill" onclick="closeShareModal()">Done</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal Drawer: Edit Patient Demographics -->
     <div id="patient-modal" class="modal-overlay">
