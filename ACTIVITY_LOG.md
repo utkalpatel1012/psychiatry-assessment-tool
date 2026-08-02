@@ -137,6 +137,17 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
   *(e.g. `Rahul_Sharma_32yrs_PANSS_Report_2026-08-02.pdf`)*
 - Restores original browser window title after print dialog closes.
 
+### Phase 15: Direct PDF File Generation & Native Multi-Platform Share Pipeline
+- Integrated `html2pdf.js` library for client-side PDF document compilation.
+- Implemented `generateScalePdfFile()` which generates an **actual PDF binary File object** (`File` instance of type `application/pdf`) containing:
+  - Hospital EHR Header Banner & Timestamp
+  - Patient Demographics (Name, Age, MRN, Ward)
+  - Total Evaluation Score & Severity Impression Box
+  - Diagnostic Guidelines & Interpretation
+  - **Complete Item-by-Item Question & Response Description Table**
+- Updated `shareScalePdfFile()` to invoke `navigator.share({ files: [pdfFile] })` so modern mobile/desktop browsers attach the **ACTUAL .pdf FILE** directly to WhatsApp, Gmail, Outlook, Telegram, or System Drive.
+- Added direct fallback PDF download triggers for all share channels.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers

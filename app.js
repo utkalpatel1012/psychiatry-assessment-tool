@@ -30,6 +30,136 @@ function formatPdfDocumentTitle() {
   return `${cleanName}_${ageStr}_${scaleStr}_Report_${dateStr}`;
 }
 
+// Generate Actual Complete Scale Evaluation PDF File Object
+async function generateScalePdfFile() {
+  if (!currentScale) return null;
+  const filename = formatPdfDocumentTitle() + '.pdf';
+
+  // Build clean clinical report container for PDF compilation
+  const pdfContainer = document.createElement('div');
+  pdfContainer.id = 'pdf-export-temp-container';
+  pdfContainer.style.cssText = `
+    padding: 24px;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  `;
+
+  const dateStr = new Date().toLocaleString();
+  const maxScore = currentScale.scoring.maxScore || (currentScale.scoring.totalRange ? currentScale.scoring.totalRange.max : 100);
+
+  let itemsHtml = '';
+  currentScale.questions.forEach((q, i) => {
+    const ans = answers[i];
+    const opts = getQuestionOptions(q);
+    const text = getQuestionText(q).split('\n')[0];
+    let label = 'Skipped';
+    if (ans != null) {
+      const opt = opts.find(o => {
+        if (o.score !== undefined) return o.score === ans;
+        const match = o.label.match(/^(\d+)/);
+        return match ? parseInt(match[1]) === ans : false;
+      });
+      label = opt ? opt.label : `Score ${ans}`;
+    }
+
+    itemsHtml += `
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 8px; font-weight: 700; width: 8%;">#${i + 1}</td>
+        <td style="padding: 8px; width: 62%;">${text}</td>
+        <td style="padding: 8px; font-weight: 600; color: #0284c7; width: 30%;">${label}</td>
+      </tr>
+    `;
+  });
+
+  const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
+
+  pdfContainer.innerHTML = `
+    <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-size: 20px; color: #0f172a; margin: 0; font-weight: 800;">${currentScale.name} — CLINICAL EVALUATION REPORT</h1>
+        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${currentScale.fullName}</div>
+      </div>
+      <div style="text-align: right; font-size: 11px; color: #64748b;">
+        <strong>HOSPITAL EHR SYSTEM</strong><br>${dateStr}
+      </div>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr>
+          <td style="padding: 4px 0;"><strong>Patient Name:</strong> ${activePatientName || 'NOT SPECIFIED'}</td>
+          <td style="padding: 4px 0;"><strong>Age:</strong> ${activePatientAge ? activePatientAge + ' yrs' : 'N/A'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0;"><strong>MRN / UHID:</strong> ${activePatientMRN || 'N/A'}</td>
+          <td style="padding: 4px 0;"><strong>Ward Location:</strong> ${activePatientWard} (${getWardFullName(activePatientWard)})</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 11px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Total Evaluation Score</div>
+        <div style="font-size: 26px; font-weight: 800; color: #0284c7; margin-top: 2px;">${window._lastScore} <span style="font-size: 14px; color: #64748b;">/ ${maxScore}</span></div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 11px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Diagnostic Severity</div>
+        <div style="display: inline-block; background: #0284c7; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 4px;">${window._lastSeverity}</div>
+      </div>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+      <strong style="color: #0f172a; font-size: 12px;">Diagnostic Guidelines & Clinical Impression:</strong>
+      <p style="margin: 6px 0 0 0; font-size: 12px; color: #334155;">${range ? range.interpretation : 'Assessment completed.'}</p>
+    </div>
+
+    <h3 style="font-size: 14px; color: #0f172a; margin-bottom: 8px; font-weight: 700; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">Complete Item Responses (${currentScale.questions.length} Items)</h3>
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+      <thead>
+        <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #cbd5e1;">
+          <th style="padding: 6px;">#</th>
+          <th style="padding: 6px;">Clinical Question / Symptom</th>
+          <th style="padding: 6px;">Selected Rating & Option Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+  `;
+
+  document.body.appendChild(pdfContainer);
+
+  const opt = {
+    margin:       [0.3, 0.3, 0.3, 0.3],
+    filename:     filename,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  try {
+    let pdfBlob = null;
+    if (typeof html2pdf !== 'undefined') {
+      pdfBlob = await html2pdf().set(opt).from(pdfContainer).outputPdf('blob');
+    }
+    document.body.removeChild(pdfContainer);
+
+    if (pdfBlob) {
+      return new File([pdfBlob], filename, { type: 'application/pdf' });
+    }
+  } catch (err) {
+    console.error("Error compiling PDF file:", err);
+    if (document.getElementById('pdf-export-temp-container')) {
+      document.body.removeChild(pdfContainer);
+    }
+  }
+  return null;
+}
+
 // DOM Elements
 const homeView = document.getElementById('home-view');
 const assessmentView = document.getElementById('assessment-view');
@@ -160,50 +290,68 @@ window.closeShareModal = function() {
   if (modal) modal.classList.remove('active');
 };
 
-window.shareViaNativeApi = async function() {
-  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
-  const title = `${currentScale ? currentScale.name : 'Psychiatry'} Clinical Assessment — ${activePatientName}`;
+// DIRECT SHARE OF COMPLETE REPORT IN PDF FORM ONLY TO ANY PLATFORM
+window.shareScalePdfFile = async function() {
+  closeShareModal();
+  const filename = formatPdfDocumentTitle() + '.pdf';
   
-  if (navigator.share) {
-    try {
+  try {
+    const pdfFile = await generateScalePdfFile();
+
+    if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
       await navigator.share({
-        title: title,
-        text: shareText
+        title: `${currentScale ? currentScale.name : 'Psychiatry'} Clinical Report - ${activePatientName}`,
+        text: `Attached is the complete PDF Clinical Evaluation Report for ${activePatientName} (${activePatientAge} yrs, Ward: ${activePatientWard}).`,
+        files: [pdfFile]
       });
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Share failed:', err);
-      }
+      return;
     }
-  } else {
-    alert("Web Share API is not supported on this browser. Use WhatsApp, Email, or Print PDF options below!");
+
+    // Direct PDF File Download Fallback if browser Web Share Level 2 is unavailable
+    if (typeof html2pdf !== 'undefined') {
+      const tempPdfFile = await generateScalePdfFile();
+      if (tempPdfFile) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(tempPdfFile);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        alert(`Complete PDF Evaluation Report "${filename}" generated! You can now send or attach this PDF file to any platform.`);
+      }
+    } else {
+      window.exportPdfReport();
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      console.error("PDF Share failed:", err);
+      window.exportPdfReport();
+    }
   }
 };
 
 window.shareViaWhatsApp = function() {
-  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
-  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-  window.open(url, '_blank');
+  shareScalePdfFile();
 };
 
 window.shareViaEmail = function() {
-  const shareText = emrNoteTextEl ? emrNoteTextEl.textContent : '';
-  const subject = `[HIS EMR Report] ${currentScale ? currentScale.name : 'Psychiatry Scale'} Evaluation — ${activePatientName} (${activePatientMRN})`;
-  const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareText)}`;
-  window.open(url, '_self');
+  shareScalePdfFile();
 };
 
-window.exportPdfReport = function() {
+window.exportPdfReport = async function() {
   closeShareModal();
-  const originalTitle = document.title;
-  const customPdfTitle = formatPdfDocumentTitle();
-  
-  document.title = customPdfTitle;
-  window.print();
-  
-  setTimeout(() => {
-    document.title = originalTitle;
-  }, 1000);
+  const filename = formatPdfDocumentTitle() + '.pdf';
+  const pdfFile = await generateScalePdfFile();
+  if (pdfFile) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(pdfFile);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    window.print();
+  }
 };
 
 window.copyShareText = function() {
@@ -454,7 +602,7 @@ function calculateAndDisplayScores() {
   if (scoreMainEl) scoreMainEl.textContent = totalScore;
   if (scoreMaxEl) scoreMaxEl.textContent = `/ ${maxScore}`;
 
-  const range = currentScale.scoring.ranges.find(r => totalScore >= r.min && totalScore <= r.max);
+  const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => totalScore >= r.min && totalScore <= r.max) : null;
   const severityStr = range ? range.severity : 'Completed';
   
   if (severityPillEl) {
@@ -538,7 +686,7 @@ function generateEMRClinicalNote() {
   note += `TOTAL SCORE  : ${window._lastScore} (Severity: ${window._lastSeverity})\n`;
   note += `----------------------------------------------------\n`;
   note += `CLINICAL IMPRESSION & GUIDELINES:\n`;
-  const range = currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max);
+  const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
   note += `${range ? range.interpretation : 'Assessment completed.'}\n`;
   note += `====================================================\n`;
   
@@ -644,7 +792,7 @@ function setupEventListeners() {
   // Print / Export PDF with Custom Patient Name & Age Filename
   if (btnPrintPdf) {
     btnPrintPdf.addEventListener('click', () => {
-      window.exportPdfReport();
+      exportPdfReport();
     });
   }
 
