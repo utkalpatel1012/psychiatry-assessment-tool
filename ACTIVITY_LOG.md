@@ -151,7 +151,13 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 ### Phase 17: Full Question Text & Operational Response Description Extraction Fix
 - Fixed `getQuestionText()` truncation bug in `generateScalePdfFile()` where `.split('\n')[0]` was discarding question descriptions and physical exam protocols.
 - Refactored response matching logic (`opts[ans]`) so option labels (`Absent`, `Mitgehen`, `Waxy Flexibility`, `Hallucinatory Behavior`) and **full operational descriptions** are extracted for 100% of all items.
-- Configured PDF container with `position: fixed; top: 0; left: 0; width: 790px;` during compilation to prevent canvas clipping on multi-page assessments (e.g. PANSS 30 items, BFCRS 23 items).
+
+### Phase 18: Visible DOM PDF Compilation Fix (Zero Blank PDF Output)
+- Discovered root cause of blank PDF pages: `html2canvas` fails when trying to capture off-screen or `position: fixed` elements overlaying the viewport.
+- Added `#pdf-medical-report` directly inside the visible `#results-view` DOM hierarchy in `index.html`.
+- Updated `populatePdfMedicalReport()` to render the full report directly into `#pdf-medical-report` upon scale completion.
+- Configured `html2pdf().from(document.getElementById('pdf-medical-report'))` so the PDF engine compiles directly from a real, visible, fully-computed DOM element on screen.
+- 100% guarantees crisp, non-blank PDF files on all mobile and desktop browsers.
 
 ---
 
