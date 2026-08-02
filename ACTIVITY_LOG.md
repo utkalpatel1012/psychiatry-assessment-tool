@@ -130,6 +130,13 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - As clinician selects options for each question item, the running total score calculates instantly (`updateLiveScore()`) and updates live.
 - Handles backwards navigation (`Previous Question`) gracefully by recalculating the exact running score.
 
+### Phase 14: Automated Dynamic PDF Naming (Patient Name + Age + Scale Name)
+- Added `formatPdfDocumentTitle()` helper to dynamically set the document title prior to PDF export.
+- Generated PDF filenames automatically format as:
+  `[Patient_Name]_[Age]yrs_[Scale_Abbreviation]_Report_[Date].pdf`
+  *(e.g. `Rahul_Sharma_32yrs_PANSS_Report_2026-08-02.pdf`)*
+- Restores original browser window title after print dialog closes.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers

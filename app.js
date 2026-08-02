@@ -20,6 +20,16 @@ function getWardFullName(code) {
   return map[code] || code || 'General Male Ward';
 }
 
+// Custom PDF Filename Formatter according to Patient Name, Age & Scale
+function formatPdfDocumentTitle() {
+  const cleanName = (activePatientName || 'Patient').trim().replace(/[^a-zA-Z0-9]/g, '_');
+  const ageStr = activePatientAge ? `${activePatientAge}yrs` : 'AgeNA';
+  const scaleStr = currentScale ? currentScale.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Clinical_Report';
+  const dateStr = new Date().toISOString().split('T')[0];
+  
+  return `${cleanName}_${ageStr}_${scaleStr}_Report_${dateStr}`;
+}
+
 // DOM Elements
 const homeView = document.getElementById('home-view');
 const assessmentView = document.getElementById('assessment-view');
@@ -185,7 +195,15 @@ window.shareViaEmail = function() {
 
 window.exportPdfReport = function() {
   closeShareModal();
+  const originalTitle = document.title;
+  const customPdfTitle = formatPdfDocumentTitle();
+  
+  document.title = customPdfTitle;
   window.print();
+  
+  setTimeout(() => {
+    document.title = originalTitle;
+  }, 1000);
 };
 
 window.copyShareText = function() {
@@ -623,10 +641,10 @@ function setupEventListeners() {
     });
   }
 
-  // Print / Export PDF
+  // Print / Export PDF with Custom Patient Name & Age Filename
   if (btnPrintPdf) {
     btnPrintPdf.addEventListener('click', () => {
-      window.print();
+      window.exportPdfReport();
     });
   }
 
