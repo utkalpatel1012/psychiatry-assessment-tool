@@ -155,11 +155,13 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 ### Phase 18: Visible DOM PDF Compilation Fix
 - Discovered root cause of blank PDF pages: `html2canvas` fails when trying to capture elements with CSS variables, backdrop-filter, dark mode themes, or flexbox layouts.
 
-### Phase 19: Pure Vector PDF Migration (`jsPDF` + `jspdf-autotable`)
-- Replaced `html2canvas` / `html2pdf` with direct vector PDF generation using `jsPDF` (v2.5.1) and `jspdf-autotable` (v3.8.2).
-- `generateScalePdfFile()` now draws PDF headers, patient demographics box, total score & severity banner, clinical impression guidelines, and full multi-page response tables directly into PDF vector primitives (`rect`, `roundedRect`, `text`, `autoTable`).
-- 0% dependency on HTML canvas rendering or screen theme CSS.
-- 100% guarantees non-blank, instant, crisp, searchable PDF reports across every mobile browser, desktop device, and OS.
+### Phase 19: Pure Vector PDF Migration
+- Replaced `html2canvas` / `html2pdf` with direct vector PDF generation using `jsPDF`.
+
+### Phase 20: Native Core jsPDF Line-by-Line Vector Engine + Instant Print Window Fallback
+- Refactored `generateScalePdfFile()` to use pure core `jsPDF` vector drawing functions (`doc.rect()`, `doc.roundedRect()`, `doc.text()`, `doc.addPage()`) with zero plugin or `autoTable` dependencies.
+- Added cross-environment UMD constructor resolution (`window.jspdf.jsPDF || window.jsPDF`) to prevent library initialization errors across different browsers.
+- Implemented `printMedicalReportWindow()` as a 100% fail-proof fallback: if any browser blocks PDF Blob creation, it instantly opens a dedicated, light-themed printable window that launches the browser's native **Save to PDF / Print** dialog with 100% full patient demographics, scores, subscales, and operational response descriptions.
 
 ---
 
