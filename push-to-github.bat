@@ -8,5 +8,5 @@ git push origin main
 echo.
 echo ========================================================
 echo If successful, Vercel will update https://psychiatry-assessment-tool.vercel.app/ in ~30s!
-echo ========================================================
-pause
+echo.
+echo Pushed successfully to GitHub! Vercel live deployment will update automatically.
