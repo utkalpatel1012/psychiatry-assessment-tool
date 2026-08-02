@@ -148,6 +148,11 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - Added `pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }` and `page-break-inside: avoid;` on all table rows (`<tr>`) and cards to prevent page break split errors.
 - Included Subscale Score Breakdown tables and full item-by-item question & response description tables with alternating row shading (`#ffffff` / `#f8fafc`).
 
+### Phase 17: Full Question Text & Operational Response Description Extraction Fix
+- Fixed `getQuestionText()` truncation bug in `generateScalePdfFile()` where `.split('\n')[0]` was discarding question descriptions and physical exam protocols.
+- Refactored response matching logic (`opts[ans]`) so option labels (`Absent`, `Mitgehen`, `Waxy Flexibility`, `Hallucinatory Behavior`) and **full operational descriptions** are extracted for 100% of all items.
+- Configured PDF container with `position: fixed; top: 0; left: 0; width: 790px;` during compilation to prevent canvas clipping on multi-page assessments (e.g. PANSS 30 items, BFCRS 23 items).
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers
