@@ -30,7 +30,7 @@ function formatPdfDocumentTitle() {
   return `${cleanName}_${ageStr}_${scaleStr}_Report_${dateStr}`;
 }
 
-// 100% Fail-Proof Dedicated Printable Clinical Report Window
+// 100% Structured A4 Printable Medical Report Window (Exact A4 Page Formatting & Subdivisional Breakdown)
 function printMedicalReportWindow() {
   if (!currentScale) return;
 
@@ -38,23 +38,42 @@ function printMedicalReportWindow() {
   const maxScore = currentScale.scoring.maxScore || (currentScale.scoring.totalRange ? currentScale.scoring.totalRange.max : 100);
   const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
 
+  // Build Subdivisional / Subscale Breakdown Section
   let subscalesHtml = '';
   if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
-    let subCells = currentScale.subscales.map(ss => `
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center; flex: 1;">
-        <div style="font-size: 11px; font-weight: bold; color: #475569;">${ss.name}</div>
-        <div style="font-size: 18px; font-weight: bold; color: #0284c7; margin: 2px 0;">${window._subscores[ss.id] || 0}</div>
-        <div style="font-size: 10px; color: #94a3b8;">Range: ${ss.min} – ${ss.max}</div>
-      </div>
-    `).join('');
+    let subRows = currentScale.subscales.map(ss => {
+      const scoreVal = window._subscores[ss.id] || 0;
+      return `
+        <tr style="border-bottom: 1px solid #cbd5e1;">
+          <td style="padding: 7px 10px; font-weight: bold; color: #0f172a;">${ss.name}</td>
+          <td style="padding: 7px 10px; font-weight: 800; color: #0284c7; text-align: center; font-size: 13px;">${scoreVal}</td>
+          <td style="padding: 7px 10px; color: #64748b; text-align: center;">${ss.min} – ${ss.max}</td>
+        </tr>
+      `;
+    }).join('');
+
     subscalesHtml = `
-      <div style="margin-bottom: 16px; page-break-inside: avoid;">
-        <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; color: #0f172a;">Subscale Score Breakdown</div>
-        <div style="display: flex; gap: 10px;">${subCells}</div>
+      <div style="background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; page-break-inside: avoid;">
+        <div style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+          Subdivisional Score Breakdown & Subscale Total Scores
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+          <thead>
+            <tr style="background: #e0f2fe; color: #0369a1; text-align: left; font-weight: 800;">
+              <th style="padding: 7px 10px; border-bottom: 1.5px solid #7dd3fc;">Subdivision / Subscale Domain</th>
+              <th style="padding: 7px 10px; border-bottom: 1.5px solid #7dd3fc; text-align: center;">Subtotal Score</th>
+              <th style="padding: 7px 10px; border-bottom: 1.5px solid #7dd3fc; text-align: center;">Min – Max Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${subRows}
+          </tbody>
+        </table>
       </div>
     `;
   }
 
+  // Build Detailed Questions & Operational Responses Table
   let itemsHtml = '';
   currentScale.questions.forEach((q, i) => {
     const ans = answers[i];
@@ -73,9 +92,9 @@ function printMedicalReportWindow() {
       }
       if (opt) {
         const desc = opt.description || opt.desc || '';
-        labelText = `<strong style="color: #0284c7; font-size: 12px;">Score ${ans}: ${opt.label}</strong>${desc ? `<div style="font-size: 11px; color: #334155; margin-top: 3px; font-weight: normal; line-height: 1.4;">${desc}</div>` : ''}`;
+        labelText = `<strong style="color: #0284c7; font-size: 11.5px;">Score ${ans}: ${opt.label}</strong>${desc ? `<div style="font-size: 10.5px; color: #334155; margin-top: 3px; font-weight: normal; line-height: 1.4;">${desc}</div>` : ''}`;
       } else {
-        labelText = `<strong style="color: #0284c7; font-size: 12px;">Score ${ans}</strong>`;
+        labelText = `<strong style="color: #0284c7; font-size: 11.5px;">Score ${ans}</strong>`;
       }
     }
 
@@ -83,7 +102,7 @@ function printMedicalReportWindow() {
     itemsHtml += `
       <tr style="background: ${rowBg}; border-bottom: 1px solid #cbd5e1; page-break-inside: avoid;">
         <td style="padding: 8px 6px; text-align: center; font-weight: bold; color: #0284c7; width: 6%; vertical-align: top;">${i + 1}</td>
-        <td style="padding: 8px 10px; width: 54%; vertical-align: top; font-weight: 500;">${qText}</td>
+        <td style="padding: 8px 10px; width: 54%; vertical-align: top; font-weight: 500; color: #0f172a;">${qText}</td>
         <td style="padding: 8px 10px; width: 40%; vertical-align: top; background: rgba(14,165,233,0.03);">${labelText}</td>
       </tr>
     `;
@@ -91,25 +110,31 @@ function printMedicalReportWindow() {
 
   const printHtml = `
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
       <meta charset="UTF-8">
       <title>${formatPdfDocumentTitle()}</title>
       <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 24px; color: #0f172a; font-size: 12px; line-height: 1.5; background: #ffffff; }
+        @page { size: A4 portrait; margin: 12mm; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 16px; color: #0f172a; font-size: 11.5px; line-height: 1.45; background: #ffffff; }
         table { width: 100%; border-collapse: collapse; }
+        .header-banner { border-bottom: 3px solid #0284c7; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .patient-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; page-break-inside: avoid; }
+        .score-box { background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; page-break-inside: avoid; }
+        .impression-box { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 4px; padding: 10px 12px; margin-bottom: 16px; page-break-inside: avoid; }
+        .table-header { font-weight: 800; font-size: 12.5px; margin-bottom: 8px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; color: #0f172a; page-break-inside: avoid; }
         @media print {
-          @page { margin: 12mm; size: A4; }
-          body { margin: 0; }
+          body { padding: 0; }
         }
       </style>
     </head>
     <body>
-      <div style="border-bottom: 3px solid #0284c7; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
+      <!-- Header Banner -->
+      <div class="header-banner">
         <div>
-          <span style="background: #0284c7; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase;">HIS / EHR CLINICAL EVALUATION REPORT</span>
+          <span style="background: #0284c7; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">HIS / EHR CLINICAL EVALUATION REPORT</span>
           <h2 style="margin: 4px 0 2px 0; font-size: 20px; color: #0f172a; font-weight: 800;">${currentScale.name} EVALUATION</h2>
-          <div style="font-size: 11.5px; color: #64748b;">${currentScale.fullName}</div>
+          <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">${currentScale.fullName}</div>
         </div>
         <div style="text-align: right; font-size: 10.5px; color: #64748b; line-height: 1.4;">
           <strong style="color: #0f172a; font-size: 11.5px;">HOSPITAL INFORMATION SYSTEM</strong><br>
@@ -118,8 +143,9 @@ function printMedicalReportWindow() {
         </div>
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; page-break-inside: avoid;">
-        <div style="font-size: 10.5px; font-weight: bold; color: #0284c7; text-transform: uppercase; margin-bottom: 4px;">Patient Context</div>
+      <!-- Patient Demographics Card -->
+      <div class="patient-card">
+        <div style="font-size: 10.5px; font-weight: bold; color: #0284c7; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">Patient Context</div>
         <table>
           <tr>
             <td style="padding: 2px 0; width: 50%;"><strong>Patient Name:</strong> ${activePatientName || 'NOT SPECIFIED'}</td>
@@ -132,29 +158,34 @@ function printMedicalReportWindow() {
         </table>
       </div>
 
-      <div style="background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; page-break-inside: avoid;">
+      <!-- Total Score & Severity Banner -->
+      <div class="score-box">
         <div>
-          <div style="font-size: 10.5px; font-weight: bold; color: #0369a1; text-transform: uppercase;">Total Score</div>
+          <div style="font-size: 10.5px; font-weight: bold; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;">Total Assessment Score</div>
           <div style="font-size: 28px; font-weight: 800; color: #0284c7; line-height: 1; margin-top: 2px;">
             ${window._lastScore} <span style="font-size: 14px; color: #64748b; font-weight: 600;">/ ${maxScore}</span>
           </div>
         </div>
-        <div style="background: #0284c7; color: white; padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800; text-transform: uppercase;">
+        <div style="background: #0284c7; color: white; padding: 6px 16px; border-radius: 20px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
           ${window._lastSeverity}
         </div>
       </div>
 
+      <!-- Subdivisional Total Scores Section (If Applicable) -->
       ${subscalesHtml}
 
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 4px; padding: 10px 12px; margin-bottom: 16px; page-break-inside: avoid;">
+      <!-- Diagnostic Guidelines & Impression Box -->
+      <div class="impression-box">
         <strong style="color: #0f172a; font-size: 12px;">Clinical Guidelines & Diagnostic Impression:</strong>
-        <p style="margin: 3px 0 0 0; font-size: 11px; color: #334155; line-height: 1.4;">${range ? range.interpretation : 'Assessment completed.'}</p>
+        <p style="margin: 3px 0 0 0; font-size: 11px; color: #334155; line-height: 1.45;">${range ? range.interpretation : 'Assessment completed.'}</p>
       </div>
 
-      <div style="font-weight: 800; font-size: 13px; margin-bottom: 8px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; color: #0f172a; page-break-inside: avoid;">
-        Complete Item Responses & Operational Descriptions (${currentScale.questions.length} Items)
+      <!-- Scale Questions and Responses Table Header -->
+      <div class="table-header">
+        Complete Scale Item Responses & Operational Descriptions (${currentScale.questions.length} Items)
       </div>
 
+      <!-- Complete Item Table -->
       <table style="font-size: 11px; margin-bottom: 16px;">
         <thead>
           <tr style="background: #e2e8f0; text-align: left;">
@@ -168,6 +199,7 @@ function printMedicalReportWindow() {
         </tbody>
       </table>
 
+      <!-- Footer -->
       <table style="width: 100%; margin-top: 20px; border-top: 1px solid #cbd5e1; padding-top: 8px; font-size: 10px; color: #94a3b8; page-break-inside: avoid;">
         <tr>
           <td>Generated by Hospital Information System (HIS / EHR Suite)</td>
@@ -195,7 +227,7 @@ function printMedicalReportWindow() {
   }
 }
 
-// Pure Core jsPDF Line-by-Line Vector PDF File Generator
+// Pure Core jsPDF Line-by-Line Vector PDF File Generator with Subdivisional Totals Box
 async function generateScalePdfFile() {
   if (!currentScale) return null;
   const filename = formatPdfDocumentTitle() + '.pdf';
@@ -251,7 +283,7 @@ async function generateScalePdfFile() {
 
     drawHeader();
 
-    // Demographics Box
+    // 1. Demographics Box
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(203, 213, 225);
     doc.roundedRect(14, 26, 182, 22, 2, 2, 'FD');
@@ -283,7 +315,7 @@ async function generateScalePdfFile() {
     doc.setFont('helvetica', 'normal');
     doc.text(`${activePatientWard} (${getWardFullName(activePatientWard)})`, 125, 44);
 
-    // Score & Severity Banner
+    // 2. Total Score & Diagnostic Severity Banner
     doc.setFillColor(240, 249, 255);
     doc.setDrawColor(125, 211, 252);
     doc.roundedRect(14, 52, 182, 18, 2, 2, 'FD');
@@ -291,7 +323,7 @@ async function generateScalePdfFile() {
     doc.setTextColor(3, 105, 161);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL SCORE: ${window._lastScore} / ${maxScore}`, 18, 63);
+    doc.text(`TOTAL ASSESSMENT SCORE: ${window._lastScore} / ${maxScore}`, 18, 63);
 
     const sevText = (window._lastSeverity || 'Completed').toUpperCase();
     doc.setFillColor(2, 132, 199);
@@ -301,56 +333,66 @@ async function generateScalePdfFile() {
     doc.setFont('helvetica', 'bold');
     doc.text(sevText, 154, 62.5, { align: 'center' });
 
-    // Guidelines Box
+    let y = 74;
+
+    // 3. Subdivisional Total Scores Section (If Subscales Exist)
+    if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
+      const boxHeight = 8 + (currentScale.subscales.length * 6.5);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(2, 132, 199);
+      doc.roundedRect(14, y, 182, boxHeight, 2, 2, 'FD');
+
+      doc.setTextColor(2, 132, 199);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`SUBDIVISIONAL SCORE BREAKDOWN & SUBSCALE TOTALS`, 18, y + 6);
+      
+      let subY = y + 12;
+      currentScale.subscales.forEach((ss) => {
+        const scoreVal = window._subscores[ss.id] || 0;
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${ss.name}`, 18, subY);
+
+        doc.setTextColor(2, 132, 199);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Subtotal Score: ${scoreVal}`, 115, subY);
+
+        doc.setTextColor(100, 116, 139);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Range: ${ss.min} – ${ss.max}`, 160, subY);
+
+        subY += 6.5;
+      });
+
+      y += boxHeight + 4;
+    }
+
+    // 4. Clinical Guidelines & Impression Box
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, 74, 182, 20, 2, 2, 'FD');
+    doc.roundedRect(14, y, 182, 20, 2, 2, 'FD');
 
     doc.setTextColor(15, 23, 42);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Clinical Guidelines & Diagnostic Impression:`, 18, 80);
+    doc.text(`Clinical Guidelines & Diagnostic Impression:`, 18, y + 6);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(51, 65, 85);
     const impressionText = range ? range.interpretation : 'Assessment completed.';
     const splitImpression = doc.splitTextToSize(impressionText, 174);
-    doc.text(splitImpression, 18, 85);
+    doc.text(splitImpression, 18, y + 11);
 
-    let y = 100;
+    y += 24;
 
-    // Subscales Breakdown
-    if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
-      doc.setTextColor(15, 23, 42);
-      doc.setFontSize(9.5);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`Subscale Score Breakdown`, 14, y);
-      y += 5;
-
-      currentScale.subscales.forEach(ss => {
-        doc.setFillColor(248, 250, 252);
-        doc.setDrawColor(226, 232, 240);
-        doc.rect(14, y, 182, 7, 'FD');
-        doc.setFontSize(8.5);
-        doc.setTextColor(15, 23, 42);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${ss.name}`, 18, y + 5);
-        doc.setTextColor(2, 132, 199);
-        doc.text(`Score: ${window._subscores[ss.id] || 0}`, 110, y + 5);
-        doc.setTextColor(100, 116, 139);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Range: ${ss.min} - ${ss.max}`, 155, y + 5);
-        y += 8;
-      });
-      y += 4;
-    }
-
-    // Complete Item Responses Section
+    // 5. Complete Item Responses Section
     doc.setTextColor(15, 23, 42);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Complete Item Responses & Operational Descriptions (${currentScale.questions.length} Items)`, 14, y);
+    doc.text(`Complete Scale Item Responses & Operational Descriptions (${currentScale.questions.length} Items)`, 14, y);
     y += 5;
 
     // Table Header Row
@@ -603,6 +645,7 @@ window.shareScalePdfFile = async function() {
 
     if (window._lastJsPdfDoc) {
       window._lastJsPdfDoc.save(filename);
+      printMedicalReportWindow();
     } else {
       printMedicalReportWindow();
     }
@@ -626,6 +669,7 @@ window.exportPdfReport = async function() {
   const pdfFile = await generateScalePdfFile();
   if (window._lastJsPdfDoc) {
     window._lastJsPdfDoc.save(filename);
+    printMedicalReportWindow();
   } else {
     printMedicalReportWindow();
   }

@@ -160,8 +160,16 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 
 ### Phase 20: Native Core jsPDF Line-by-Line Vector Engine + Instant Print Window Fallback
 - Refactored `generateScalePdfFile()` to use pure core `jsPDF` vector drawing functions (`doc.rect()`, `doc.roundedRect()`, `doc.text()`, `doc.addPage()`) with zero plugin or `autoTable` dependencies.
-- Added cross-environment UMD constructor resolution (`window.jspdf.jsPDF || window.jsPDF`) to prevent library initialization errors across different browsers.
-- Implemented `printMedicalReportWindow()` as a 100% fail-proof fallback: if any browser blocks PDF Blob creation, it instantly opens a dedicated, light-themed printable window that launches the browser's native **Save to PDF / Print** dialog with 100% full patient demographics, scores, subscales, and operational response descriptions.
+
+### Phase 21: Structured A4 Clinical Document Overhaul & Subdivisional Score Breakdown
+- Formatted PDF report specifically for standard A4 paper size (`@page { size: A4 portrait; margin: 12mm; }`).
+- Re-structured document layout into clean clinical sections:
+  1. **Official Hospital EHR Header Banner**: Scale abbreviation, full title, date/time, and status badge.
+  2. **Patient Demographics Card**: Name, Age, MRN/UHID, Ward Location.
+  3. **Total Assessment Score & Diagnostic Severity Box**: Total score out of max score with severity badge.
+  4. **Subdivisional Score Breakdown Table**: For multi-domain scales (PANSS, HAM-D, BFCRS, BPRS, YMRS), renders a dedicated subdivisional table showing each domain name, subtotal score, and min-max range inside the Score & Interpretation section.
+  5. **Diagnostic Guidelines & Impression Callout Box**: Structured box with dark blue accent border.
+  6. **Scale Questions & Responses Data Table**: Alternating rows with item number, full question text/examination protocol, selected rating score, option title, and full operational criteria.
 
 ---
 
