@@ -99,11 +99,20 @@
       <!-- View 2: Active Scale Assessment Mode -->
       <section id="assessment-view" style="display: none;">
         <div class="assessment-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <h2 id="assessment-scale-name" class="assessment-title">Scale Name</h2>
-            <button id="btn-cancel-assessment" class="btn-pill" style="font-size: 0.75rem; color: var(--accent-rose);">
-              <i class="fas fa-times"></i> Exit Assessment
-            </button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h2 id="assessment-scale-name" class="assessment-title">Scale Name</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <!-- Live Score Counter Badge -->
+              <div id="live-score-badge" class="live-score-counter" title="Running Score calculated in real time">
+                <i class="fas fa-calculator" style="color: var(--accent-cyan);"></i>
+                <span>Live Score: <strong id="live-score-val">0</strong></span>
+              </div>
+              <button id="btn-cancel-assessment" class="btn-pill" style="font-size: 0.75rem; color: var(--accent-rose);">
+                <i class="fas fa-times"></i> Exit
+              </button>
+            </div>
           </div>
 
           <div class="progress-bar-track">

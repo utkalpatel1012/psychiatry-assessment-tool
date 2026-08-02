@@ -48,6 +48,7 @@ const questionTextEl = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options-container');
 const btnPrev = document.getElementById('btn-prev');
 const btnCancelAssessment = document.getElementById('btn-cancel-assessment');
+const liveScoreValEl = document.getElementById('live-score-val');
 
 // Results View Elements
 const scoreMainEl = document.getElementById('score-main');
@@ -74,6 +75,21 @@ function updatePatientUI() {
   if (activePatientAgeEl) activePatientAgeEl.textContent = activePatientAge ? `${activePatientAge} yrs` : 'N/A';
   if (activePatientMRNEl) activePatientMRNEl.textContent = activePatientMRN || 'N/A';
   if (activePatientWardEl) activePatientWardEl.textContent = activePatientWard || 'GMW';
+}
+
+function updateLiveScore() {
+  if (!liveScoreValEl) return;
+  if (!answers || answers.length === 0) {
+    liveScoreValEl.textContent = '0';
+    return;
+  }
+  let runningTotal = 0;
+  answers.forEach(val => {
+    if (typeof val === 'number' && !isNaN(val)) {
+      runningTotal += val;
+    }
+  });
+  liveScoreValEl.textContent = runningTotal;
 }
 
 window.openPatientModal = function() {
@@ -272,6 +288,7 @@ function startAssessment(scale) {
   answers = [];
   if (assessmentScaleName) assessmentScaleName.textContent = `${scale.name} — ${scale.fullName}`;
   showView(assessmentView);
+  updateLiveScore();
   showQuestion();
 }
 
@@ -299,6 +316,8 @@ function showQuestion() {
   
   const pct = Math.round((currentQuestionIndex / total) * 100);
   if (progressBarFill) progressBarFill.style.width = `${pct}%`;
+
+  updateLiveScore();
 
   if (optionsContainer) {
     optionsContainer.innerHTML = options.map((opt, idx) => {
@@ -345,6 +364,7 @@ function showQuestion() {
         if (isNaN(score)) score = 0;
 
         answers.push(score);
+        updateLiveScore();
 
         document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
         this.classList.add('selected');
@@ -583,6 +603,7 @@ function setupEventListeners() {
       if (currentQuestionIndex > 0) {
         answers.pop();
         currentQuestionIndex--;
+        updateLiveScore();
         showQuestion();
       }
     });

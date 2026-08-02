@@ -188,6 +188,28 @@ body {
   font-weight: 700;
 }
 
+/* Real-Time Live Score Counter Badge */
+.live-score-counter {
+  background: rgba(14, 165, 233, 0.12);
+  color: var(--text-primary);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.15);
+  transition: all var(--transition-fast);
+}
+
+.live-score-counter strong {
+  color: var(--accent-cyan);
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+}
+
 /* Ward Selection Radio Cards */
 .ward-option-card {
   position: relative;

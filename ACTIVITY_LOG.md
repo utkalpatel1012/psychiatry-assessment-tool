@@ -125,6 +125,11 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
   - 📄 **Export PDF Document**: Trigger formatted print to PDF dialog.
   - 📋 **Copy EMR Text**: 1-click clipboard copy.
 
+### Phase 13: Real-Time Live Score Counter During Scale Administration
+- Integrated a real-time **Live Score Counter Badge** (`#live-score-badge`) at the top right of the assessment card header in `#assessment-view`.
+- As clinician selects options for each question item, the running total score calculates instantly (`updateLiveScore()`) and updates live.
+- Handles backwards navigation (`Previous Question`) gracefully by recalculating the exact running score.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers
