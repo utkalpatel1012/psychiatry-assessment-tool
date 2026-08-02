@@ -30,26 +30,53 @@ function formatPdfDocumentTitle() {
   return `${cleanName}_${ageStr}_${scaleStr}_Report_${dateStr}`;
 }
 
-// Generate Actual Complete Scale Evaluation PDF File Object
+// Generate Actual Complete Scale Evaluation PDF File Object (Pristine Medical Grade Rendering)
 async function generateScalePdfFile() {
   if (!currentScale) return null;
   const filename = formatPdfDocumentTitle() + '.pdf';
 
-  // Build clean clinical report container for PDF compilation
+  // Build clean fixed-width clinical report container for html2pdf compilation
   const pdfContainer = document.createElement('div');
   pdfContainer.id = 'pdf-export-temp-container';
   pdfContainer.style.cssText = `
-    padding: 24px;
-    background: #ffffff;
-    color: #0f172a;
-    font-family: 'Inter', -apple-system, sans-serif;
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 780px;
+    padding: 30px;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
     line-height: 1.5;
+    box-sizing: border-box;
   `;
 
   const dateStr = new Date().toLocaleString();
   const maxScore = currentScale.scoring.maxScore || (currentScale.scoring.totalRange ? currentScale.scoring.totalRange.max : 100);
 
+  // Build Subscale HTML table if subscales exist
+  let subscalesHtml = '';
+  if (currentScale.subscales && currentScale.subscales.length > 0 && window._subscores) {
+    let subCells = currentScale.subscales.map(ss => `
+      <td style="padding: 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; width: 33%;">
+        <div style="font-size: 11px; font-weight: 700; color: #475569;">${ss.name}</div>
+        <div style="font-size: 20px; font-weight: 800; color: #0284c7; margin: 2px 0;">${window._subscores[ss.id] || 0}</div>
+        <div style="font-size: 10px; color: #94a3b8;">Range: ${ss.min} – ${ss.max}</div>
+      </td>
+    `).join('');
+
+    subscalesHtml = `
+      <div style="margin-bottom: 20px; page-break-inside: avoid;">
+        <h4 style="font-size: 13px; color: #0f172a; margin: 0 0 8px 0; font-weight: 700;">Subscale Score Breakdown</h4>
+        <table style="width: 100%; border-collapse: separate; border-spacing: 8px 0; margin-left: -8px;">
+          <tr>${subCells}</tr>
+        </table>
+      </div>
+    `;
+  }
+
+  // Build Items HTML Table
   let itemsHtml = '';
   currentScale.questions.forEach((q, i) => {
     const ans = answers[i];
@@ -65,11 +92,13 @@ async function generateScalePdfFile() {
       label = opt ? opt.label : `Score ${ans}`;
     }
 
+    const rowBg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
+
     itemsHtml += `
-      <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 8px; font-weight: 700; width: 8%;">#${i + 1}</td>
-        <td style="padding: 8px; width: 62%;">${text}</td>
-        <td style="padding: 8px; font-weight: 600; color: #0284c7; width: 30%;">${label}</td>
+      <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0; page-break-inside: avoid;">
+        <td style="padding: 10px 8px; font-weight: 700; color: #0284c7; text-align: center; width: 6%; border-bottom: 1px solid #e2e8f0;">${i + 1}</td>
+        <td style="padding: 10px 10px; width: 60%; color: #1e293b; border-bottom: 1px solid #e2e8f0;">${text}</td>
+        <td style="padding: 10px 10px; font-weight: 600; color: #0f172a; width: 34%; border-bottom: 1px solid #e2e8f0; background: rgba(14,165,233,0.05);">${label}</td>
       </tr>
     `;
   });
@@ -77,68 +106,106 @@ async function generateScalePdfFile() {
   const range = currentScale.scoring.ranges ? currentScale.scoring.ranges.find(r => window._lastScore >= r.min && window._lastScore <= r.max) : null;
 
   pdfContainer.innerHTML = `
-    <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <h1 style="font-size: 20px; color: #0f172a; margin: 0; font-weight: 800;">${currentScale.name} — CLINICAL EVALUATION REPORT</h1>
-        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${currentScale.fullName}</div>
-      </div>
-      <div style="text-align: right; font-size: 11px; color: #64748b;">
-        <strong>HOSPITAL EHR SYSTEM</strong><br>${dateStr}
-      </div>
-    </div>
+    <!-- Header Banner -->
+    <table style="width: 100%; border-collapse: collapse; border-bottom: 3px solid #0284c7; padding-bottom: 12px; margin-bottom: 18px;">
+      <tr>
+        <td style="vertical-align: top;">
+          <div style="display: inline-block; background: #0284c7; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px;">HIS / EHR CLINICAL REPORT</div>
+          <h1 style="font-size: 22px; color: #0f172a; margin: 4px 0 0 0; font-weight: 800; letter-spacing: -0.5px;">${currentScale.name} ASSESSMENT</h1>
+          <div style="font-size: 12px; color: #64748b; font-weight: 500;">${currentScale.fullName}</div>
+        </td>
+        <td style="text-align: right; vertical-align: top; font-size: 11px; color: #64748b; line-height: 1.4;">
+          <strong style="color: #0f172a; font-size: 12px;">HOSPITAL INFORMATION SYSTEM</strong><br>
+          Evaluation Date: ${dateStr}<br>
+          Status: Verified & Stored
+        </td>
+      </tr>
+    </table>
 
-    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+    <!-- Patient Demographics Section -->
+    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; page-break-inside: avoid;">
+      <div style="font-size: 11px; text-transform: uppercase; color: #0284c7; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px;">Patient Demographics Context</div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
         <tr>
-          <td style="padding: 4px 0;"><strong>Patient Name:</strong> ${activePatientName || 'NOT SPECIFIED'}</td>
-          <td style="padding: 4px 0;"><strong>Age:</strong> ${activePatientAge ? activePatientAge + ' yrs' : 'N/A'}</td>
+          <td style="padding: 4px 0; width: 50%;"><strong>Patient Name:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientName || 'NOT SPECIFIED'}</span></td>
+          <td style="padding: 4px 0; width: 50%;"><strong>Age:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientAge ? activePatientAge + ' Years' : 'N/A'}</span></td>
         </tr>
         <tr>
-          <td style="padding: 4px 0;"><strong>MRN / UHID:</strong> ${activePatientMRN || 'N/A'}</td>
-          <td style="padding: 4px 0;"><strong>Ward Location:</strong> ${activePatientWard} (${getWardFullName(activePatientWard)})</td>
+          <td style="padding: 4px 0; width: 50%;"><strong>MRN / UHID:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientMRN || 'N/A'}</span></td>
+          <td style="padding: 4px 0; width: 50%;"><strong>Ward Location:</strong> <span style="color: #0f172a; font-weight: 700;">${activePatientWard} (${getWardFullName(activePatientWard)})</span></td>
         </tr>
       </table>
     </div>
 
-    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <div style="font-size: 11px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Total Evaluation Score</div>
-        <div style="font-size: 26px; font-weight: 800; color: #0284c7; margin-top: 2px;">${window._lastScore} <span style="font-size: 14px; color: #64748b;">/ ${maxScore}</span></div>
-      </div>
-      <div style="text-align: right;">
-        <div style="font-size: 11px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Diagnostic Severity</div>
-        <div style="display: inline-block; background: #0284c7; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 4px;">${window._lastSeverity}</div>
-      </div>
+    <!-- Score & Severity Banner -->
+    <table style="width: 100%; border-collapse: collapse; background: #f0f9ff; border: 1.5px solid #7dd3fc; border-radius: 8px; margin-bottom: 18px; page-break-inside: avoid;">
+      <tr>
+        <td style="padding: 16px 20px; vertical-align: middle;">
+          <div style="font-size: 11px; text-transform: uppercase; color: #0369a1; font-weight: 800; letter-spacing: 0.5px;">Total Assessment Score</div>
+          <div style="font-size: 32px; font-weight: 800; color: #0284c7; line-height: 1; margin-top: 4px;">
+            ${window._lastScore} <span style="font-size: 16px; color: #64748b; font-weight: 600;">/ ${maxScore}</span>
+          </div>
+        </td>
+        <td style="padding: 16px 20px; text-align: right; vertical-align: middle;">
+          <div style="font-size: 11px; text-transform: uppercase; color: #0369a1; font-weight: 800; letter-spacing: 0.5px;">Diagnostic Severity</div>
+          <div style="display: inline-block; background: #0284c7; color: #ffffff; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-top: 6px; box-shadow: 0 2px 4px rgba(2,132,199,0.2);">
+            ${window._lastSeverity}
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Subscale Breakdown -->
+    ${subscalesHtml}
+
+    <!-- Guidelines Impression Box -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; border-radius: 4px; padding: 14px 16px; margin-bottom: 22px; page-break-inside: avoid;">
+      <strong style="color: #0f172a; font-size: 13px;">Clinical Guidelines & Diagnostic Impression:</strong>
+      <p style="margin: 6px 0 0 0; font-size: 12px; color: #334155; line-height: 1.5;">${range ? range.interpretation : 'Assessment completed.'}</p>
     </div>
 
-    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
-      <strong style="color: #0f172a; font-size: 12px;">Diagnostic Guidelines & Clinical Impression:</strong>
-      <p style="margin: 6px 0 0 0; font-size: 12px; color: #334155;">${range ? range.interpretation : 'Assessment completed.'}</p>
+    <!-- Detailed Item Table Header -->
+    <div style="margin-bottom: 10px; page-break-inside: avoid;">
+      <h3 style="font-size: 14px; color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px;">
+        Detailed Item Responses & Score Breakdown (${currentScale.questions.length} Items)
+      </h3>
     </div>
 
-    <h3 style="font-size: 14px; color: #0f172a; margin-bottom: 8px; font-weight: 700; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">Complete Item Responses (${currentScale.questions.length} Items)</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+    <!-- Detailed Items Table -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 20px;">
       <thead>
-        <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #cbd5e1;">
-          <th style="padding: 6px;">#</th>
-          <th style="padding: 6px;">Clinical Question / Symptom</th>
-          <th style="padding: 6px;">Selected Rating & Option Description</th>
+        <tr style="background: #e2e8f0; text-align: left;">
+          <th style="padding: 8px 6px; text-align: center; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1;">Item</th>
+          <th style="padding: 8px 10px; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1;">Clinical Question / Symptom Description</th>
+          <th style="padding: 8px 10px; color: #334155; font-weight: 800; border-bottom: 2px solid #cbd5e1;">Selected Rating & Operational Option</th>
         </tr>
       </thead>
       <tbody>
         ${itemsHtml}
       </tbody>
     </table>
+
+    <!-- Medical Sign-off Footer -->
+    <table style="width: 100%; margin-top: 30px; border-top: 1px solid #cbd5e1; padding-top: 12px; font-size: 10px; color: #94a3b8; page-break-inside: avoid;">
+      <tr>
+        <td>Generated automatically by Hospital Information System (HIS / EHR Assessment Suite)</td>
+        <td style="text-align: right; font-weight: 700; color: #64748b;">CONFIDENTIAL MEDICAL RECORD</td>
+      </tr>
+    </table>
   `;
 
   document.body.appendChild(pdfContainer);
 
+  // Wait 120ms for DOM elements and styles to compute before compiling Canvas
+  await new Promise(resolve => setTimeout(resolve, 120));
+
   const opt = {
-    margin:       [0.3, 0.3, 0.3, 0.3],
+    margin:       [0.35, 0.35, 0.35, 0.35],
     filename:     filename,
     image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
   try {
@@ -146,7 +213,9 @@ async function generateScalePdfFile() {
     if (typeof html2pdf !== 'undefined') {
       pdfBlob = await html2pdf().set(opt).from(pdfContainer).outputPdf('blob');
     }
-    document.body.removeChild(pdfContainer);
+    if (document.getElementById('pdf-export-temp-container')) {
+      document.body.removeChild(pdfContainer);
+    }
 
     if (pdfBlob) {
       return new File([pdfBlob], filename, { type: 'application/pdf' });
@@ -308,24 +377,21 @@ window.shareScalePdfFile = async function() {
     }
 
     // Direct PDF File Download Fallback if browser Web Share Level 2 is unavailable
-    if (typeof html2pdf !== 'undefined') {
-      const tempPdfFile = await generateScalePdfFile();
-      if (tempPdfFile) {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(tempPdfFile);
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        alert(`Complete PDF Evaluation Report "${filename}" generated! You can now send or attach this PDF file to any platform.`);
-      }
+    if (pdfFile) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(pdfFile);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert(`Complete PDF Evaluation Report "${filename}" generated! You can now send or attach this PDF file to any platform.`);
     } else {
-      window.exportPdfReport();
+      window.print();
     }
   } catch (err) {
     if (err.name !== 'AbortError') {
       console.error("PDF Share failed:", err);
-      window.exportPdfReport();
+      window.print();
     }
   }
 };

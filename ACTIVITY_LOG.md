@@ -139,14 +139,14 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 
 ### Phase 15: Direct PDF File Generation & Native Multi-Platform Share Pipeline
 - Integrated `html2pdf.js` library for client-side PDF document compilation.
-- Implemented `generateScalePdfFile()` which generates an **actual PDF binary File object** (`File` instance of type `application/pdf`) containing:
-  - Hospital EHR Header Banner & Timestamp
-  - Patient Demographics (Name, Age, MRN, Ward)
-  - Total Evaluation Score & Severity Impression Box
-  - Diagnostic Guidelines & Interpretation
-  - **Complete Item-by-Item Question & Response Description Table**
+- Implemented `generateScalePdfFile()` which generates an **actual PDF binary File object** (`File` instance of type `application/pdf`).
 - Updated `shareScalePdfFile()` to invoke `navigator.share({ files: [pdfFile] })` so modern mobile/desktop browsers attach the **ACTUAL .pdf FILE** directly to WhatsApp, Gmail, Outlook, Telegram, or System Drive.
-- Added direct fallback PDF download triggers for all share channels.
+
+### Phase 16: Medical-Grade 780px Fixed-Width PDF Layout Overhaul
+- Completely re-engineered `generateScalePdfFile()` using a fixed 780px A4 printable layout to prevent text clipping, overlapping, or dark-mode color bleed.
+- Structured PDF using high-compatibility HTML `<table>` elements with explicit pixel dimensions (`width: 780px`, `background: #ffffff !important`, `color: #0f172a !important`).
+- Added `pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }` and `page-break-inside: avoid;` on all table rows (`<tr>`) and cards to prevent page break split errors.
+- Included Subscale Score Breakdown tables and full item-by-item question & response description tables with alternating row shading (`#ffffff` / `#f8fafc`).
 
 ---
 
