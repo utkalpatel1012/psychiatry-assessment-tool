@@ -100,6 +100,12 @@ This codebase is a high-performance, responsive Single-Page Application (SPA) de
 - Clinicians can read explicit diagnostic criteria (frequency, intensity, behavioral manifestation, and functional impact) directly under each option before making a selection.
 - Updated option button UI (`script.js`, `app.js`, `style.css`) with clean 2-line layout (`.option-title-text` + `.option-desc-text`).
 
+### Phase 10: MDCalc-Grade Clinical Scale Operationalization & Beginner Elicitation Guidelines
+- Comprehensive overhaul of all 22 existing scales based on MDCalc gold-standard clinical assessment format.
+- Added **Beginner Clinical Assessment Tips & Physical Elicitation Protocols** (`💡 Beginner Tip: ...`) for every question item across BFCRS, PANSS, HAM-D, MADRS, AIMS, YMRS, HAM-A, BPRS, MoCA, MMSE, and others.
+- Implemented **item-specific 0-3 response options for ALL 23 items of the Bush-Francis Catatonia Rating Scale (BFCRS)**, including explicit step-by-step instructions for testing physical signs (Mitgehen, Gegenhalten, Waxy Flexibility, Grasp Reflex, Automatic Obedience).
+- Added explicit item-by-item scoring anchors for PANSS (1-7), HAM-D (0-4), MADRS (0-6), and AIMS (0-4) so medical students and novice clinicians can apply them with zero ambiguity.
+
 ---
 
 ## 🤖 Instructions for Future AI Agents & Developers
